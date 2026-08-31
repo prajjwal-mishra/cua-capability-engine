@@ -1,13 +1,13 @@
 {
-  "capturedAt": "2026-08-31T05:44:47.478Z",
+  "capturedAt": "2026-08-31T05:51:37.151Z",
   "page": {
-    "url": "http://127.0.0.1:57980/frame/member/10099",
+    "url": "http://localhost:4000/frame/member/10099",
     "routePattern": "/frame/member/:id",
     "title": "Riverbend Credit Union — Access Denied",
     "frames": [
       {
         "framePath": [],
-        "url": "http://127.0.0.1:57980/frame/member/10099",
+        "url": "http://localhost:4000/frame/member/10099",
         "routePattern": "/frame/member/:id"
       }
     ]

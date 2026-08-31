@@ -157,7 +157,14 @@ export interface SurfaceCapabilities {
  * because it must behave identically no matter which surface is underneath.
  */
 export interface Surface {
-  observe(opts?: { readonly screenshot?: boolean }): Promise<UISnapshot>;
+  observe(): Promise<UISnapshot>;
   act(action: SurfaceAction): Promise<ActionResult>;
   capabilities(): SurfaceCapabilities;
+  /**
+   * Capture evidence, with the given regions painted out before the image is
+   * ever encoded. Masking happens here, at the point of capture, rather than
+   * after the fact — an unmasked PNG should never exist, not even in memory.
+   * Present only when `capabilities().canScreenshot`.
+   */
+  screenshot?(masks: readonly Bounds[]): Promise<Buffer>;
 }

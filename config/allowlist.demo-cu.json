@@ -1,0 +1,41 @@
+{
+  "id": "demo-cu.legacy-cu",
+  "tenant": "demo-cu",
+  "appId": "legacy-cu",
+  "origins": ["http://localhost:4000"],
+  "routePatterns": ["/", "/frame/**"],
+  "deniedRoutePatterns": ["/__control/**"],
+  "actions": ["navigate", "click", "type", "select", "read", "waitFor", "scroll"],
+  "targetRoles": [
+    "textbox",
+    "button",
+    "link",
+    "combobox",
+    "checkbox",
+    "radio",
+    "cell",
+    "columnheader"
+  ],
+  "forbiddenFieldPatterns": ["ssn", "social security", "tax id", "card number", "cvv", "pin"],
+  "risk": {
+    "irreversible": [
+      "commit",
+      "transfer",
+      "disburse",
+      "wire",
+      "delete",
+      "authorize",
+      "post payment"
+    ],
+    "write": ["continue", "submit", "save", "open sub-account"],
+    "readOnly": [
+      "search",
+      "find member",
+      "new search",
+      "back to search",
+      "acknowledge",
+      "member search"
+    ]
+  },
+  "allowCoordinateFallback": false
+}

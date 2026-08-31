@@ -1,27 +1,27 @@
 {
-  "capturedAt": "2026-08-31T05:44:48.556Z",
+  "capturedAt": "2026-08-31T05:51:38.256Z",
   "page": {
-    "url": "http://127.0.0.1:57980/",
+    "url": "http://localhost:4000/",
     "routePattern": "/",
     "title": "Riverbend Credit Union — Back Office",
     "frames": [
       {
         "framePath": [],
-        "url": "http://127.0.0.1:57980/",
+        "url": "http://localhost:4000/",
         "routePattern": "/"
       },
       {
         "framePath": [
           "navFrame"
         ],
-        "url": "http://127.0.0.1:57980/frame/nav",
+        "url": "http://localhost:4000/frame/nav",
         "routePattern": "/frame/nav"
       },
       {
         "framePath": [
           "contentFrame"
         ],
-        "url": "http://127.0.0.1:57980/frame/member/10042",
+        "url": "http://localhost:4000/frame/member/10042",
         "routePattern": "/frame/member/:id"
       },
       {
@@ -29,7 +29,7 @@
           "contentFrame",
           "acctFrame"
         ],
-        "url": "http://127.0.0.1:57980/frame/accounts/10042?variant=variant-a",
+        "url": "http://localhost:4000/frame/accounts/10042?variant=variant-a",
         "routePattern": "/frame/accounts/:id"
       }
     ]
@@ -131,7 +131,7 @@
         "contentFrame"
       ],
       "bounds": {
-        "x": 0,
+        "x": 180,
         "y": 0,
         "width": 1100,
         "height": 28
@@ -151,7 +151,7 @@
         "contentFrame"
       ],
       "bounds": {
-        "x": 1,
+        "x": 181,
         "y": 29,
         "width": 109,
         "height": 24
@@ -171,7 +171,7 @@
         "contentFrame"
       ],
       "bounds": {
-        "x": 110,
+        "x": 290,
         "y": 29,
         "width": 139,
         "height": 24
@@ -195,7 +195,7 @@
         "contentFrame"
       ],
       "bounds": {
-        "x": 1,
+        "x": 181,
         "y": 53,
         "width": 109,
         "height": 24
@@ -217,7 +217,7 @@
         "contentFrame"
       ],
       "bounds": {
-        "x": 110,
+        "x": 290,
         "y": 53,
         "width": 139,
         "height": 24
@@ -242,7 +242,7 @@
         "contentFrame"
       ],
       "bounds": {
-        "x": 1,
+        "x": 181,
         "y": 77,
         "width": 109,
         "height": 24
@@ -264,7 +264,7 @@
         "contentFrame"
       ],
       "bounds": {
-        "x": 110,
+        "x": 290,
         "y": 77,
         "width": 139,
         "height": 24
@@ -289,7 +289,7 @@
         "contentFrame"
       ],
       "bounds": {
-        "x": 1,
+        "x": 181,
         "y": 101,
         "width": 109,
         "height": 24
@@ -311,7 +311,7 @@
         "contentFrame"
       ],
       "bounds": {
-        "x": 110,
+        "x": 290,
         "y": 101,
         "width": 139,
         "height": 24
@@ -336,7 +336,7 @@
         "contentFrame"
       ],
       "bounds": {
-        "x": 0,
+        "x": 180,
         "y": 126,
         "width": 74,
         "height": 24
@@ -356,7 +356,7 @@
         "contentFrame"
       ],
       "bounds": {
-        "x": 4,
+        "x": 184,
         "y": 334,
         "width": 128,
         "height": 21
@@ -376,7 +376,7 @@
         "contentFrame"
       ],
       "bounds": {
-        "x": 140,
+        "x": 320,
         "y": 337,
         "width": 98,
         "height": 16
@@ -397,8 +397,8 @@
         "acctFrame"
       ],
       "bounds": {
-        "x": 1,
-        "y": 1,
+        "x": 361,
+        "y": 151,
         "width": 163,
         "height": 23
       },
@@ -418,8 +418,8 @@
         "acctFrame"
       ],
       "bounds": {
-        "x": 164,
-        "y": 1,
+        "x": 524,
+        "y": 151,
         "width": 197,
         "height": 23
       },
@@ -441,8 +441,8 @@
         "acctFrame"
       ],
       "bounds": {
-        "x": 361,
-        "y": 1,
+        "x": 721,
+        "y": 151,
         "width": 191,
         "height": 23
       },
@@ -464,8 +464,8 @@
         "acctFrame"
       ],
       "bounds": {
-        "x": 552,
-        "y": 1,
+        "x": 912,
+        "y": 151,
         "width": 88,
         "height": 23
       },
@@ -487,8 +487,8 @@
         "acctFrame"
       ],
       "bounds": {
-        "x": 1,
-        "y": 24,
+        "x": 361,
+        "y": 174,
         "width": 163,
         "height": 23
       },
@@ -511,8 +511,8 @@
         "acctFrame"
       ],
       "bounds": {
-        "x": 164,
-        "y": 24,
+        "x": 524,
+        "y": 174,
         "width": 197,
         "height": 23
       },
@@ -537,8 +537,8 @@
         "acctFrame"
       ],
       "bounds": {
-        "x": 361,
-        "y": 24,
+        "x": 721,
+        "y": 174,
         "width": 191,
         "height": 23
       },
@@ -563,8 +563,8 @@
         "acctFrame"
       ],
       "bounds": {
-        "x": 552,
-        "y": 24,
+        "x": 912,
+        "y": 174,
         "width": 88,
         "height": 23
       },
@@ -589,8 +589,8 @@
         "acctFrame"
       ],
       "bounds": {
-        "x": 1,
-        "y": 47,
+        "x": 361,
+        "y": 197,
         "width": 163,
         "height": 23
       },
@@ -613,8 +613,8 @@
         "acctFrame"
       ],
       "bounds": {
-        "x": 164,
-        "y": 47,
+        "x": 524,
+        "y": 197,
         "width": 197,
         "height": 23
       },
@@ -639,8 +639,8 @@
         "acctFrame"
       ],
       "bounds": {
-        "x": 361,
-        "y": 47,
+        "x": 721,
+        "y": 197,
         "width": 191,
         "height": 23
       },
@@ -665,8 +665,8 @@
         "acctFrame"
       ],
       "bounds": {
-        "x": 552,
-        "y": 47,
+        "x": 912,
+        "y": 197,
         "width": 88,
         "height": 23
       },
@@ -691,8 +691,8 @@
         "acctFrame"
       ],
       "bounds": {
-        "x": 1,
-        "y": 70,
+        "x": 361,
+        "y": 220,
         "width": 163,
         "height": 23
       },
@@ -715,8 +715,8 @@
         "acctFrame"
       ],
       "bounds": {
-        "x": 164,
-        "y": 70,
+        "x": 524,
+        "y": 220,
         "width": 197,
         "height": 23
       },
@@ -741,8 +741,8 @@
         "acctFrame"
       ],
       "bounds": {
-        "x": 361,
-        "y": 70,
+        "x": 721,
+        "y": 220,
         "width": 191,
         "height": 23
       },
@@ -767,8 +767,8 @@
         "acctFrame"
       ],
       "bounds": {
-        "x": 552,
-        "y": 70,
+        "x": 912,
+        "y": 220,
         "width": 88,
         "height": 23
       },

@@ -1,13 +1,13 @@
 {
-  "capturedAt": "2026-08-31T05:44:48.004Z",
+  "capturedAt": "2026-08-31T05:51:37.682Z",
   "page": {
-    "url": "http://127.0.0.1:57980/frame/subaccount/10042",
+    "url": "http://localhost:4000/frame/subaccount/10042",
     "routePattern": "/frame/subaccount/:id",
     "title": "Riverbend Credit Union — Open Sub-Account",
     "frames": [
       {
         "framePath": [],
-        "url": "http://127.0.0.1:57980/frame/subaccount/10042",
+        "url": "http://localhost:4000/frame/subaccount/10042",
         "routePattern": "/frame/subaccount/:id"
       }
     ]

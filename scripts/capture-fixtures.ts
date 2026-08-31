@@ -15,6 +15,11 @@ import { WebSurface } from "../src/surface/web.surface.js";
 import type { UISnapshot } from "../src/surface/types.js";
 
 const OUT = join(process.cwd(), "tests/fixtures/snapshots");
+/** Fixtures are committed test data, so they must not carry the ephemeral port
+ *  this script happened to bind. Rewrite to the canonical demo origin. */
+const CANONICAL = "http://localhost:4000";
+const canonicalize = (snap: UISnapshot, from: string): UISnapshot =>
+  JSON.parse(JSON.stringify(snap).split(from).join(CANONICAL));
 
 const app = createApp();
 const server = app.listen(0);
@@ -28,7 +33,7 @@ const surface = new WebSurface(page);
 
 async function capture(name: string, url: string): Promise<UISnapshot> {
   await page.goto(url);
-  const snap = await surface.observe();
+  const snap = canonicalize(await surface.observe(), base);
   writeFileSync(join(OUT, `${name}.json`), JSON.stringify(snap, null, 2));
   console.log(`${name.padEnd(28)} ${snap.elements.length} elements`);
   return snap;
@@ -49,7 +54,7 @@ await page.evaluate(() => {
   (document.getElementById("contentFrame") as HTMLIFrameElement).src = "/frame/member/10042";
 });
 await page.waitForTimeout(300);
-const framed = await surface.observe();
+const framed = canonicalize(await surface.observe(), base);
 writeFileSync(join(OUT, "member-detail-framed.json"), JSON.stringify(framed, null, 2));
 console.log(`${"member-detail-framed".padEnd(28)} ${framed.elements.length} elements`);
 

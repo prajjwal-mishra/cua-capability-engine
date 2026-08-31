@@ -1,13 +1,13 @@
 {
-  "capturedAt": "2026-08-31T05:44:45.343Z",
+  "capturedAt": "2026-08-31T05:51:35.012Z",
   "page": {
-    "url": "http://127.0.0.1:57980/frame/results?q=10042",
+    "url": "http://localhost:4000/frame/results?q=10042",
     "routePattern": "/frame/results",
     "title": "Riverbend Credit Union — Search Results",
     "frames": [
       {
         "framePath": [],
-        "url": "http://127.0.0.1:57980/frame/results?q=10042",
+        "url": "http://localhost:4000/frame/results?q=10042",
         "routePattern": "/frame/results"
       }
     ]

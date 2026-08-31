@@ -13,6 +13,7 @@ import type { Browser, BrowserContext, ElementHandle, Frame, Page } from "playwr
 import { collectElements, type RawElement } from "./perceive.js";
 import type {
   ActionResult,
+  Bounds,
   FrameContext,
   Surface,
   SurfaceAction,
@@ -47,10 +48,7 @@ export class WebSurface implements Surface {
   private refIndex = new Map<string, RefLocation>();
   private frames: Frame[] = [];
 
-  constructor(
-    private readonly page: Page,
-    private readonly options: WebSurfaceOptions = {},
-  ) {}
+  constructor(private readonly page: Page) {}
 
   capabilities(): SurfaceCapabilities {
     return {
@@ -64,7 +62,7 @@ export class WebSurface implements Surface {
 
   /* ------------------------------------------------------------ observe -- */
 
-  async observe(opts: { screenshot?: boolean } = {}): Promise<UISnapshot> {
+  async observe(): Promise<UISnapshot> {
     await this.settle();
 
     this.frames = this.page.frames();
@@ -77,6 +75,10 @@ export class WebSurface implements Surface {
     for (let fi = 0; fi < this.frames.length; fi++) {
       const frame = this.frames[fi]!;
       const framePath = await this.framePathOf(frame);
+      // Element bounds arrive frame-relative. Offset them into top-level page
+      // coordinates so they are usable both as diagnostics and as screenshot
+      // mask regions — a frame-relative box would mask the wrong pixels.
+      const offset = await this.frameOffset(frame);
       frameContexts.push({
         framePath,
         url: frame.url(),
@@ -117,7 +119,14 @@ export class WebSurface implements Surface {
           value: r.value,
           state: r.state,
           framePath,
-          bounds: r.bounds,
+          bounds: r.bounds
+            ? {
+                x: r.bounds.x + offset.x,
+                y: r.bounds.y + offset.y,
+                width: r.bounds.width,
+                height: r.bounds.height,
+              }
+            : undefined,
           ordinal: 0, // assigned below, once the whole page is known
           nearbyText: r.nearbyText,
           structuralPath: r.structuralPath,
@@ -128,12 +137,6 @@ export class WebSurface implements Surface {
 
     const withOrdinals = assignOrdinals(elements);
 
-    let screenshotPath: string | undefined;
-    if (opts.screenshot && this.options.screenshotSink) {
-      const png = await this.page.screenshot({ fullPage: false });
-      screenshotPath = await this.options.screenshotSink(png, withOrdinals);
-    }
-
     return {
       capturedAt: new Date().toISOString(),
       page: {
@@ -143,7 +146,6 @@ export class WebSurface implements Surface {
         frames: frameContexts,
       },
       elements: withOrdinals,
-      screenshotPath,
     };
   }
 
@@ -246,6 +248,56 @@ export class WebSurface implements Surface {
     }
   }
 
+  /** A frame's position within the top-level page, accumulated up the chain. */
+  private async frameOffset(frame: Frame): Promise<{ x: number; y: number }> {
+    let x = 0;
+    let y = 0;
+    let cur: Frame | null = frame;
+    while (cur && cur.parentFrame()) {
+      const el = await cur.frameElement().catch(() => null);
+      const box = el ? await el.boundingBox().catch(() => null) : null;
+      if (box) {
+        x += box.x;
+        y += box.y;
+      }
+      cur = cur.parentFrame();
+    }
+    return { x, y };
+  }
+
+  /**
+   * Screenshot with sensitive regions painted out BEFORE capture. The overlay
+   * is injected, the image is taken, and the overlay is removed — so a PNG
+   * containing the unmasked value is never produced in the first place.
+   */
+  async screenshot(masks: readonly Bounds[] = []): Promise<Buffer> {
+    const MARKER = "__cua_mask__";
+    if (masks.length > 0) {
+      await this.page.evaluate(
+        ({ boxes, marker }) => {
+          for (const b of boxes) {
+            const d = document.createElement("div");
+            d.setAttribute("data-cua", marker);
+            d.style.cssText = `position:fixed;left:${b.x}px;top:${b.y}px;width:${b.width}px;height:${b.height}px;background:#000;z-index:2147483647;pointer-events:none;`;
+            document.body.appendChild(d);
+          }
+        },
+        { boxes: masks as Bounds[], marker: MARKER },
+      );
+    }
+    try {
+      return await this.page.screenshot({ fullPage: false });
+    } finally {
+      if (masks.length > 0) {
+        await this.page
+          .evaluate((marker) => {
+            document.querySelectorAll(`[data-cua="${marker}"]`).forEach((n) => n.remove());
+          }, MARKER)
+          .catch(() => {});
+      }
+    }
+  }
+
   /** Frame names from the root document down. Empty array = main frame. */
   private async framePathOf(frame: Frame): Promise<string[]> {
     const path: string[] = [];
@@ -335,12 +387,9 @@ export function canonicalizeRoute(rawUrl: string): string {
 
 /** Launch helper kept here so nothing above this file imports Playwright. */
 export async function launchWebSurface(opts: {
-  headless: boolean;
   browser: Browser;
-  screenshotSink?: WebSurfaceOptions["screenshotSink"];
 }): Promise<{ surface: WebSurface; context: BrowserContext; page: Page }> {
   const context = await opts.browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await context.newPage();
-  const surface = new WebSurface(page, { screenshotSink: opts.screenshotSink });
-  return { surface, context, page };
+  return { surface: new WebSurface(page), context, page };
 }

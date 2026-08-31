@@ -1,27 +1,27 @@
 {
-  "capturedAt": "2026-08-31T05:44:44.820Z",
+  "capturedAt": "2026-08-31T05:51:34.493Z",
   "page": {
-    "url": "http://127.0.0.1:57980/?variant=variant-b",
+    "url": "http://localhost:4000/?variant=variant-b",
     "routePattern": "/",
     "title": "Summit Federal CU — Back Office",
     "frames": [
       {
         "framePath": [],
-        "url": "http://127.0.0.1:57980/?variant=variant-b",
+        "url": "http://localhost:4000/?variant=variant-b",
         "routePattern": "/"
       },
       {
         "framePath": [
           "navFrame"
         ],
-        "url": "http://127.0.0.1:57980/frame/nav",
+        "url": "http://localhost:4000/frame/nav",
         "routePattern": "/frame/nav"
       },
       {
         "framePath": [
           "contentFrame"
         ],
-        "url": "http://127.0.0.1:57980/frame/search?variant=variant-b",
+        "url": "http://localhost:4000/frame/search?variant=variant-b",
         "routePattern": "/frame/search"
       }
     ]
@@ -123,7 +123,7 @@
         "contentFrame"
       ],
       "bounds": {
-        "x": 0,
+        "x": 180,
         "y": 0,
         "width": 1100,
         "height": 28
@@ -143,7 +143,7 @@
         "contentFrame"
       ],
       "bounds": {
-        "x": 1,
+        "x": 181,
         "y": 35,
         "width": 125,
         "height": 29
@@ -164,7 +164,7 @@
         "contentFrame"
       ],
       "bounds": {
-        "x": 134,
+        "x": 314,
         "y": 39,
         "width": 182,
         "height": 21
@@ -187,7 +187,7 @@
         "contentFrame"
       ],
       "bounds": {
-        "x": 1,
+        "x": 181,
         "y": 64,
         "width": 125,
         "height": 29
@@ -210,7 +210,7 @@
         "contentFrame"
       ],
       "bounds": {
-        "x": 134,
+        "x": 314,
         "y": 68,
         "width": 182,
         "height": 21
@@ -233,7 +233,7 @@
         "contentFrame"
       ],
       "bounds": {
-        "x": 134,
+        "x": 314,
         "y": 97,
         "width": 94,
         "height": 21
