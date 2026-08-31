@@ -136,7 +136,16 @@ describe("resolution", () => {
     const d = describeElement(find(searchA, "textbox", "Member ID"), "x");
     const out = resolveDescriptor(d, searchB);
     expect(out.attempts.length).toBeGreaterThan(1);
-    expect(out.attempts[0]!.kind).toBe("role_name");
-    expect(out.attempts[0]!.matches).toBe(0); // renamed in variant-b
+    // Every rung above the one that resolved missed, and they were tried in
+    // descending confidence — the ladder's whole claim.
+    const confidences = out.attempts.map((a) => a.confidence);
+    expect([...confidences].sort((a, b) => b - a)).toEqual(confidences);
+    expect(out.attempts[0]!.matches).toBe(0); // the label was renamed in variant-b
+  });
+
+  it("tries the ladder strictly most-confident-first", () => {
+    const d = describeElement(find(searchA, "textbox", "Member ID"), "x");
+    const scores = d.strategies.map((s) => s.confidence);
+    expect([...scores].sort((a, b) => b - a)).toEqual(scores);
   });
 });

@@ -33,9 +33,12 @@ import {
   type Step,
 } from "../artifact/schema.js";
 import type { DiscoveryTrace, RecordedStep } from "../discovery/loop.js";
+import { evaluateCondition } from "../replay/checkpoint.js";
 import {
   canonicalizeEntryPoint,
+  changedFrame,
   contentRoute,
+  contentUrl,
   generalizeDetectorText,
   newlyPresent,
   parameterizeStrategyText,
@@ -75,6 +78,35 @@ export interface CompileOptions {
 export class CompileError extends Error {}
 
 /**
+ * Separate the flow from the interruptions.
+ *
+ * A step whose PRE-snapshot already matched a declared recoverable condition
+ * was the model reacting to that condition, not advancing the goal. Those steps
+ * are dropped from the capability and named in provenance, so a reviewer can
+ * see what the run hit and satisfy themselves it is covered by a recovery.
+ */
+function partitionRecoverySteps(
+  steps: readonly RecordedStep[],
+  pack: RecoveryPack | undefined,
+): { kept: RecordedStep[]; dropped: string[] } {
+  const recoverable = (pack?.knownOutcomes ?? []).filter((o) => o.severity === "recoverable");
+  if (recoverable.length === 0) return { kept: [...steps], dropped: [] };
+
+  const kept: RecordedStep[] = [];
+  const dropped: string[] = [];
+
+  for (const step of steps) {
+    const hit = recoverable.find((o) => evaluateCondition(o.detector, step.preSnapshot).passed);
+    if (hit) {
+      dropped.push(`${hit.code}: "${step.rationale}"`);
+      continue;
+    }
+    kept.push(step);
+  }
+  return { kept, dropped };
+}
+
+/**
  * Build a descriptor and validate it against the artifact schema in one step.
  * The locator module types its arrays readonly; the schema's inferred type is
  * mutable. Parsing here reconciles the two AND means a malformed ladder is
@@ -84,8 +116,11 @@ function descriptorFor(
   el: UIElement,
   intent: string,
   provenance: ParamProvenance,
+  opts: { forExtraction?: boolean } = {},
 ): z.infer<typeof ElementDescriptorSchema> {
-  const built = ElementDescriptorSchema.parse(describeElement(el, intent));
+  const built = ElementDescriptorSchema.parse(
+    describeElement(el, intent, { forExtraction: opts.forExtraction }),
+  );
   // Anything whose text IS a parameter value becomes a binding, so a descriptor
   // that identifies "the row for member 10042" becomes "the row for the member
   // this invocation asked about".
@@ -130,12 +165,26 @@ export function compileTrace(trace: DiscoveryTrace, opts: CompileOptions): Capab
     bound: new Set(trace.steps.map((s) => s.paramBinding).filter((x): x is string => Boolean(x))),
   };
 
-  const steps = trace.steps.map((recorded, i) =>
-    compileStep(recorded, i, opts.allowlist, provenance),
-  );
+  // Drop the actions the model took purely to clear a declared exceptional
+  // state. During discovery the app may throw an interstitial or a timeout at
+  // any moment; the model deals with it and moves on, but that click is NOT
+  // part of the flow. Recording it makes the interstitial mandatory — the next
+  // replay looks for an "Acknowledge" button that is not there, degrades down
+  // the ladder, and clicks whatever else happens to be the first button on the
+  // page. The condition is already declared in the reviewed pack, with a
+  // recovery; that is where it belongs.
+  const { kept, dropped } = partitionRecoverySteps(trace.steps, opts.recoveryPack);
 
-  const entrySnapshot = trace.steps[0]!.preSnapshot;
-  const entryPoint = canonicalizeEntryPoint(contentRouteUrl(entrySnapshot), provenance);
+  const steps = kept.map((recorded, i) => compileStep(recorded, i, opts.allowlist, provenance));
+
+  // The entry point is the route of the frame the flow first touches — not
+  // whichever frame happens to be deepest, which in a shell app is a coin flip
+  // between the menu and the content.
+  const first = kept[0]!;
+  const entryPoint = canonicalizeEntryPoint(
+    contentUrl(first.preSnapshot, first.element?.framePath),
+    provenance,
+  );
 
   const outputs = trace.outputs.map((o) => ({
     name: o.name,
@@ -143,7 +192,9 @@ export function compileTrace(trace: DiscoveryTrace, opts: CompileOptions): Capab
     required: true,
     sensitivity: "internal" as const,
     extraction: {
-      descriptor: descriptorFor(o.element, `the ${o.name.replace(/_/g, " ")} value`, provenance),
+      descriptor: descriptorFor(o.element, `the ${o.name.replace(/_/g, " ")} value`, provenance, {
+        forExtraction: true,
+      }),
       parse: o.parse === "currency" ? ({ kind: "currency" } as const) : ({ kind: "text" } as const),
     },
   }));
@@ -177,6 +228,7 @@ export function compileTrace(trace: DiscoveryTrace, opts: CompileOptions): Capab
       gitSha: opts.gitSha,
       surfaceType: "legacy-web",
       evidenceRef: opts.evidenceRef,
+      recoveryStepsDropped: dropped.length > 0 ? dropped : undefined,
     },
     target: {
       surfaceType: "legacy-web",
@@ -268,14 +320,16 @@ function deriveCheckpoint(
   recorded: RecordedStep,
   provenance: ParamProvenance,
 ): Condition | undefined {
-  const pre = contentRoute(recorded.preSnapshot);
-  const post = contentRoute(recorded.postSnapshot);
+  const moved = changedFrame(recorded.preSnapshot, recorded.postSnapshot);
 
-  if (pre.routePattern !== post.routePattern) {
-    const pattern = canonicalizeEntryPoint(contentRouteUrl(recorded.postSnapshot), provenance);
+  if (moved) {
+    const pattern = canonicalizeEntryPoint(
+      contentUrl(recorded.postSnapshot, moved.framePath),
+      provenance,
+    );
     return ConditionSchema.parse({
-      all: [{ type: "routeMatches", pattern, framePath: post.framePath }],
-      describe: `the ${post.framePath.join(">") || "main"} frame is at ${pattern}`,
+      all: [{ type: "routeMatches", pattern, framePath: moved.framePath }],
+      describe: `the ${moved.framePath.join(">") || "main"} frame is at ${pattern}`,
     });
   }
 
@@ -357,13 +411,6 @@ function successCondition(trace: DiscoveryTrace, provenance: ParamProvenance): C
 }
 
 /* ------------------------------------------------------------ helpers ---- */
-
-function contentRouteUrl(snapshot: UISnapshot): string {
-  const deepest = [...snapshot.page.frames].sort(
-    (a, b) => b.framePath.length - a.framePath.length,
-  )[0];
-  return deepest?.url ?? snapshot.page.url;
-}
 
 function dedupeByCode<T extends { code: string }>(items: readonly T[]): T[] {
   const seen = new Map<string, T>();

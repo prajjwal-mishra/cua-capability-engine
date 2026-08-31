@@ -22,7 +22,7 @@ const USAGE = `cua — computer-use capability engine
              Requires CUA_LLM_* in .env. Everything below does not.
 
   replay     --capability <id>[@<version>] [--input k=v ...] [--tenant <id>]
-             [--allow-writes] [--inject <mode>] [--stability N]
+             [--allow-writes] [--inject <mode>] [--inject-path <substr>] [--stability N]
              Re-run a saved capability with no model in the decision loop.
 
   catalog    list | describe <id> | invoke <id> --args '<json>'

@@ -27,6 +27,10 @@ export async function replayCommand(args: Args): Promise<void> {
   const stability = Number(args.flags.stability ?? 1);
   const inject = args.flags.inject ? String(args.flags.inject) : undefined;
   const injectCount = Number(args.flags["inject-count"] ?? 1);
+  // Which request the fault lands on. Without this the fault hits whichever
+  // iframe the shell loads first, which is not where the flow is — the demo
+  // would be showing a nav frame failing, not a recovery mid-capability.
+  const injectPath = String(args.flags["inject-path"] ?? "/frame/member");
 
   const store = new ArtifactStore();
   const { artifact, overlay } = store.resolve(ref, tenant);
@@ -50,7 +54,7 @@ export async function replayCommand(args: Args): Promise<void> {
       // /__control/** by the allowlist, and arming through the app's own URLs
       // would mean the replay navigated somewhere the capability never
       // recorded, which would make the demonstration meaningless.
-      if (inject) await armFault(inject, injectCount);
+      if (inject) await armFault(inject, injectCount, injectPath);
 
       const runId = newRunId(stability > 1 ? `stability-${run + 1}` : "replay");
       const redactor = new Redactor();
@@ -131,13 +135,15 @@ function printTelemetry(result: ReplayResult): void {
   }
 }
 
-async function armFault(mode: string, count: number): Promise<void> {
+async function armFault(mode: string, count: number, pathContains: string): Promise<void> {
   const origin = process.env.CUA_TARGET_ORIGIN ?? "http://localhost:4000";
   const res = await fetch(`${origin}/__control/inject`, {
     method: "POST",
     headers: { "content-type": "application/json" },
-    body: JSON.stringify({ mode, count }),
+    body: JSON.stringify({ mode, count, pathContains }),
   });
   if (!res.ok) throw new Error(`could not arm fault '${mode}': ${await res.text()}`);
-  console.log(`injected:   ${mode} (next ${count} request${count === 1 ? "" : "s"})`);
+  console.log(
+    `injected:   ${mode} on the next ${count} request${count === 1 ? "" : "s"} to ${pathContains}`,
+  );
 }

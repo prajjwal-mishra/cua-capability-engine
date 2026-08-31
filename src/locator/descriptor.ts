@@ -123,11 +123,18 @@ const NAME_SOURCE_CONFIDENCE: Record<string, number> = {
 export function describeElement(
   el: UIElement,
   intent: string,
-  opts: { readonly includeBounds?: boolean } = {},
+  opts: { readonly includeBounds?: boolean; readonly forExtraction?: boolean } = {},
 ): ElementDescriptor {
   const strategies: ResolutionStrategy[] = [];
 
-  if (el.name) {
+  // An OUTPUT descriptor must never key on the element's own text, because
+  // that text is the payload. Recording "the cell named $8,241.17" does not
+  // locate the savings balance — it locates one particular member's balance,
+  // and on the next invocation it either misses entirely or, worse, matches
+  // some other row that happens to hold the same amount, resolving on the top
+  // rung with high confidence. Extraction is addressed by RELATION: which
+  // column, which row.
+  if (el.name && !opts.forExtraction) {
     strategies.push({
       kind: "role_name",
       confidence: NAME_SOURCE_CONFIDENCE[el.nameSource] ?? 0.5,
@@ -175,7 +182,7 @@ export function describeElement(
   }
 
   // Disambiguates duplicates while the label still matches.
-  if (el.name) {
+  if (el.name && !opts.forExtraction) {
     strategies.push({
       kind: "frame_role_ordinal",
       confidence: 0.55,
@@ -203,7 +210,15 @@ export function describeElement(
     strategies.push({ kind: "bounds", confidence: 0, bounds: el.bounds });
   }
 
-  return { intent, role: el.role, framePath: el.framePath, strategies };
+  // The ladder is documented as most-stable-first, so order it by the stability
+  // score we already record rather than by the order the rungs were appended.
+  // This makes `confidence` the single knob governing resolution order, and it
+  // matters in practice: for a grid cell, addressing by column header and row
+  // key (0.9) is strictly better than anchoring to the neighbouring cell's
+  // value (0.82), which is itself data that changes per invocation.
+  const ordered = [...strategies].sort((a, b) => b.confidence - a.confidence);
+
+  return { intent, role: el.role, framePath: el.framePath, strategies: ordered };
 }
 
 /** Highest confidence on the ladder — a quick health signal for reviewers. */

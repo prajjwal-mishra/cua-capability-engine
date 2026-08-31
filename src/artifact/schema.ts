@@ -278,6 +278,10 @@ export const ProvenanceSchema = z.object({
   /** Deliberately NOT the transcript. Evidence lives in /evidence; the artifact
    *  records only where to find it. */
   evidenceRef: z.string().optional(),
+  /** Exceptional states the discovery run hit, whose handling was dropped from
+   *  the steps because a declared recovery already covers them. Surfaced so a
+   *  reviewer can check that claim rather than take it on trust. */
+  recoveryStepsDropped: z.array(z.string()).optional(),
 });
 
 export const TargetSchema = z.object({

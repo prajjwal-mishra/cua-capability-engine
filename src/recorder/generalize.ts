@@ -75,15 +75,70 @@ export function generalizeDetectorText(
   return { text };
 }
 
-/** The deepest frame's route — in a frameset app that is the one that moves. */
-export function contentRoute(snapshot: UISnapshot): { framePath: string[]; routePattern: string } {
-  const deepest = [...snapshot.page.frames].sort(
-    (a, b) => b.framePath.length - a.framePath.length,
-  )[0];
+/**
+ * Which frame is "the content frame".
+ *
+ * Naively this is the deepest one, and that is wrong here: a shell with a nav
+ * frame and a content frame has two frames at the same depth, so "deepest"
+ * silently picks whichever the browser happened to list first. That produced an
+ * entryPoint of /frame/nav — a capability pointed at the menu.
+ *
+ * When a hint is available (the frame a step actually targets) it wins, because
+ * the frame the flow interacts with is by definition the one that matters.
+ * Otherwise we require the deepest frame to be unambiguous.
+ */
+export function contentRoute(
+  snapshot: UISnapshot,
+  preferFramePath?: readonly string[],
+): { framePath: string[]; routePattern: string } {
+  const frames = snapshot.page.frames;
+
+  if (preferFramePath && preferFramePath.length > 0) {
+    const want = preferFramePath.join(">");
+    const hit = frames.find((f) => f.framePath.join(">") === want);
+    if (hit) return { framePath: [...hit.framePath], routePattern: hit.routePattern };
+  }
+
+  const maxDepth = Math.max(0, ...frames.map((f) => f.framePath.length));
+  const deepest = frames.filter((f) => f.framePath.length === maxDepth);
+  const chosen = deepest.length === 1 ? deepest[0] : undefined;
+
   return {
-    framePath: [...(deepest?.framePath ?? [])],
-    routePattern: deepest?.routePattern ?? snapshot.page.routePattern,
+    framePath: [...(chosen?.framePath ?? [])],
+    routePattern: chosen?.routePattern ?? snapshot.page.routePattern,
   };
+}
+
+/** The URL of the frame `contentRoute` would choose. */
+export function contentUrl(snapshot: UISnapshot, preferFramePath?: readonly string[]): string {
+  const { framePath } = contentRoute(snapshot, preferFramePath);
+  const want = framePath.join(">");
+  return snapshot.page.frames.find((f) => f.framePath.join(">") === want)?.url ?? snapshot.page.url;
+}
+
+/**
+ * The frame whose route changed across a step. This is a far better signal for
+ * a checkpoint than "the deepest frame's route", because it identifies the
+ * thing the step actually moved — and if nothing moved, it says so instead of
+ * inventing an assertion.
+ */
+export function changedFrame(
+  pre: UISnapshot,
+  post: UISnapshot,
+): { framePath: string[]; routePattern: string } | undefined {
+  const before = new Map(pre.page.frames.map((f) => [f.framePath.join(">"), f.routePattern]));
+  const moved = post.page.frames.filter(
+    (f) =>
+      before.has(f.framePath.join(">")) && before.get(f.framePath.join(">")) !== f.routePattern,
+  );
+  // A frame that appeared entirely (a nested grid loading) also counts as motion.
+  const appeared = post.page.frames.filter(
+    (f) => f.framePath.length > 0 && !before.has(f.framePath.join(">")),
+  );
+  const candidates = [...moved, ...appeared];
+  if (candidates.length !== 1) return undefined;
+  const f = candidates[0]!;
+  return { framePath: [...f.framePath], routePattern: f.routePattern };
 }
 
 /**

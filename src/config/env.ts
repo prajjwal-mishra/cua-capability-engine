@@ -15,7 +15,10 @@ export function loadEnv(path = ".env"): void {
     const key = trimmed.slice(0, eq).trim();
     if (process.env[key] !== undefined) continue;
     let value = trimmed.slice(eq + 1).trim();
-    if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
       value = value.slice(1, -1);
     }
     process.env[key] = value;
