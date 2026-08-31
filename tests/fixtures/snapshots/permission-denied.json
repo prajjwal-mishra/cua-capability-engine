@@ -1,0 +1,53 @@
+{
+  "capturedAt": "2026-08-31T05:44:47.478Z",
+  "page": {
+    "url": "http://127.0.0.1:57980/frame/member/10099",
+    "routePattern": "/frame/member/:id",
+    "title": "Riverbend Credit Union — Access Denied",
+    "frames": [
+      {
+        "framePath": [],
+        "url": "http://127.0.0.1:57980/frame/member/10099",
+        "routePattern": "/frame/member/:id"
+      }
+    ]
+  },
+  "elements": [
+    {
+      "ref": "e1",
+      "role": "cell",
+      "name": "Access Denied",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 28
+      },
+      "ordinal": 0,
+      "nearbyText": {},
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e2",
+      "role": "link",
+      "name": "New Search",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 8,
+        "y": 141,
+        "width": 78,
+        "height": 16
+      },
+      "ordinal": 0,
+      "nearbyText": {},
+      "structuralPath": "BODY[1]/TABLE[2]/TBODY[1]/TR[1]/TD[1]/FONT[4]/A[1]",
+      "tag": "a"
+    }
+  ]
+}

@@ -1,0 +1,198 @@
+{
+  "capturedAt": "2026-08-31T05:44:45.343Z",
+  "page": {
+    "url": "http://127.0.0.1:57980/frame/results?q=10042",
+    "routePattern": "/frame/results",
+    "title": "Riverbend Credit Union — Search Results",
+    "frames": [
+      {
+        "framePath": [],
+        "url": "http://127.0.0.1:57980/frame/results?q=10042",
+        "routePattern": "/frame/results"
+      }
+    ]
+  },
+  "elements": [
+    {
+      "ref": "e1",
+      "role": "cell",
+      "name": "Search Results",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 28
+      },
+      "ordinal": 0,
+      "nearbyText": {},
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e2",
+      "role": "cell",
+      "name": "Results for \"10042\"",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 0,
+        "y": 28,
+        "width": 135,
+        "height": 24
+      },
+      "ordinal": 0,
+      "nearbyText": {},
+      "structuralPath": "BODY[1]/TABLE[2]/TBODY[1]/TR[1]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e3",
+      "role": "columnheader",
+      "name": "Member ID",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 1,
+        "y": 53,
+        "width": 94,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {},
+      "structuralPath": "BODY[1]/TABLE[3]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TH[1]",
+      "tag": "th"
+    },
+    {
+      "ref": "e4",
+      "role": "columnheader",
+      "name": "Name",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 95,
+        "y": 53,
+        "width": 136,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "Member ID",
+        "precedingText": "Member ID"
+      },
+      "structuralPath": "BODY[1]/TABLE[3]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TH[2]",
+      "tag": "th"
+    },
+    {
+      "ref": "e5",
+      "role": "columnheader",
+      "name": "Branch",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 231,
+        "y": 53,
+        "width": 114,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "Name",
+        "precedingText": "Name"
+      },
+      "structuralPath": "BODY[1]/TABLE[3]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TH[3]",
+      "tag": "th"
+    },
+    {
+      "ref": "e6",
+      "role": "link",
+      "name": "10042",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 7,
+        "y": 79,
+        "width": 41,
+        "height": 16
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "aboveCell": "Member ID",
+        "columnHeader": "Member ID"
+      },
+      "structuralPath": "BODY[1]/TABLE[3]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[2]/TD[1]/FONT[1]/A[1]",
+      "tag": "a"
+    },
+    {
+      "ref": "e7",
+      "role": "cell",
+      "name": "Vantreight, Marisol",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 95,
+        "y": 76,
+        "width": 136,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "10042",
+        "rowKey": "10042",
+        "aboveCell": "Name",
+        "columnHeader": "Name"
+      },
+      "structuralPath": "BODY[1]/TABLE[3]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[2]/TD[2]",
+      "tag": "td"
+    },
+    {
+      "ref": "e8",
+      "role": "cell",
+      "name": "Riverbend Main",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 231,
+        "y": 76,
+        "width": 114,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "Vantreight, Marisol",
+        "rowKey": "10042",
+        "aboveCell": "Branch",
+        "columnHeader": "Branch"
+      },
+      "structuralPath": "BODY[1]/TABLE[3]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[2]/TD[3]",
+      "tag": "td"
+    },
+    {
+      "ref": "e9",
+      "role": "link",
+      "name": "New Search",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 4,
+        "y": 103,
+        "width": 78,
+        "height": 16
+      },
+      "ordinal": 0,
+      "nearbyText": {},
+      "structuralPath": "BODY[1]/TABLE[4]/TBODY[1]/TR[1]/TD[1]/FONT[1]/A[1]",
+      "tag": "a"
+    }
+  ]
+}

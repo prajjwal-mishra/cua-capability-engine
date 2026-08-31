@@ -1,0 +1,645 @@
+{
+  "capturedAt": "2026-08-31T05:44:46.437Z",
+  "page": {
+    "url": "http://127.0.0.1:57980/frame/member/10042?variant=variant-b",
+    "routePattern": "/frame/member/:id",
+    "title": "Account Servicing : Marisol Vantreight",
+    "frames": [
+      {
+        "framePath": [],
+        "url": "http://127.0.0.1:57980/frame/member/10042?variant=variant-b",
+        "routePattern": "/frame/member/:id"
+      },
+      {
+        "framePath": [
+          "acctFrame"
+        ],
+        "url": "http://127.0.0.1:57980/frame/accounts/10042?variant=variant-b",
+        "routePattern": "/frame/accounts/:id"
+      }
+    ]
+  },
+  "elements": [
+    {
+      "ref": "e1",
+      "role": "cell",
+      "name": "Account Servicing : Marisol Vantreight",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 28
+      },
+      "ordinal": 0,
+      "nearbyText": {},
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e2",
+      "role": "cell",
+      "name": "Member Number",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 1,
+        "y": 29,
+        "width": 125,
+        "height": 24
+      },
+      "ordinal": 0,
+      "nearbyText": {},
+      "structuralPath": "TABLE[2]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e3",
+      "role": "cell",
+      "name": "10042",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 126,
+        "y": 29,
+        "width": 139,
+        "height": 24
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "Member Number",
+        "rowKey": "Member Number",
+        "precedingText": "Member Number"
+      },
+      "structuralPath": "TABLE[2]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[2]",
+      "tag": "td"
+    },
+    {
+      "ref": "e4",
+      "role": "cell",
+      "name": "Name",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 1,
+        "y": 53,
+        "width": 125,
+        "height": 24
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "aboveCell": "Member Number"
+      },
+      "structuralPath": "TABLE[2]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[2]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e5",
+      "role": "cell",
+      "name": "Vantreight, Marisol",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 126,
+        "y": 53,
+        "width": 139,
+        "height": 24
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "Name",
+        "rowKey": "Name",
+        "aboveCell": "10042",
+        "precedingText": "Name"
+      },
+      "structuralPath": "TABLE[2]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[2]/TD[2]",
+      "tag": "td"
+    },
+    {
+      "ref": "e6",
+      "role": "cell",
+      "name": "Branch",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 1,
+        "y": 77,
+        "width": 125,
+        "height": 24
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "aboveCell": "Name"
+      },
+      "structuralPath": "TABLE[2]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[3]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e7",
+      "role": "cell",
+      "name": "Riverbend Main",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 126,
+        "y": 77,
+        "width": 139,
+        "height": 24
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "Branch",
+        "rowKey": "Branch",
+        "aboveCell": "Vantreight, Marisol",
+        "precedingText": "Branch"
+      },
+      "structuralPath": "TABLE[2]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[3]/TD[2]",
+      "tag": "td"
+    },
+    {
+      "ref": "e8",
+      "role": "cell",
+      "name": "Member Since",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 1,
+        "y": 101,
+        "width": 125,
+        "height": 24
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "aboveCell": "Branch"
+      },
+      "structuralPath": "TABLE[2]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[4]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e9",
+      "role": "cell",
+      "name": "2016-03-14",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 126,
+        "y": 101,
+        "width": 139,
+        "height": 24
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "Member Since",
+        "rowKey": "Member Since",
+        "aboveCell": "Riverbend Main",
+        "precedingText": "Member Since"
+      },
+      "structuralPath": "TABLE[2]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[4]/TD[2]",
+      "tag": "td"
+    },
+    {
+      "ref": "e10",
+      "role": "cell",
+      "name": "Accounts",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 0,
+        "y": 126,
+        "width": 74,
+        "height": 24
+      },
+      "ordinal": 0,
+      "nearbyText": {},
+      "structuralPath": "BODY[1]/TABLE[3]/TBODY[1]/TR[1]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e11",
+      "role": "button",
+      "name": "Open Sub-Account",
+      "nameSource": "value",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 4,
+        "y": 334,
+        "width": 128,
+        "height": 21
+      },
+      "ordinal": 0,
+      "nearbyText": {},
+      "structuralPath": "BODY[1]/TABLE[4]/TBODY[1]/TR[1]/TD[1]/INPUT[1]",
+      "tag": "input[button]"
+    },
+    {
+      "ref": "e12",
+      "role": "link",
+      "name": "Back to Search",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 140,
+        "y": 337,
+        "width": 98,
+        "height": 16
+      },
+      "ordinal": 0,
+      "nearbyText": {},
+      "structuralPath": "BODY[1]/TABLE[4]/TBODY[1]/TR[1]/TD[2]/FONT[1]/A[1]",
+      "tag": "a"
+    },
+    {
+      "ref": "e13",
+      "role": "columnheader",
+      "name": "Account Type",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "acctFrame"
+      ],
+      "bounds": {
+        "x": 1,
+        "y": 1,
+        "width": 180,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {},
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[1]/TH[1]",
+      "tag": "th"
+    },
+    {
+      "ref": "e14",
+      "role": "columnheader",
+      "name": "Account Number",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "acctFrame"
+      ],
+      "bounds": {
+        "x": 181,
+        "y": 1,
+        "width": 218,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "Account Type"
+      },
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[1]/TH[2]",
+      "tag": "th"
+    },
+    {
+      "ref": "e15",
+      "role": "columnheader",
+      "name": "Balance",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "acctFrame"
+      ],
+      "bounds": {
+        "x": 399,
+        "y": 1,
+        "width": 144,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "Account Number"
+      },
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[1]/TH[3]",
+      "tag": "th"
+    },
+    {
+      "ref": "e16",
+      "role": "columnheader",
+      "name": "Status",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "acctFrame"
+      ],
+      "bounds": {
+        "x": 543,
+        "y": 1,
+        "width": 97,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "Balance"
+      },
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[1]/TH[4]",
+      "tag": "th"
+    },
+    {
+      "ref": "e17",
+      "role": "cell",
+      "name": "Share Savings",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "acctFrame"
+      ],
+      "bounds": {
+        "x": 1,
+        "y": 24,
+        "width": 180,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "aboveCell": "Account Type",
+        "columnHeader": "Account Type"
+      },
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[2]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e18",
+      "role": "cell",
+      "name": "4417-99820-01",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "acctFrame"
+      ],
+      "bounds": {
+        "x": 181,
+        "y": 24,
+        "width": 218,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "Share Savings",
+        "rowKey": "Share Savings",
+        "aboveCell": "Account Number",
+        "columnHeader": "Account Number"
+      },
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[2]/TD[2]",
+      "tag": "td"
+    },
+    {
+      "ref": "e19",
+      "role": "cell",
+      "name": "$8,241.17",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "acctFrame"
+      ],
+      "bounds": {
+        "x": 399,
+        "y": 24,
+        "width": 144,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "4417-99820-01",
+        "rowKey": "Share Savings",
+        "aboveCell": "Balance",
+        "columnHeader": "Balance"
+      },
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[2]/TD[3]",
+      "tag": "td"
+    },
+    {
+      "ref": "e20",
+      "role": "cell",
+      "name": "Open",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "acctFrame"
+      ],
+      "bounds": {
+        "x": 543,
+        "y": 24,
+        "width": 97,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "$8,241.17",
+        "rowKey": "Share Savings",
+        "aboveCell": "Status",
+        "columnHeader": "Status"
+      },
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[2]/TD[4]",
+      "tag": "td"
+    },
+    {
+      "ref": "e21",
+      "role": "cell",
+      "name": "Checking",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "acctFrame"
+      ],
+      "bounds": {
+        "x": 1,
+        "y": 47,
+        "width": 180,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "aboveCell": "Share Savings",
+        "columnHeader": "Account Type"
+      },
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[3]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e22",
+      "role": "cell",
+      "name": "4417-99820-02",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "acctFrame"
+      ],
+      "bounds": {
+        "x": 181,
+        "y": 47,
+        "width": 218,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "Checking",
+        "rowKey": "Checking",
+        "aboveCell": "4417-99820-01",
+        "columnHeader": "Account Number"
+      },
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[3]/TD[2]",
+      "tag": "td"
+    },
+    {
+      "ref": "e23",
+      "role": "cell",
+      "name": "$1,902.44",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "acctFrame"
+      ],
+      "bounds": {
+        "x": 399,
+        "y": 47,
+        "width": 144,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "4417-99820-02",
+        "rowKey": "Checking",
+        "aboveCell": "$8,241.17",
+        "columnHeader": "Balance"
+      },
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[3]/TD[3]",
+      "tag": "td"
+    },
+    {
+      "ref": "e24",
+      "role": "cell",
+      "name": "Open",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "acctFrame"
+      ],
+      "bounds": {
+        "x": 543,
+        "y": 47,
+        "width": 97,
+        "height": 23
+      },
+      "ordinal": 1,
+      "nearbyText": {
+        "leftCell": "$1,902.44",
+        "rowKey": "Checking",
+        "aboveCell": "Open",
+        "columnHeader": "Status"
+      },
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[3]/TD[4]",
+      "tag": "td"
+    },
+    {
+      "ref": "e25",
+      "role": "cell",
+      "name": "Certificate",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "acctFrame"
+      ],
+      "bounds": {
+        "x": 1,
+        "y": 70,
+        "width": 180,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "aboveCell": "Checking",
+        "columnHeader": "Account Type"
+      },
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[4]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e26",
+      "role": "cell",
+      "name": "4417-99820-07",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "acctFrame"
+      ],
+      "bounds": {
+        "x": 181,
+        "y": 70,
+        "width": 218,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "Certificate",
+        "rowKey": "Certificate",
+        "aboveCell": "4417-99820-02",
+        "columnHeader": "Account Number"
+      },
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[4]/TD[2]",
+      "tag": "td"
+    },
+    {
+      "ref": "e27",
+      "role": "cell",
+      "name": "$15,000.00",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "acctFrame"
+      ],
+      "bounds": {
+        "x": 399,
+        "y": 70,
+        "width": 144,
+        "height": 23
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "4417-99820-07",
+        "rowKey": "Certificate",
+        "aboveCell": "$1,902.44",
+        "columnHeader": "Balance"
+      },
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[4]/TD[3]",
+      "tag": "td"
+    },
+    {
+      "ref": "e28",
+      "role": "cell",
+      "name": "Open",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "acctFrame"
+      ],
+      "bounds": {
+        "x": 543,
+        "y": 70,
+        "width": 97,
+        "height": 23
+      },
+      "ordinal": 2,
+      "nearbyText": {
+        "leftCell": "$15,000.00",
+        "rowKey": "Certificate",
+        "aboveCell": "Open",
+        "columnHeader": "Status"
+      },
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[4]/TD[4]",
+      "tag": "td"
+    }
+  ]
+}

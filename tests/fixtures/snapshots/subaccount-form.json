@@ -1,0 +1,178 @@
+{
+  "capturedAt": "2026-08-31T05:44:48.004Z",
+  "page": {
+    "url": "http://127.0.0.1:57980/frame/subaccount/10042",
+    "routePattern": "/frame/subaccount/:id",
+    "title": "Riverbend Credit Union — Open Sub-Account",
+    "frames": [
+      {
+        "framePath": [],
+        "url": "http://127.0.0.1:57980/frame/subaccount/10042",
+        "routePattern": "/frame/subaccount/:id"
+      }
+    ]
+  },
+  "elements": [
+    {
+      "ref": "e1",
+      "role": "cell",
+      "name": "Open Sub-Account — 10042",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 28
+      },
+      "ordinal": 0,
+      "nearbyText": {},
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e2",
+      "role": "cell",
+      "name": "Account Type",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 1,
+        "y": 35,
+        "width": 107,
+        "height": 27
+      },
+      "ordinal": 0,
+      "nearbyText": {},
+      "structuralPath": "TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[2]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e3",
+      "role": "combobox",
+      "name": "Account Type",
+      "nameSource": "heuristic-table-cell",
+      "value": "",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 116,
+        "y": 39,
+        "width": 83,
+        "height": 19
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "Account Type",
+        "rowKey": "Account Type"
+      },
+      "structuralPath": "TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[2]/TD[2]/SELECT[1]",
+      "tag": "select"
+    },
+    {
+      "ref": "e4",
+      "role": "cell",
+      "name": "Nickname",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 1,
+        "y": 62,
+        "width": 107,
+        "height": 29
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "aboveCell": "Account Type"
+      },
+      "structuralPath": "TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[3]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e5",
+      "role": "textbox",
+      "name": "Nickname",
+      "nameSource": "heuristic-table-cell",
+      "value": "",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 116,
+        "y": 66,
+        "width": 182,
+        "height": 21
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "Nickname",
+        "rowKey": "Nickname",
+        "aboveCell": "-- select -- Savings Certificate"
+      },
+      "structuralPath": "TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[3]/TD[2]/INPUT[1]",
+      "tag": "input[text]"
+    },
+    {
+      "ref": "e6",
+      "role": "cell",
+      "name": "Initial Deposit",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 1,
+        "y": 91,
+        "width": 107,
+        "height": 29
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "aboveCell": "Nickname"
+      },
+      "structuralPath": "TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[4]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e7",
+      "role": "textbox",
+      "name": "Initial Deposit",
+      "nameSource": "heuristic-table-cell",
+      "value": "",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 116,
+        "y": 95,
+        "width": 97,
+        "height": 21
+      },
+      "ordinal": 0,
+      "nearbyText": {
+        "leftCell": "Initial Deposit",
+        "rowKey": "Initial Deposit"
+      },
+      "structuralPath": "TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[4]/TD[2]/INPUT[1]",
+      "tag": "input[text]"
+    },
+    {
+      "ref": "e8",
+      "role": "button",
+      "name": "Continue",
+      "nameSource": "value",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 116,
+        "y": 124,
+        "width": 70,
+        "height": 21
+      },
+      "ordinal": 0,
+      "nearbyText": {},
+      "structuralPath": "TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[5]/TD[2]/INPUT[1]",
+      "tag": "input[submit]"
+    }
+  ]
+}
