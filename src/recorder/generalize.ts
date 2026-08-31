@@ -86,6 +86,22 @@ export function contentRoute(snapshot: UISnapshot): { framePath: string[]; route
   };
 }
 
+/**
+ * Replace any strategy text that is EXACTLY a bound parameter's value with a
+ * `{{param:name}}` token.
+ *
+ * Exact equality, not substring: "10042" as a whole accessible name is the
+ * member id; "10042" appearing inside "$10,042.00" is a coincidence, and
+ * rewriting the latter would produce a descriptor that matches nothing.
+ */
+export function parameterizeStrategyText(text: string, provenance: ParamProvenance): string {
+  for (const name of provenance.bound) {
+    const value = provenance.values[name];
+    if (value !== undefined && value.length > 0 && text === value) return `{{param:${name}}}`;
+  }
+  return text;
+}
+
 /** Elements present after a step that were not present before it. */
 export function newlyPresent(pre: UISnapshot, post: UISnapshot): UISnapshot["elements"] {
   const before = new Set(pre.elements.map((e) => `${e.framePath.join(">")}|${e.role}|${e.name}`));

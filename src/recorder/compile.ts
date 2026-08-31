@@ -16,7 +16,6 @@
  * what promoting a draft to approved should mean.
  */
 
-import { randomUUID } from "node:crypto";
 import { z } from "zod";
 import { describeElement } from "../locator/descriptor.js";
 import { classifyAction } from "../policy/risk.js";
@@ -39,6 +38,7 @@ import {
   contentRoute,
   generalizeDetectorText,
   newlyPresent,
+  parameterizeStrategyText,
   type ParamProvenance,
 } from "./generalize.js";
 
@@ -80,8 +80,41 @@ export class CompileError extends Error {}
  * mutable. Parsing here reconciles the two AND means a malformed ladder is
  * caught at compile time rather than at replay time.
  */
-function descriptorFor(el: UIElement, intent: string): z.infer<typeof ElementDescriptorSchema> {
-  return ElementDescriptorSchema.parse(describeElement(el, intent));
+function descriptorFor(
+  el: UIElement,
+  intent: string,
+  provenance: ParamProvenance,
+): z.infer<typeof ElementDescriptorSchema> {
+  const built = ElementDescriptorSchema.parse(describeElement(el, intent));
+  // Anything whose text IS a parameter value becomes a binding, so a descriptor
+  // that identifies "the row for member 10042" becomes "the row for the member
+  // this invocation asked about".
+  return {
+    ...built,
+    strategies: built.strategies.map((strategy) => {
+      switch (strategy.kind) {
+        case "role_name":
+          return { ...strategy, name: parameterizeStrategyText(strategy.name, provenance) };
+        case "label_anchor":
+          return {
+            ...strategy,
+            labelText: parameterizeStrategyText(strategy.labelText, provenance),
+          };
+        case "table_cell":
+          return {
+            ...strategy,
+            columnHeader: parameterizeStrategyText(strategy.columnHeader, provenance),
+            rowKey: parameterizeStrategyText(strategy.rowKey, provenance),
+          };
+        case "frame_role_ordinal":
+          return strategy.name === undefined
+            ? strategy
+            : { ...strategy, name: parameterizeStrategyText(strategy.name, provenance) };
+        default:
+          return strategy;
+      }
+    }),
+  };
 }
 
 export function compileTrace(trace: DiscoveryTrace, opts: CompileOptions): CapabilityArtifact {
@@ -110,7 +143,7 @@ export function compileTrace(trace: DiscoveryTrace, opts: CompileOptions): Capab
     required: true,
     sensitivity: "internal" as const,
     extraction: {
-      descriptor: descriptorFor(o.element, `the ${o.name.replace(/_/g, " ")} value`),
+      descriptor: descriptorFor(o.element, `the ${o.name.replace(/_/g, " ")} value`, provenance),
       parse: o.parse === "currency" ? ({ kind: "currency" } as const) : ({ kind: "text" } as const),
     },
   }));
@@ -209,7 +242,7 @@ function compileStep(
     id,
     intent,
     action: recorded.action.kind as Step["action"],
-    target: recorded.element ? descriptorFor(recorded.element, intent) : undefined,
+    target: recorded.element ? descriptorFor(recorded.element, intent, provenance) : undefined,
     value,
     checkpoint,
     waitPolicy: { strategy: checkpoint ? "conditionMet" : "settled", timeoutMs: 10_000 },
@@ -336,8 +369,4 @@ function dedupeByCode<T extends { code: string }>(items: readonly T[]): T[] {
   const seen = new Map<string, T>();
   for (const item of items) if (!seen.has(item.code)) seen.set(item.code, item);
   return [...seen.values()];
-}
-
-export function newRunId(prefix = "run"): string {
-  return `${prefix}-${new Date().toISOString().replace(/[:.]/g, "-")}-${randomUUID().slice(0, 8)}`;
 }

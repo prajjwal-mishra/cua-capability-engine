@@ -10,7 +10,7 @@ import { chromium } from "playwright";
 import { execSync } from "node:child_process";
 import { readFileSync, existsSync } from "node:fs";
 import { join } from "node:path";
-import type { Args } from "../cli.js";
+import type { Args } from "../cli-args.js";
 import { WebSurface } from "../surface/web.surface.js";
 import { GuardedSurface, PolicyGate } from "../policy/gate.js";
 import { loadAllowlist } from "../policy/allowlist.js";
@@ -20,7 +20,8 @@ import { RunLog } from "../obs/log.js";
 import { EvidenceWriter } from "../obs/evidence.js";
 import { LlmClient, llmConfigFromEnv } from "../discovery/llm.js";
 import { runDiscovery } from "../discovery/loop.js";
-import { compileTrace, newRunId, RecoveryPackSchema } from "../recorder/compile.js";
+import { compileTrace, RecoveryPackSchema } from "../recorder/compile.js";
+import { newRunId } from "../obs/run-id.js";
 import { ArtifactStore } from "../artifact/store.js";
 import type { GoalSpec } from "../discovery/prompts.js";
 
