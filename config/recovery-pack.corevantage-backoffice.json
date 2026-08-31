@@ -1,0 +1,139 @@
+{
+  "vendorProduct": "corevantage-backoffice",
+  "describe": "Reviewed exceptional-state handling for this vendor product. A single discovery run cannot be relied on to encounter a session timeout, a transient host failure and a maintenance notice, so these are authored and reviewed once per product rather than rediscovered per capability. Detectors match in any frame unless a framePath is given.",
+
+  "knownOutcomes": [
+    {
+      "code": "member_not_found",
+      "severity": "business",
+      "message": "No member matches the supplied identifier.",
+      "mapsTo": "NOT_FOUND",
+      "detector": {
+        "all": [{ "type": "textPresent", "text": "No member records match" }],
+        "describe": "the results screen reports no matching records"
+      }
+    },
+    {
+      "code": "permission_denied",
+      "severity": "business",
+      "message": "The operator is not authorized to view this member record.",
+      "mapsTo": "FORBIDDEN",
+      "detector": {
+        "all": [{ "type": "textPresent", "text": "SEC-4031" }],
+        "describe": "the access-denied screen with its reference code"
+      }
+    },
+    {
+      "code": "validation_rejected",
+      "severity": "business",
+      "message": "The application rejected the supplied input.",
+      "mapsTo": "INVALID_INPUT",
+      "detector": {
+        "all": [{ "type": "textPresent", "text": "is required" }],
+        "describe": "a required-field validation message is showing"
+      }
+    },
+    {
+      "code": "deposit_below_minimum",
+      "severity": "business",
+      "message": "The initial deposit is below the product minimum.",
+      "mapsTo": "INVALID_INPUT",
+      "detector": {
+        "all": [{ "type": "textPresent", "text": "at least $25.00" }],
+        "describe": "the deposit minimum validation message is showing"
+      }
+    },
+    {
+      "code": "session_expired",
+      "severity": "recoverable",
+      "message": "The application session timed out and was re-established.",
+      "detector": {
+        "all": [{ "type": "textPresent", "text": "session has timed out" }],
+        "describe": "the login interstitial replaced the requested page"
+      }
+    },
+    {
+      "code": "maintenance_notice",
+      "severity": "recoverable",
+      "message": "A scheduled-maintenance notice interrupted the flow and was acknowledged.",
+      "detector": {
+        "all": [{ "type": "textPresent", "text": "Scheduled maintenance window" }],
+        "describe": "the maintenance interstitial is showing"
+      }
+    },
+    {
+      "code": "service_unavailable",
+      "severity": "recoverable",
+      "message": "The core banking host was briefly unavailable; the step was retried.",
+      "detector": {
+        "all": [{ "type": "textPresent", "text": "Service Unavailable" }],
+        "describe": "the host returned a 503 page"
+      }
+    },
+    {
+      "code": "application_error",
+      "severity": "hard",
+      "message": "The application raised an unhandled server error.",
+      "detector": {
+        "all": [{ "type": "textPresent", "text": "Server Error in" }],
+        "describe": "the ASP.NET unhandled-exception page"
+      }
+    }
+  ],
+
+  "recoveries": [
+    {
+      "code": "session_expired",
+      "maxAttempts": 2,
+      "describe": "Re-authenticate the service operator on the interstitial, then retry the step that was interrupted.",
+      "detector": {
+        "all": [{ "type": "textPresent", "text": "session has timed out" }]
+      },
+      "actions": [
+        {
+          "kind": "click",
+          "target": {
+            "intent": "resume the timed-out session",
+            "role": "button",
+            "framePath": ["contentFrame"],
+            "strategies": [
+              { "kind": "role_name", "confidence": 0.9, "role": "button", "name": "Resume Session", "match": "exact" }
+            ]
+          }
+        },
+        { "kind": "retryStep" }
+      ]
+    },
+    {
+      "code": "maintenance_notice",
+      "maxAttempts": 2,
+      "describe": "Acknowledge the maintenance notice and retry the interrupted step.",
+      "detector": {
+        "all": [{ "type": "textPresent", "text": "Scheduled maintenance window" }]
+      },
+      "actions": [
+        {
+          "kind": "click",
+          "target": {
+            "intent": "acknowledge the maintenance notice",
+            "role": "button",
+            "framePath": ["contentFrame"],
+            "strategies": [
+              { "kind": "role_name", "confidence": 0.9, "role": "button", "name": "Acknowledge", "match": "exact" }
+            ]
+          }
+        },
+        { "kind": "retryStep" }
+      ]
+    },
+    {
+      "code": "service_unavailable",
+      "maxAttempts": 3,
+      "describe": "Back off briefly and retry; this host returns 503 under momentary load and succeeds on retry.",
+      "detector": {
+        "all": [{ "type": "textPresent", "text": "Service Unavailable" }]
+      },
+      "actions": [{ "kind": "wait", "ms": 1200 }, { "kind": "retryStep" }]
+    }
+  ]
+}
