@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-08-31T05:51:35.571Z",
+  "capturedAt": "2026-08-31T06:34:24.117Z",
   "page": {
     "url": "http://localhost:4000/frame/member/10042",
     "routePattern": "/frame/member/:id",
@@ -11,9 +11,7 @@
         "routePattern": "/frame/member/:id"
       },
       {
-        "framePath": [
-          "acctFrame"
-        ],
+        "framePath": ["acctFrame"],
         "url": "http://localhost:4000/frame/accounts/10042?variant=variant-a",
         "routePattern": "/frame/accounts/:id"
       }
@@ -34,6 +32,7 @@
         "height": 28
       },
       "ordinal": 0,
+      "roleOrdinal": 0,
       "nearbyText": {},
       "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]",
       "tag": "td"
@@ -52,6 +51,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 1,
       "nearbyText": {},
       "structuralPath": "TABLE[2]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]",
       "tag": "td"
@@ -70,6 +70,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 2,
       "nearbyText": {
         "leftCell": "Member ID",
         "rowKey": "Member ID",
@@ -92,6 +93,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 3,
       "nearbyText": {
         "aboveCell": "Member ID"
       },
@@ -112,6 +114,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 4,
       "nearbyText": {
         "leftCell": "Name",
         "rowKey": "Name",
@@ -135,6 +138,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 5,
       "nearbyText": {
         "aboveCell": "Name"
       },
@@ -155,6 +159,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 6,
       "nearbyText": {
         "leftCell": "Branch",
         "rowKey": "Branch",
@@ -178,6 +183,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 7,
       "nearbyText": {
         "aboveCell": "Branch"
       },
@@ -198,6 +204,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 8,
       "nearbyText": {
         "leftCell": "Member Since",
         "rowKey": "Member Since",
@@ -221,6 +228,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 9,
       "nearbyText": {},
       "structuralPath": "BODY[1]/TABLE[3]/TBODY[1]/TR[1]/TD[1]",
       "tag": "td"
@@ -239,6 +247,7 @@
         "height": 21
       },
       "ordinal": 0,
+      "roleOrdinal": 0,
       "nearbyText": {},
       "structuralPath": "BODY[1]/TABLE[4]/TBODY[1]/TR[1]/TD[1]/INPUT[1]",
       "tag": "input[button]"
@@ -257,6 +266,7 @@
         "height": 16
       },
       "ordinal": 0,
+      "roleOrdinal": 0,
       "nearbyText": {},
       "structuralPath": "BODY[1]/TABLE[4]/TBODY[1]/TR[1]/TD[2]/FONT[1]/A[1]",
       "tag": "a"
@@ -267,9 +277,7 @@
       "name": "Account Type",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "acctFrame"
-      ],
+      "framePath": ["acctFrame"],
       "bounds": {
         "x": 1,
         "y": 151,
@@ -277,6 +285,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 0,
       "nearbyText": {},
       "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[1]/TH[1]",
       "tag": "th"
@@ -287,9 +296,7 @@
       "name": "Account Number",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "acctFrame"
-      ],
+      "framePath": ["acctFrame"],
       "bounds": {
         "x": 164,
         "y": 151,
@@ -297,6 +304,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 1,
       "nearbyText": {
         "leftCell": "Account Type"
       },
@@ -309,9 +317,7 @@
       "name": "Current Balance",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "acctFrame"
-      ],
+      "framePath": ["acctFrame"],
       "bounds": {
         "x": 361,
         "y": 151,
@@ -319,6 +325,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 2,
       "nearbyText": {
         "leftCell": "Account Number"
       },
@@ -331,9 +338,7 @@
       "name": "Status",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "acctFrame"
-      ],
+      "framePath": ["acctFrame"],
       "bounds": {
         "x": 552,
         "y": 151,
@@ -341,6 +346,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 3,
       "nearbyText": {
         "leftCell": "Current Balance"
       },
@@ -353,9 +359,7 @@
       "name": "Savings",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "acctFrame"
-      ],
+      "framePath": ["acctFrame"],
       "bounds": {
         "x": 1,
         "y": 174,
@@ -363,6 +367,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 0,
       "nearbyText": {
         "aboveCell": "Account Type",
         "columnHeader": "Account Type"
@@ -376,9 +381,7 @@
       "name": "4417-99820-01",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "acctFrame"
-      ],
+      "framePath": ["acctFrame"],
       "bounds": {
         "x": 164,
         "y": 174,
@@ -386,6 +389,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 1,
       "nearbyText": {
         "leftCell": "Savings",
         "rowKey": "Savings",
@@ -401,9 +405,7 @@
       "name": "$8,241.17",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "acctFrame"
-      ],
+      "framePath": ["acctFrame"],
       "bounds": {
         "x": 361,
         "y": 174,
@@ -411,6 +413,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 2,
       "nearbyText": {
         "leftCell": "4417-99820-01",
         "rowKey": "Savings",
@@ -426,9 +429,7 @@
       "name": "Open",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "acctFrame"
-      ],
+      "framePath": ["acctFrame"],
       "bounds": {
         "x": 552,
         "y": 174,
@@ -436,6 +437,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 3,
       "nearbyText": {
         "leftCell": "$8,241.17",
         "rowKey": "Savings",
@@ -451,9 +453,7 @@
       "name": "Checking",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "acctFrame"
-      ],
+      "framePath": ["acctFrame"],
       "bounds": {
         "x": 1,
         "y": 197,
@@ -461,6 +461,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 4,
       "nearbyText": {
         "aboveCell": "Savings",
         "columnHeader": "Account Type"
@@ -474,9 +475,7 @@
       "name": "4417-99820-02",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "acctFrame"
-      ],
+      "framePath": ["acctFrame"],
       "bounds": {
         "x": 164,
         "y": 197,
@@ -484,6 +483,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 5,
       "nearbyText": {
         "leftCell": "Checking",
         "rowKey": "Checking",
@@ -499,9 +499,7 @@
       "name": "$1,902.44",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "acctFrame"
-      ],
+      "framePath": ["acctFrame"],
       "bounds": {
         "x": 361,
         "y": 197,
@@ -509,6 +507,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 6,
       "nearbyText": {
         "leftCell": "4417-99820-02",
         "rowKey": "Checking",
@@ -524,9 +523,7 @@
       "name": "Open",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "acctFrame"
-      ],
+      "framePath": ["acctFrame"],
       "bounds": {
         "x": 552,
         "y": 197,
@@ -534,6 +531,7 @@
         "height": 23
       },
       "ordinal": 1,
+      "roleOrdinal": 7,
       "nearbyText": {
         "leftCell": "$1,902.44",
         "rowKey": "Checking",
@@ -549,9 +547,7 @@
       "name": "Certificate",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "acctFrame"
-      ],
+      "framePath": ["acctFrame"],
       "bounds": {
         "x": 1,
         "y": 220,
@@ -559,6 +555,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 8,
       "nearbyText": {
         "aboveCell": "Checking",
         "columnHeader": "Account Type"
@@ -572,9 +569,7 @@
       "name": "4417-99820-07",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "acctFrame"
-      ],
+      "framePath": ["acctFrame"],
       "bounds": {
         "x": 164,
         "y": 220,
@@ -582,6 +577,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 9,
       "nearbyText": {
         "leftCell": "Certificate",
         "rowKey": "Certificate",
@@ -597,9 +593,7 @@
       "name": "$15,000.00",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "acctFrame"
-      ],
+      "framePath": ["acctFrame"],
       "bounds": {
         "x": 361,
         "y": 220,
@@ -607,6 +601,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 10,
       "nearbyText": {
         "leftCell": "4417-99820-07",
         "rowKey": "Certificate",
@@ -622,9 +617,7 @@
       "name": "Open",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "acctFrame"
-      ],
+      "framePath": ["acctFrame"],
       "bounds": {
         "x": 552,
         "y": 220,
@@ -632,6 +625,7 @@
         "height": 23
       },
       "ordinal": 2,
+      "roleOrdinal": 11,
       "nearbyText": {
         "leftCell": "$15,000.00",
         "rowKey": "Certificate",

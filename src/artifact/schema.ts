@@ -81,6 +81,8 @@ export const ResolutionStrategySchema = z.discriminatedUnion("kind", [
     role: UIRoleSchema,
     name: z.string().optional(),
     ordinal: z.number().int().min(0),
+    /** Whether `ordinal` counts within role+name or within role alone. */
+    ordinalScope: z.enum(["role_and_name", "role"]).default("role_and_name"),
   }),
   z.object({
     kind: z.literal("structural"),
@@ -248,6 +250,10 @@ export const RecoveryActionSchema = z.discriminatedUnion("kind", [
   z.object({ kind: z.literal("click"), target: ElementDescriptorSchema }),
   z.object({ kind: z.literal("navigate"), url: z.string() }),
   z.object({ kind: z.literal("wait"), ms: z.number().int().positive() }),
+  /** Re-request the failing frame. For a transient server error the step's
+   *  target is not on the error page, so the request must be retried rather
+   *  than the click repeated. */
+  z.object({ kind: z.literal("reload"), framePath: z.array(z.string()).optional() }),
   /** Re-run the step that tripped the recovery. The bounded loop lives in the
    *  executor; this only declares intent. */
   z.object({ kind: z.literal("retryStep") }),

@@ -8,7 +8,12 @@ import {
   toolContract,
   type CapabilityArtifact,
 } from "../src/artifact/schema.js";
-import { applyOverlay, describeOverlay, OverlayMismatch, OverlaySchema } from "../src/artifact/overlays.js";
+import {
+  applyOverlay,
+  describeOverlay,
+  OverlayMismatch,
+  OverlaySchema,
+} from "../src/artifact/overlays.js";
 import { ArtifactStore } from "../src/artifact/store.js";
 import { latest, parseCapabilityRef, satisfies } from "../src/artifact/version.js";
 
@@ -51,7 +56,12 @@ const base: CapabilityArtifact = CapabilityArtifactSchema.parse({
           role: "cell",
           framePath: ["contentFrame", "acctFrame"],
           strategies: [
-            { kind: "table_cell", confidence: 0.9, columnHeader: "Current Balance", rowKey: "Savings" },
+            {
+              kind: "table_cell",
+              confidence: 0.9,
+              columnHeader: "Current Balance",
+              rowKey: "Savings",
+            },
           ],
         },
         parse: { kind: "currency" },
@@ -68,7 +78,15 @@ const base: CapabilityArtifact = CapabilityArtifactSchema.parse({
         intent: "member id field",
         role: "textbox",
         framePath: ["contentFrame"],
-        strategies: [{ kind: "role_name", confidence: 0.65, role: "textbox", name: "Member ID", match: "exact" }],
+        strategies: [
+          {
+            kind: "role_name",
+            confidence: 0.65,
+            role: "textbox",
+            name: "Member ID",
+            match: "exact",
+          },
+        ],
       },
       risk: "read_only",
     },
@@ -80,13 +98,22 @@ const base: CapabilityArtifact = CapabilityArtifactSchema.parse({
         intent: "search button",
         role: "button",
         framePath: ["contentFrame"],
-        strategies: [{ kind: "role_name", confidence: 0.9, role: "button", name: "Search", match: "exact" }],
+        strategies: [
+          { kind: "role_name", confidence: 0.9, role: "button", name: "Search", match: "exact" },
+        ],
       },
       risk: "read_only",
     },
   ],
   successCondition: {
-    all: [{ type: "elementPresent", role: "cell", name: "Savings", framePath: ["contentFrame", "acctFrame"] }],
+    all: [
+      {
+        type: "elementPresent",
+        role: "cell",
+        name: "Savings",
+        framePath: ["contentFrame", "acctFrame"],
+      },
+    ],
     describe: "the accounts grid shows a savings row",
   },
   policy: { allowlistRef: "config/allowlist.demo-cu.json" },
@@ -147,7 +174,13 @@ describe("overlays are separate documents applied over a base", () => {
             role: "textbox",
             framePath: ["contentFrame"],
             strategies: [
-              { kind: "role_name", confidence: 0.65, role: "textbox", name: "Member Number", match: "exact" },
+              {
+                kind: "role_name",
+                confidence: 0.65,
+                role: "textbox",
+                name: "Member Number",
+                match: "exact",
+              },
             ],
           },
         },
@@ -160,7 +193,12 @@ describe("overlays are separate documents applied over a base", () => {
               role: "cell",
               framePath: ["contentFrame", "acctFrame"],
               strategies: [
-                { kind: "table_cell", confidence: 0.9, columnHeader: "Balance", rowKey: "Share Savings" },
+                {
+                  kind: "table_cell",
+                  confidence: 0.9,
+                  columnHeader: "Balance",
+                  rowKey: "Share Savings",
+                },
               ],
             },
           },
@@ -217,7 +255,13 @@ describe("overlays are separate documents applied over a base", () => {
                 role: "button",
                 framePath: ["contentFrame"],
                 strategies: [
-                  { kind: "role_name", confidence: 0.9, role: "button", name: "Commit Sub-Account", match: "exact" },
+                  {
+                    kind: "role_name",
+                    confidence: 0.9,
+                    role: "button",
+                    name: "Commit Sub-Account",
+                    match: "exact",
+                  },
                 ],
               },
             },
@@ -236,7 +280,10 @@ describe("store", () => {
 
   beforeEach(() => {
     dir = mkdtempSync(join(tmpdir(), "cua-store-"));
-    store = new ArtifactStore({ capabilities: join(dir, "capabilities"), overlays: join(dir, "overlays") });
+    store = new ArtifactStore({
+      capabilities: join(dir, "capabilities"),
+      overlays: join(dir, "overlays"),
+    });
   });
   afterEach(() => rmSync(dir, { recursive: true, force: true }));
 
@@ -267,7 +314,13 @@ describe("store", () => {
               role: "textbox",
               framePath: ["contentFrame"],
               strategies: [
-                { kind: "role_name", confidence: 0.65, role: "textbox", name: "Member Number", match: "exact" },
+                {
+                  kind: "role_name",
+                  confidence: 0.65,
+                  role: "textbox",
+                  name: "Member Number",
+                  match: "exact",
+                },
               ],
             },
           },
@@ -285,7 +338,9 @@ describe("store", () => {
 
     const tenant = store.resolve("member.savings_balance", "summit-fcu");
     expect(tenant.overlay?.tenant).toBe("summit-fcu");
-    expect(tenant.artifact.steps[0]!.target!.strategies[0]).toMatchObject({ name: "Member Number" });
+    expect(tenant.artifact.steps[0]!.target!.strategies[0]).toMatchObject({
+      name: "Member Number",
+    });
   });
 
   it("accumulates a stability signal across runs", () => {

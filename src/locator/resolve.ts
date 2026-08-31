@@ -42,6 +42,20 @@ export type ResolutionOutcome =
 export interface ResolveOptions {
   /** Coordinates are diagnostics by default. Turning this on is a policy act. */
   readonly allowCoordinateFallback?: boolean;
+  /**
+   * Input values for this invocation, substituted into parameterized strategy
+   * text. Without this, any descriptor that identifies a row BY its key — "the
+   * link named 10042" — is welded to the member it was recorded against, and
+   * the capability is not a capability at all.
+   */
+  readonly bindings?: Readonly<Record<string, string>>;
+}
+
+/** Replace `{{param:name}}` tokens with this invocation's values. */
+export function interpolate(text: string, bindings: Readonly<Record<string, string>> = {}): string {
+  return text.replace(/\{\{param:([A-Za-z0-9_]+)\}\}/g, (whole, name: string) =>
+    bindings[name] !== undefined ? bindings[name]! : whole,
+  );
 }
 
 const norm = (s: string): string => s.replace(/\s+/g, " ").trim().toLowerCase();
@@ -66,8 +80,12 @@ export function resolveDescriptor(
       continue;
     }
 
-    const matches = matchStrategy(strategy, scoped);
-    attempts.push({ kind: strategy.kind, confidence: strategy.confidence, matches: matches.length });
+    const matches = matchStrategy(strategy, scoped, opts.bindings ?? {});
+    attempts.push({
+      kind: strategy.kind,
+      confidence: strategy.confidence,
+      matches: matches.length,
+    });
 
     if (matches.length === 1) {
       return {
@@ -91,20 +109,22 @@ export function resolveDescriptor(
 function matchStrategy(
   strategy: ElementDescriptor["strategies"][number],
   scoped: readonly UIElement[],
+  bindings: Readonly<Record<string, string>>,
 ): readonly UIElement[] {
   switch (strategy.kind) {
     case "role_name": {
-      const exact = scoped.filter((e) => e.role === strategy.role && e.name === strategy.name);
+      const wanted = interpolate(strategy.name, bindings);
+      const exact = scoped.filter((e) => e.role === strategy.role && e.name === wanted);
       if (exact.length === 1) return exact;
       // Case/whitespace drift is the most common benign change in these apps.
       const relaxed = scoped.filter(
-        (e) => e.role === strategy.role && norm(e.name) === norm(strategy.name),
+        (e) => e.role === strategy.role && norm(e.name) === norm(wanted),
       );
       return relaxed.length > 0 ? relaxed : exact;
     }
 
     case "label_anchor": {
-      const want = norm(strategy.labelText);
+      const want = norm(interpolate(strategy.labelText, bindings));
       return scoped.filter((e) => {
         if (e.role !== strategy.role) return false;
         if (strategy.relation === "same-row") return norm(e.nearbyText.leftCell ?? "") === want;
@@ -114,8 +134,8 @@ function matchStrategy(
     }
 
     case "table_cell": {
-      const col = norm(strategy.columnHeader);
-      const row = norm(strategy.rowKey);
+      const col = norm(interpolate(strategy.columnHeader, bindings));
+      const row = norm(interpolate(strategy.rowKey, bindings));
       return scoped.filter(
         (e) =>
           norm(e.nearbyText.columnHeader ?? "") === col && norm(e.nearbyText.rowKey ?? "") === row,
@@ -123,13 +143,19 @@ function matchStrategy(
     }
 
     case "frame_role_ordinal": {
-      const byRole = scoped.filter((e) => {
-        if (e.role !== strategy.role) return false;
-        if (strategy.name !== undefined) return norm(e.name) === norm(strategy.name);
-        return true;
-      });
-      const hit = byRole.filter((e) => e.ordinal === strategy.ordinal);
-      return hit;
+      // Two readings, and they resolve to different elements. Scoped to role
+      // alone, the ordinal counts every control of that role in the frame — the
+      // reading that still means something after a relabel. Scoped to role and
+      // name, it disambiguates genuine duplicates of the same label.
+      if (strategy.ordinalScope === "role") {
+        return scoped.filter((e) => e.role === strategy.role && e.roleOrdinal === strategy.ordinal);
+      }
+      if (strategy.name === undefined) return [];
+      const wanted = norm(interpolate(strategy.name, bindings));
+      return scoped.filter(
+        (e) =>
+          e.role === strategy.role && norm(e.name) === wanted && e.ordinal === strategy.ordinal,
+      );
     }
 
     case "structural":

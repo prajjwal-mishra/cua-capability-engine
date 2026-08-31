@@ -13,12 +13,7 @@
 import type { Bounds, UIElement, UIRole, UISnapshot } from "../surface/types.js";
 
 export type StrategyKind =
-  | "role_name"
-  | "label_anchor"
-  | "table_cell"
-  | "frame_role_ordinal"
-  | "structural"
-  | "bounds";
+  "role_name" | "label_anchor" | "table_cell" | "frame_role_ordinal" | "structural" | "bounds";
 
 /** Rung 1: computed role + accessible name. The only strategy that survives a
  *  re-skin, and the only one a desktop surface gets for free from UIA/AX. */
@@ -49,13 +44,22 @@ export interface TableCellStrategy {
   readonly rowKey: string;
 }
 
-/** Rung 4: role + ordinal within a frame. Survives text changes, not reorders. */
+/**
+ * Rung 4: position within a frame. Survives text changes, not reorders.
+ *
+ * The scope is explicit rather than implied by whether `name` is set, because
+ * the two readings resolve to different elements and a reviewer should not have
+ * to infer which one an artifact meant:
+ *   role_and_name — "the 2nd link named 'Open'"
+ *   role          — "the 1st textbox in this frame", regardless of its label
+ */
 export interface FrameRoleOrdinalStrategy {
   readonly kind: "frame_role_ordinal";
   readonly confidence: number;
   readonly role: UIRole;
   readonly name?: string;
   readonly ordinal: number;
+  readonly ordinalScope: "role_and_name" | "role";
 }
 
 /** Rung 5: scoped structural path. Explicitly low confidence; recorded so a
@@ -170,12 +174,27 @@ export function describeElement(
     });
   }
 
+  // Disambiguates duplicates while the label still matches.
+  if (el.name) {
+    strategies.push({
+      kind: "frame_role_ordinal",
+      confidence: 0.55,
+      role: el.role,
+      name: el.name,
+      ordinal: el.ordinal,
+      ordinalScope: "role_and_name",
+    });
+  }
+
+  // The rename-tolerant rung: position alone. This is what carries a capability
+  // across a tenant that calls the same field something else — and when it is
+  // the rung that resolves, the run log says so, which is the drift signal.
   strategies.push({
     kind: "frame_role_ordinal",
-    confidence: 0.55,
+    confidence: 0.4,
     role: el.role,
-    name: el.name || undefined,
-    ordinal: el.ordinal,
+    ordinal: el.roleOrdinal,
+    ordinalScope: "role",
   });
 
   strategies.push({ kind: "structural", confidence: 0.3, path: el.structuralPath });

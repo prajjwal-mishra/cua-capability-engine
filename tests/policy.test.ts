@@ -7,7 +7,12 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import { loadAllowlist, routeMatches, type Allowlist } from "../src/policy/allowlist.js";
-import { GuardedSurface, PolicyGate, PolicyViolation, ApprovalRequired } from "../src/policy/gate.js";
+import {
+  GuardedSurface,
+  PolicyGate,
+  PolicyViolation,
+  ApprovalRequired,
+} from "../src/policy/gate.js";
 import { classifyAction, effectiveRisk } from "../src/policy/risk.js";
 import { Redactor } from "../src/policy/redact.js";
 import type {
@@ -19,9 +24,7 @@ import type {
   UISnapshot,
 } from "../src/surface/types.js";
 
-const allowlist: Allowlist = loadAllowlist(
-  join(process.cwd(), "config/allowlist.demo-cu.json"),
-);
+const allowlist: Allowlist = loadAllowlist(join(process.cwd(), "config/allowlist.demo-cu.json"));
 const snapshot: UISnapshot = JSON.parse(
   readFileSync(join(process.cwd(), "tests/fixtures/snapshots/search-variant-a.json"), "utf8"),
 );
@@ -61,7 +64,10 @@ describe("deny by default", () => {
 
   it("refuses the target app's own control plane", () => {
     // The automation must not be able to arm its own fault injections.
-    const d = gate.check({ kind: "navigate", url: "http://localhost:4000/__control/inject" }, ctx());
+    const d = gate.check(
+      { kind: "navigate", url: "http://localhost:4000/__control/inject" },
+      ctx(),
+    );
     expect(d.verdict).toBe("deny");
     if (d.verdict === "deny") expect(d.code).toBe("route_not_allowed");
   });
@@ -91,7 +97,13 @@ describe("risk classes", () => {
   const gate = new PolicyGate();
 
   it("treats typing as read-only — the submit carries the risk, not the keystroke", () => {
-    expect(classifyAction({ kind: "type", ref: "e1", text: "10042" }, el("textbox", "Member ID"), allowlist.risk)).toBe("read_only");
+    expect(
+      classifyAction(
+        { kind: "type", ref: "e1", text: "10042" },
+        el("textbox", "Member ID"),
+        allowlist.risk,
+      ),
+    ).toBe("read_only");
   });
 
   it("lets a read-only lookup replay with no write flag at all", () => {
@@ -157,7 +169,10 @@ describe("redaction", () => {
 
   it("redacts a snapshot and reports what to mask in the screenshot", () => {
     const detail: UISnapshot = JSON.parse(
-      readFileSync(join(process.cwd(), "tests/fixtures/snapshots/member-detail-variant-a.json"), "utf8"),
+      readFileSync(
+        join(process.cwd(), "tests/fixtures/snapshots/member-detail-variant-a.json"),
+        "utf8",
+      ),
     );
     const r = new Redactor();
     const { snapshot: clean, sensitiveBounds } = r.redactSnapshot(detail);
@@ -178,7 +193,12 @@ class CountingSurface implements Surface {
   acted = 0;
   constructor(private readonly snap: UISnapshot) {}
   capabilities(): SurfaceCapabilities {
-    return { surfaceType: "web", canScreenshot: false, supportsFrames: true, nativeAccessibilityNames: false };
+    return {
+      surfaceType: "web",
+      canScreenshot: false,
+      supportsFrames: true,
+      nativeAccessibilityNames: false,
+    };
   }
   async observe(): Promise<UISnapshot> {
     return this.snap;
@@ -195,7 +215,13 @@ describe("no action bypasses the gate", () => {
     const inner = new CountingSurface(snapshot);
     const surface = new GuardedSurface(inner, {
       gate,
-      context: () => ({ mode: "replay", allowlist, allowWrites: true, artifactApproved: true, leaseOwner: "automation" }),
+      context: () => ({
+        mode: "replay",
+        allowlist,
+        allowWrites: true,
+        artifactApproved: true,
+        leaseOwner: "automation",
+      }),
     });
 
     await surface.observe();
@@ -230,13 +256,19 @@ describe("no action bypasses the gate", () => {
     const inner = new CountingSurface(snapshot);
     const surface = new GuardedSurface(inner, {
       gate,
-      context: () => ({ mode: "replay", allowlist, allowWrites: true, artifactApproved: true, leaseOwner: "automation" }),
+      context: () => ({
+        mode: "replay",
+        allowlist,
+        allowWrites: true,
+        artifactApproved: true,
+        leaseOwner: "automation",
+      }),
       declaredRisk: () => "irreversible",
     });
     await surface.observe();
-    await expect(surface.act({ kind: "click", ref: el("button", "Search").ref })).rejects.toBeInstanceOf(
-      ApprovalRequired,
-    );
+    await expect(
+      surface.act({ kind: "click", ref: el("button", "Search").ref }),
+    ).rejects.toBeInstanceOf(ApprovalRequired);
     expect(inner.acted).toBe(0);
   });
 });

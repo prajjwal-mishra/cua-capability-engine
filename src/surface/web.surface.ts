@@ -127,7 +127,8 @@ export class WebSurface implements Surface {
                 height: r.bounds.height,
               }
             : undefined,
-          ordinal: 0, // assigned below, once the whole page is known
+          ordinal: 0, // both assigned below, once the whole page is known
+          roleOrdinal: 0,
           nearbyText: r.nearbyText,
           structuralPath: r.structuralPath,
           tag: r.tag,
@@ -165,7 +166,17 @@ export class WebSurface implements Surface {
           return done({ ok: true });
         }
         case "key": {
-          await this.page.keyboard.press(action.key);
+          await this.actAndSettle(() => this.page.keyboard.press(action.key));
+          return done({ ok: true });
+        }
+        case "reload": {
+          // Reload the named frame, or the deepest one — in a frameset app the
+          // shell is not what failed, the content frame is.
+          const target = action.framePath
+            ? await this.frameByPath(action.framePath)
+            : this.deepestFrame();
+          if (!target) return done({ ok: false, error: "no frame to reload" });
+          await target.goto(target.url(), { waitUntil: "domcontentloaded" });
           await this.settle();
           return done({ ok: true });
         }
@@ -184,25 +195,24 @@ export class WebSurface implements Surface {
         }
         case "click": {
           const el = await this.requireRef(action.ref);
-          await el.click({ timeout: 5_000 });
-          await this.settle();
+          await this.actAndSettle(() => el.click({ timeout: 5_000 }));
           return done({ ok: true });
         }
         case "type": {
           const el = await this.requireRef(action.ref);
           await el.fill(action.text, { timeout: 5_000 });
           if (action.submit) {
-            await el.press("Enter");
-            await this.settle();
+            await this.actAndSettle(() => el.press("Enter"));
           }
           return done({ ok: true });
         }
         case "select": {
           const el = await this.requireRef(action.ref);
-          await el.selectOption({ label: action.option }).catch(async () => {
-            await el.selectOption(action.option);
+          await this.actAndSettle(async () => {
+            await el.selectOption({ label: action.option }).catch(async () => {
+              await el.selectOption(action.option);
+            });
           });
-          await this.settle();
           return done({ ok: true });
         }
         case "read": {
@@ -246,6 +256,27 @@ export class WebSurface implements Surface {
     } catch {
       return null;
     }
+  }
+
+  /**
+   * Fallback for a reload with no frame named. Deliberately conservative: when
+   * more than one frame shares the greatest depth there is no honest answer to
+   * "the deepest frame", and guessing would reload someone else's navigation.
+   * Recoveries should name their frame; the pack does.
+   */
+  private deepestFrame(): Frame | undefined {
+    const frames = this.page.frames();
+    const maxDepth = Math.max(...frames.map(depthOf));
+    const deepest = frames.filter((f) => depthOf(f) === maxDepth);
+    return deepest.length === 1 ? deepest[0] : undefined;
+  }
+
+  private async frameByPath(path: readonly string[]): Promise<Frame | undefined> {
+    for (const frame of this.page.frames()) {
+      const actual = await this.framePathOf(frame);
+      if (actual.join(">") === path.join(">")) return frame;
+    }
+    return undefined;
   }
 
   /** A frame's position within the top-level page, accumulated up the chain. */
@@ -318,12 +349,49 @@ export class WebSurface implements Surface {
   }
 
   /**
-   * Condition-based settling, never a bare sleep. `networkidle` is bounded and
-   * falls through on timeout rather than throwing: a page that keeps a socket
-   * open forever is still a usable page.
+   * Perform an action that may navigate a FRAME, and wait for the result.
+   *
+   * This is the subtle one. In a frameset app, clicking a submit button inside
+   * the content frame navigates that frame and never touches the top-level
+   * document — so waiting on the page's load state returns immediately and we
+   * observe the pre-click DOM. That failure is intermittent by nature: it is a
+   * race, and it wins often enough to look like flakiness in the artifact
+   * rather than a bug in perception.
+   *
+   * So we arm a frame-navigation listener BEFORE dispatching, and the wait ends
+   * the moment a frame actually navigates. The ceiling is only reached when
+   * nothing navigated — a click that genuinely changed nothing — and it exists
+   * to bound that case, not to pace the common one.
+   */
+  private async actAndSettle(dispatch: () => Promise<unknown>, ceilingMs = 1_500): Promise<void> {
+    let onNavigated: ((frame: Frame) => void) | undefined;
+    const navigated = new Promise<void>((resolve) => {
+      onNavigated = () => resolve();
+      this.page.once("framenavigated", onNavigated);
+    });
+    const ceiling = new Promise<void>((resolve) => setTimeout(resolve, ceilingMs));
+
+    try {
+      await dispatch();
+      await Promise.race([navigated, ceiling]);
+    } finally {
+      if (onNavigated) this.page.off("framenavigated", onNavigated);
+    }
+    await this.settle();
+  }
+
+  /**
+   * Condition-based settling, never a bare sleep. Every frame is waited on, not
+   * just the top document, and each wait falls through on timeout rather than
+   * throwing: a page holding a socket open forever is still a usable page.
    */
   private async settle(timeoutMs = 5_000): Promise<void> {
     await this.page.waitForLoadState("domcontentloaded", { timeout: timeoutMs }).catch(() => {});
+    await Promise.all(
+      this.page
+        .frames()
+        .map((f) => f.waitForLoadState("domcontentloaded", { timeout: timeoutMs }).catch(() => {})),
+    );
     await this.page.waitForLoadState("networkidle", { timeout: timeoutMs }).catch(() => {});
   }
 }
@@ -345,21 +413,40 @@ const KNOWN_ROLES: readonly string[] = [
   "text",
 ];
 
+function depthOf(frame: Frame): number {
+  let n = 0;
+  let cur: Frame | null = frame;
+  while (cur?.parentFrame()) {
+    n++;
+    cur = cur.parentFrame();
+  }
+  return n;
+}
+
 function normalizeRole(role: string): UIRole {
   return (KNOWN_ROLES.includes(role) ? role : "generic") as UIRole;
 }
 
 /**
- * Ordinal = index among elements sharing role + name within the same frame.
- * This is what makes "the second 'Open' link" expressible without a selector.
+ * Two ordinals, because they answer different questions.
+ *
+ * `ordinal` counts within role+name and expresses "the second 'Open' link".
+ * `roleOrdinal` counts within role alone and expresses "the first textbox in
+ * this frame" — the only one of the two that still means something after the
+ * app is relabelled, which is precisely the cross-tenant case.
  */
 function assignOrdinals(elements: readonly UIElement[]): UIElement[] {
-  const seen = new Map<string, number>();
+  const byRoleAndName = new Map<string, number>();
+  const byRole = new Map<string, number>();
   return elements.map((e) => {
-    const key = `${e.framePath.join(">")}|${e.role}|${e.name}`;
-    const n = seen.get(key) ?? 0;
-    seen.set(key, n + 1);
-    return { ...e, ordinal: n };
+    const frame = e.framePath.join(">");
+    const nameKey = `${frame}|${e.role}|${e.name}`;
+    const roleKey = `${frame}|${e.role}`;
+    const ordinal = byRoleAndName.get(nameKey) ?? 0;
+    const roleOrdinal = byRole.get(roleKey) ?? 0;
+    byRoleAndName.set(nameKey, ordinal + 1);
+    byRole.set(roleKey, roleOrdinal + 1);
+    return { ...e, ordinal, roleOrdinal };
   });
 }
 

@@ -10,7 +10,11 @@ import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import type { UISnapshot } from "../src/surface/types.js";
-import { describeElement, descriptorConfidence, type ElementDescriptor } from "../src/locator/descriptor.js";
+import {
+  describeElement,
+  descriptorConfidence,
+  type ElementDescriptor,
+} from "../src/locator/descriptor.js";
 import { isDriftSignal, resolveDescriptor } from "../src/locator/resolve.js";
 
 const fixture = (name: string): UISnapshot =>
@@ -93,7 +97,9 @@ describe("resolution", () => {
       intent: "a status cell",
       role: "cell",
       framePath: detailA.elements.find((e) => e.nearbyText.columnHeader === "Status")!.framePath,
-      strategies: [{ kind: "role_name", confidence: 0.9, role: "cell", name: "Open", match: "exact" }],
+      strategies: [
+        { kind: "role_name", confidence: 0.9, role: "cell", name: "Open", match: "exact" },
+      ],
     };
     const out = resolveDescriptor(ambiguous, detailA);
     expect(out.status).toBe("ambiguous");

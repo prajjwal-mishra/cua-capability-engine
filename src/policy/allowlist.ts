@@ -21,7 +21,9 @@ export const AllowlistSchema = z.object({
   /** Checked before routePatterns, so a deny always wins. */
   deniedRoutePatterns: z.array(z.string()).default([]),
   actions: z
-    .array(z.enum(["navigate", "click", "type", "select", "key", "read", "waitFor", "scroll"]))
+    .array(
+      z.enum(["navigate", "click", "type", "select", "key", "read", "waitFor", "scroll", "reload"]),
+    )
     .min(1),
   targetRoles: z.array(z.string()).min(1),
   /** Fields the automation must never type into, matched against the control's

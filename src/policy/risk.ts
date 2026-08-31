@@ -54,6 +54,7 @@ export function classifyAction(
     case "read":
     case "waitFor":
     case "scroll":
+    case "reload":
       return "read_only";
 
     case "key":

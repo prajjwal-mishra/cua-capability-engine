@@ -97,7 +97,13 @@
             "role": "button",
             "framePath": ["contentFrame"],
             "strategies": [
-              { "kind": "role_name", "confidence": 0.9, "role": "button", "name": "Resume Session", "match": "exact" }
+              {
+                "kind": "role_name",
+                "confidence": 0.9,
+                "role": "button",
+                "name": "Resume Session",
+                "match": "exact"
+              }
             ]
           }
         },
@@ -119,7 +125,13 @@
             "role": "button",
             "framePath": ["contentFrame"],
             "strategies": [
-              { "kind": "role_name", "confidence": 0.9, "role": "button", "name": "Acknowledge", "match": "exact" }
+              {
+                "kind": "role_name",
+                "confidence": 0.9,
+                "role": "button",
+                "name": "Acknowledge",
+                "match": "exact"
+              }
             ]
           }
         },
@@ -129,11 +141,14 @@
     {
       "code": "service_unavailable",
       "maxAttempts": 3,
-      "describe": "Back off briefly and retry; this host returns 503 under momentary load and succeeds on retry.",
+      "describe": "Back off briefly and re-request the failing page. The 503 body contains none of the step's controls, so the request is retried rather than the click repeated; this host succeeds on the second attempt.",
       "detector": {
         "all": [{ "type": "textPresent", "text": "Service Unavailable" }]
       },
-      "actions": [{ "kind": "wait", "ms": 1200 }, { "kind": "retryStep" }]
+      "actions": [
+        { "kind": "wait", "ms": 1200 },
+        { "kind": "reload", "framePath": ["contentFrame"] }
+      ]
     }
   ]
 }

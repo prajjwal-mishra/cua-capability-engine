@@ -50,6 +50,21 @@ export function collectElements(refPrefix: string, maxElements: number): RawElem
     return (n.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 200);
   };
 
+  /**
+   * A cell's own text, ignoring text that belongs to controls inside it.
+   *
+   * Legacy pages routinely put a message and a link in the same cell:
+   *   <td>No member records match. <a>New Search</a></td>
+   * Dropping such cells entirely (because they contain a control) loses exactly
+   * the sentences that identify business outcomes, while taking their full
+   * textContent would duplicate every link label as cell text.
+   */
+  const ownText = (el: Element): string => {
+    const clone = el.cloneNode(true) as Element;
+    clone.querySelectorAll("a, button, input, select, textarea, table").forEach((n) => n.remove());
+    return (clone.textContent ?? "").replace(/\s+/g, " ").trim().slice(0, 200);
+  };
+
   const visible = (el: Element): boolean => {
     const r = el.getBoundingClientRect();
     if (r.width === 0 && r.height === 0) return false;
@@ -128,8 +143,7 @@ export function collectElements(refPrefix: string, maxElements: number): RawElem
     }
 
     if (role === "cell") {
-      // Only the cell's own text, not nested tables.
-      const t = txt(el);
+      const t = ownText(el);
       if (t) return { name: t, source: "text-content" };
     }
 
@@ -230,10 +244,15 @@ export function collectElements(refPrefix: string, maxElements: number): RawElem
     if (role === "generic") continue;
     if (!visible(el)) continue;
 
-    // A cell that only wraps another control adds noise, not signal.
+    // A cell earns its place by carrying text of its own. Skipping every cell
+    // that contains a control or a nested table looks tidier but silently drops
+    // the sentences that identify exceptional states — a session-timeout notice
+    // sits in the same cell as the re-auth form, and a "no records" message in
+    // the same cell as the link back. ownText() already excludes anything that
+    // belongs to a descendant control or table, so an outer wrapper contributes
+    // only what it actually says.
     if (role === "cell" || role === "columnheader") {
-      if (el.querySelector("input, select, textarea, button, a[href], table")) continue;
-      if (!txt(el)) continue;
+      if (!ownText(el)) continue;
     }
 
     let { name, source } = accessibleName(el, role);

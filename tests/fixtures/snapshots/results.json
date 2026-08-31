@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-08-31T05:51:35.012Z",
+  "capturedAt": "2026-08-31T06:34:23.544Z",
   "page": {
     "url": "http://localhost:4000/frame/results?q=10042",
     "routePattern": "/frame/results",
@@ -27,6 +27,7 @@
         "height": 28
       },
       "ordinal": 0,
+      "roleOrdinal": 0,
       "nearbyText": {},
       "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]",
       "tag": "td"
@@ -45,6 +46,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 1,
       "nearbyText": {},
       "structuralPath": "BODY[1]/TABLE[2]/TBODY[1]/TR[1]/TD[1]",
       "tag": "td"
@@ -63,6 +65,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 0,
       "nearbyText": {},
       "structuralPath": "BODY[1]/TABLE[3]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TH[1]",
       "tag": "th"
@@ -81,6 +84,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 1,
       "nearbyText": {
         "leftCell": "Member ID",
         "precedingText": "Member ID"
@@ -102,6 +106,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 2,
       "nearbyText": {
         "leftCell": "Name",
         "precedingText": "Name"
@@ -123,6 +128,7 @@
         "height": 16
       },
       "ordinal": 0,
+      "roleOrdinal": 0,
       "nearbyText": {
         "aboveCell": "Member ID",
         "columnHeader": "Member ID"
@@ -144,6 +150,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 2,
       "nearbyText": {
         "leftCell": "10042",
         "rowKey": "10042",
@@ -167,6 +174,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 3,
       "nearbyText": {
         "leftCell": "Vantreight, Marisol",
         "rowKey": "10042",
@@ -190,6 +198,7 @@
         "height": 16
       },
       "ordinal": 0,
+      "roleOrdinal": 1,
       "nearbyText": {},
       "structuralPath": "BODY[1]/TABLE[4]/TBODY[1]/TR[1]/TD[1]/FONT[1]/A[1]",
       "tag": "a"

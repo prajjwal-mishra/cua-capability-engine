@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-08-31T05:51:38.256Z",
+  "capturedAt": "2026-08-31T06:34:26.794Z",
   "page": {
     "url": "http://localhost:4000/",
     "routePattern": "/",
@@ -11,24 +11,17 @@
         "routePattern": "/"
       },
       {
-        "framePath": [
-          "navFrame"
-        ],
+        "framePath": ["navFrame"],
         "url": "http://localhost:4000/frame/nav",
         "routePattern": "/frame/nav"
       },
       {
-        "framePath": [
-          "contentFrame"
-        ],
+        "framePath": ["contentFrame"],
         "url": "http://localhost:4000/frame/member/10042",
         "routePattern": "/frame/member/:id"
       },
       {
-        "framePath": [
-          "contentFrame",
-          "acctFrame"
-        ],
+        "framePath": ["contentFrame", "acctFrame"],
         "url": "http://localhost:4000/frame/accounts/10042?variant=variant-a",
         "routePattern": "/frame/accounts/:id"
       }
@@ -41,9 +34,7 @@
       "name": "Riverbend Credit Union",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "navFrame"
-      ],
+      "framePath": ["navFrame"],
       "bounds": {
         "x": 0,
         "y": 0,
@@ -51,6 +42,7 @@
         "height": 44
       },
       "ordinal": 0,
+      "roleOrdinal": 0,
       "nearbyText": {},
       "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]",
       "tag": "td"
@@ -61,9 +53,7 @@
       "name": "Member Search",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "navFrame"
-      ],
+      "framePath": ["navFrame"],
       "bounds": {
         "x": 8,
         "y": 48,
@@ -71,6 +61,7 @@
         "height": 16
       },
       "ordinal": 0,
+      "roleOrdinal": 0,
       "nearbyText": {
         "aboveCell": "Riverbend Credit Union"
       },
@@ -83,9 +74,7 @@
       "name": "Reports",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "navFrame"
-      ],
+      "framePath": ["navFrame"],
       "bounds": {
         "x": 8,
         "y": 72,
@@ -93,6 +82,7 @@
         "height": 16
       },
       "ordinal": 0,
+      "roleOrdinal": 1,
       "nearbyText": {
         "aboveCell": "Member Search"
       },
@@ -105,9 +95,7 @@
       "name": "Batch Jobs",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "navFrame"
-      ],
+      "framePath": ["navFrame"],
       "bounds": {
         "x": 8,
         "y": 96,
@@ -115,6 +103,7 @@
         "height": 16
       },
       "ordinal": 0,
+      "roleOrdinal": 2,
       "nearbyText": {
         "aboveCell": "Reports"
       },
@@ -127,9 +116,7 @@
       "name": "Member Detail — Marisol Vantreight",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame"
-      ],
+      "framePath": ["contentFrame"],
       "bounds": {
         "x": 180,
         "y": 0,
@@ -137,6 +124,7 @@
         "height": 28
       },
       "ordinal": 0,
+      "roleOrdinal": 0,
       "nearbyText": {},
       "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]",
       "tag": "td"
@@ -147,9 +135,7 @@
       "name": "Member ID",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame"
-      ],
+      "framePath": ["contentFrame"],
       "bounds": {
         "x": 181,
         "y": 29,
@@ -157,6 +143,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 1,
       "nearbyText": {},
       "structuralPath": "TABLE[2]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]",
       "tag": "td"
@@ -167,9 +154,7 @@
       "name": "10042",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame"
-      ],
+      "framePath": ["contentFrame"],
       "bounds": {
         "x": 290,
         "y": 29,
@@ -177,6 +162,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 2,
       "nearbyText": {
         "leftCell": "Member ID",
         "rowKey": "Member ID",
@@ -191,9 +177,7 @@
       "name": "Name",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame"
-      ],
+      "framePath": ["contentFrame"],
       "bounds": {
         "x": 181,
         "y": 53,
@@ -201,6 +185,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 3,
       "nearbyText": {
         "aboveCell": "Member ID"
       },
@@ -213,9 +198,7 @@
       "name": "Vantreight, Marisol",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame"
-      ],
+      "framePath": ["contentFrame"],
       "bounds": {
         "x": 290,
         "y": 53,
@@ -223,6 +206,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 4,
       "nearbyText": {
         "leftCell": "Name",
         "rowKey": "Name",
@@ -238,9 +222,7 @@
       "name": "Branch",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame"
-      ],
+      "framePath": ["contentFrame"],
       "bounds": {
         "x": 181,
         "y": 77,
@@ -248,6 +230,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 5,
       "nearbyText": {
         "aboveCell": "Name"
       },
@@ -260,9 +243,7 @@
       "name": "Riverbend Main",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame"
-      ],
+      "framePath": ["contentFrame"],
       "bounds": {
         "x": 290,
         "y": 77,
@@ -270,6 +251,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 6,
       "nearbyText": {
         "leftCell": "Branch",
         "rowKey": "Branch",
@@ -285,9 +267,7 @@
       "name": "Member Since",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame"
-      ],
+      "framePath": ["contentFrame"],
       "bounds": {
         "x": 181,
         "y": 101,
@@ -295,6 +275,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 7,
       "nearbyText": {
         "aboveCell": "Branch"
       },
@@ -307,9 +288,7 @@
       "name": "2016-03-14",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame"
-      ],
+      "framePath": ["contentFrame"],
       "bounds": {
         "x": 290,
         "y": 101,
@@ -317,6 +296,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 8,
       "nearbyText": {
         "leftCell": "Member Since",
         "rowKey": "Member Since",
@@ -332,9 +312,7 @@
       "name": "Accounts",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame"
-      ],
+      "framePath": ["contentFrame"],
       "bounds": {
         "x": 180,
         "y": 126,
@@ -342,6 +320,7 @@
         "height": 24
       },
       "ordinal": 0,
+      "roleOrdinal": 9,
       "nearbyText": {},
       "structuralPath": "BODY[1]/TABLE[3]/TBODY[1]/TR[1]/TD[1]",
       "tag": "td"
@@ -352,9 +331,7 @@
       "name": "Open Sub-Account",
       "nameSource": "value",
       "state": {},
-      "framePath": [
-        "contentFrame"
-      ],
+      "framePath": ["contentFrame"],
       "bounds": {
         "x": 184,
         "y": 334,
@@ -362,6 +339,7 @@
         "height": 21
       },
       "ordinal": 0,
+      "roleOrdinal": 0,
       "nearbyText": {},
       "structuralPath": "BODY[1]/TABLE[4]/TBODY[1]/TR[1]/TD[1]/INPUT[1]",
       "tag": "input[button]"
@@ -372,9 +350,7 @@
       "name": "Back to Search",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame"
-      ],
+      "framePath": ["contentFrame"],
       "bounds": {
         "x": 320,
         "y": 337,
@@ -382,6 +358,7 @@
         "height": 16
       },
       "ordinal": 0,
+      "roleOrdinal": 0,
       "nearbyText": {},
       "structuralPath": "BODY[1]/TABLE[4]/TBODY[1]/TR[1]/TD[2]/FONT[1]/A[1]",
       "tag": "a"
@@ -392,10 +369,7 @@
       "name": "Account Type",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame",
-        "acctFrame"
-      ],
+      "framePath": ["contentFrame", "acctFrame"],
       "bounds": {
         "x": 361,
         "y": 151,
@@ -403,6 +377,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 0,
       "nearbyText": {},
       "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[1]/TH[1]",
       "tag": "th"
@@ -413,10 +388,7 @@
       "name": "Account Number",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame",
-        "acctFrame"
-      ],
+      "framePath": ["contentFrame", "acctFrame"],
       "bounds": {
         "x": 524,
         "y": 151,
@@ -424,6 +396,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 1,
       "nearbyText": {
         "leftCell": "Account Type"
       },
@@ -436,10 +409,7 @@
       "name": "Current Balance",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame",
-        "acctFrame"
-      ],
+      "framePath": ["contentFrame", "acctFrame"],
       "bounds": {
         "x": 721,
         "y": 151,
@@ -447,6 +417,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 2,
       "nearbyText": {
         "leftCell": "Account Number"
       },
@@ -459,10 +430,7 @@
       "name": "Status",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame",
-        "acctFrame"
-      ],
+      "framePath": ["contentFrame", "acctFrame"],
       "bounds": {
         "x": 912,
         "y": 151,
@@ -470,6 +438,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 3,
       "nearbyText": {
         "leftCell": "Current Balance"
       },
@@ -482,10 +451,7 @@
       "name": "Savings",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame",
-        "acctFrame"
-      ],
+      "framePath": ["contentFrame", "acctFrame"],
       "bounds": {
         "x": 361,
         "y": 174,
@@ -493,6 +459,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 0,
       "nearbyText": {
         "aboveCell": "Account Type",
         "columnHeader": "Account Type"
@@ -506,10 +473,7 @@
       "name": "4417-99820-01",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame",
-        "acctFrame"
-      ],
+      "framePath": ["contentFrame", "acctFrame"],
       "bounds": {
         "x": 524,
         "y": 174,
@@ -517,6 +481,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 1,
       "nearbyText": {
         "leftCell": "Savings",
         "rowKey": "Savings",
@@ -532,10 +497,7 @@
       "name": "$8,241.17",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame",
-        "acctFrame"
-      ],
+      "framePath": ["contentFrame", "acctFrame"],
       "bounds": {
         "x": 721,
         "y": 174,
@@ -543,6 +505,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 2,
       "nearbyText": {
         "leftCell": "4417-99820-01",
         "rowKey": "Savings",
@@ -558,10 +521,7 @@
       "name": "Open",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame",
-        "acctFrame"
-      ],
+      "framePath": ["contentFrame", "acctFrame"],
       "bounds": {
         "x": 912,
         "y": 174,
@@ -569,6 +529,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 3,
       "nearbyText": {
         "leftCell": "$8,241.17",
         "rowKey": "Savings",
@@ -584,10 +545,7 @@
       "name": "Checking",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame",
-        "acctFrame"
-      ],
+      "framePath": ["contentFrame", "acctFrame"],
       "bounds": {
         "x": 361,
         "y": 197,
@@ -595,6 +553,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 4,
       "nearbyText": {
         "aboveCell": "Savings",
         "columnHeader": "Account Type"
@@ -608,10 +567,7 @@
       "name": "4417-99820-02",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame",
-        "acctFrame"
-      ],
+      "framePath": ["contentFrame", "acctFrame"],
       "bounds": {
         "x": 524,
         "y": 197,
@@ -619,6 +575,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 5,
       "nearbyText": {
         "leftCell": "Checking",
         "rowKey": "Checking",
@@ -634,10 +591,7 @@
       "name": "$1,902.44",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame",
-        "acctFrame"
-      ],
+      "framePath": ["contentFrame", "acctFrame"],
       "bounds": {
         "x": 721,
         "y": 197,
@@ -645,6 +599,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 6,
       "nearbyText": {
         "leftCell": "4417-99820-02",
         "rowKey": "Checking",
@@ -660,10 +615,7 @@
       "name": "Open",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame",
-        "acctFrame"
-      ],
+      "framePath": ["contentFrame", "acctFrame"],
       "bounds": {
         "x": 912,
         "y": 197,
@@ -671,6 +623,7 @@
         "height": 23
       },
       "ordinal": 1,
+      "roleOrdinal": 7,
       "nearbyText": {
         "leftCell": "$1,902.44",
         "rowKey": "Checking",
@@ -686,10 +639,7 @@
       "name": "Certificate",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame",
-        "acctFrame"
-      ],
+      "framePath": ["contentFrame", "acctFrame"],
       "bounds": {
         "x": 361,
         "y": 220,
@@ -697,6 +647,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 8,
       "nearbyText": {
         "aboveCell": "Checking",
         "columnHeader": "Account Type"
@@ -710,10 +661,7 @@
       "name": "4417-99820-07",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame",
-        "acctFrame"
-      ],
+      "framePath": ["contentFrame", "acctFrame"],
       "bounds": {
         "x": 524,
         "y": 220,
@@ -721,6 +669,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 9,
       "nearbyText": {
         "leftCell": "Certificate",
         "rowKey": "Certificate",
@@ -736,10 +685,7 @@
       "name": "$15,000.00",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame",
-        "acctFrame"
-      ],
+      "framePath": ["contentFrame", "acctFrame"],
       "bounds": {
         "x": 721,
         "y": 220,
@@ -747,6 +693,7 @@
         "height": 23
       },
       "ordinal": 0,
+      "roleOrdinal": 10,
       "nearbyText": {
         "leftCell": "4417-99820-07",
         "rowKey": "Certificate",
@@ -762,10 +709,7 @@
       "name": "Open",
       "nameSource": "text-content",
       "state": {},
-      "framePath": [
-        "contentFrame",
-        "acctFrame"
-      ],
+      "framePath": ["contentFrame", "acctFrame"],
       "bounds": {
         "x": 912,
         "y": 220,
@@ -773,6 +717,7 @@
         "height": 23
       },
       "ordinal": 2,
+      "roleOrdinal": 11,
       "nearbyText": {
         "leftCell": "$15,000.00",
         "rowKey": "Certificate",

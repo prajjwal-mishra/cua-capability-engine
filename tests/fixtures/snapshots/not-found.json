@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-08-31T05:51:36.634Z",
+  "capturedAt": "2026-08-31T06:34:25.172Z",
   "page": {
     "url": "http://localhost:4000/frame/results?q=99999",
     "routePattern": "/frame/results",
@@ -27,12 +27,32 @@
         "height": 28
       },
       "ordinal": 0,
+      "roleOrdinal": 0,
       "nearbyText": {},
       "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]",
       "tag": "td"
     },
     {
       "ref": "e2",
+      "role": "cell",
+      "name": "No member records match the criteria supplied. Searched for: 99999",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [],
+      "bounds": {
+        "x": 0,
+        "y": 28,
+        "width": 366,
+        "height": 102
+      },
+      "ordinal": 0,
+      "roleOrdinal": 1,
+      "nearbyText": {},
+      "structuralPath": "BODY[1]/TABLE[2]/TBODY[1]/TR[1]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e3",
       "role": "link",
       "name": "New Search",
       "nameSource": "text-content",
@@ -45,6 +65,7 @@
         "height": 16
       },
       "ordinal": 0,
+      "roleOrdinal": 0,
       "nearbyText": {},
       "structuralPath": "BODY[1]/TABLE[2]/TBODY[1]/TR[1]/TD[1]/FONT[3]/A[1]",
       "tag": "a"

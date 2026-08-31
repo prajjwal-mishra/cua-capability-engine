@@ -77,8 +77,12 @@ export interface UIElement {
   readonly framePath: readonly string[];
   /** Diagnostics only. Never used to locate an element unless explicitly allowed. */
   readonly bounds?: Bounds;
-  /** Index among same-role, same-name siblings within the same container. */
+  /** Index among same-role, same-NAME elements in this frame. Disambiguates
+   *  genuine duplicates: "the second 'Open' link". */
   readonly ordinal: number;
+  /** Index among same-role elements in this frame, ignoring name. This is the
+   *  rung that survives a pure relabelling, where role+name cannot. */
+  readonly roleOrdinal: number;
   readonly nearbyText: NearbyText;
   /** Scoped structural path. Last-resort strategy, recorded as low confidence. */
   readonly structuralPath: string;
@@ -131,7 +135,11 @@ export type SurfaceAction =
       readonly ref?: string;
       readonly timeoutMs?: number;
     }
-  | { readonly kind: "scroll"; readonly direction: "up" | "down"; readonly amount?: number };
+  | { readonly kind: "scroll"; readonly direction: "up" | "down"; readonly amount?: number }
+  /** Re-request a frame's current URL. The honest recovery for a transient
+   *  server failure: the step's target is gone from the error page, so
+   *  re-clicking it is impossible — the request itself must be retried. */
+  | { readonly kind: "reload"; readonly framePath?: readonly string[] };
 
 export interface ActionResult {
   readonly ok: boolean;
