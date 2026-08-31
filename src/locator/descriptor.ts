@@ -1,0 +1,202 @@
+/**
+ * How a recorded step says which control it means.
+ *
+ * This is the load-bearing robustness decision in the system. A descriptor is
+ * never a CSS selector and never a pixel: it is an ORDERED LADDER of resolution
+ * strategies, each scored at record time, tried in order at replay. The ladder
+ * degrades from "semantically meaningful and stable" down to "structural and
+ * brittle", and the replay log records WHICH RUNG RESOLVED — so a capability
+ * that silently slid from rung 1 to rung 5 is visible as drift telemetry rather
+ * than as a mystery failure three weeks later.
+ */
+
+import type { Bounds, UIElement, UIRole, UISnapshot } from "../surface/types.js";
+
+export type StrategyKind =
+  | "role_name"
+  | "label_anchor"
+  | "table_cell"
+  | "frame_role_ordinal"
+  | "structural"
+  | "bounds";
+
+/** Rung 1: computed role + accessible name. The only strategy that survives a
+ *  re-skin, and the only one a desktop surface gets for free from UIA/AX. */
+export interface RoleNameStrategy {
+  readonly kind: "role_name";
+  readonly confidence: number;
+  readonly role: UIRole;
+  readonly name: string;
+  readonly match: "exact" | "normalized";
+}
+
+/** Rung 2: "the textbox in the same table row as the cell reading 'Member ID'".
+ *  This is what legacy form layouts give you instead of a <label for>. */
+export interface LabelAnchorStrategy {
+  readonly kind: "label_anchor";
+  readonly confidence: number;
+  readonly role: UIRole;
+  readonly labelText: string;
+  readonly relation: "same-row" | "same-column" | "preceding-text";
+}
+
+/** Rung 3: a data-grid cell, addressed the way a human reads a table —
+ *  by column header and row key. */
+export interface TableCellStrategy {
+  readonly kind: "table_cell";
+  readonly confidence: number;
+  readonly columnHeader: string;
+  readonly rowKey: string;
+}
+
+/** Rung 4: role + ordinal within a frame. Survives text changes, not reorders. */
+export interface FrameRoleOrdinalStrategy {
+  readonly kind: "frame_role_ordinal";
+  readonly confidence: number;
+  readonly role: UIRole;
+  readonly name?: string;
+  readonly ordinal: number;
+}
+
+/** Rung 5: scoped structural path. Explicitly low confidence; recorded so a
+ *  reviewer can see the capability is leaning on markup shape. */
+export interface StructuralStrategy {
+  readonly kind: "structural";
+  readonly confidence: number;
+  readonly path: string;
+}
+
+/** Rung 6: recorded geometry. DIAGNOSTIC ONLY — never used to locate anything
+ *  unless the policy explicitly enables coordinate fallback. */
+export interface BoundsStrategy {
+  readonly kind: "bounds";
+  readonly confidence: 0;
+  readonly bounds: Bounds;
+}
+
+export type ResolutionStrategy =
+  | RoleNameStrategy
+  | LabelAnchorStrategy
+  | TableCellStrategy
+  | FrameRoleOrdinalStrategy
+  | StructuralStrategy
+  | BoundsStrategy;
+
+export interface ElementDescriptor {
+  /** Human-readable, for the run log and for a reviewer reading the artifact. */
+  readonly intent: string;
+  readonly role: UIRole;
+  readonly framePath: readonly string[];
+  /** Ordered most-stable-first. Resolution walks this list. */
+  readonly strategies: readonly ResolutionStrategy[];
+}
+
+/* --------------------------------------------------------------- record --- */
+
+const NAME_SOURCE_CONFIDENCE: Record<string, number> = {
+  "aria-labelledby": 0.95,
+  "aria-label": 0.95,
+  "label-element": 0.95,
+  value: 0.9,
+  "text-content": 0.88,
+  alt: 0.85,
+  title: 0.8,
+  placeholder: 0.7,
+  // A name we inferred from layout is weaker than one the app declared, and the
+  // artifact should say so rather than pretend they are equivalent.
+  "heuristic-table-cell": 0.65,
+  "heuristic-preceding-text": 0.55,
+  none: 0,
+};
+
+/**
+ * Build the full ladder for an element we just acted on.
+ *
+ * Every rung that can be populated is populated, even when rung 1 looks solid.
+ * The cost is a few hundred bytes of JSON; the benefit is that when rung 1
+ * breaks at 2am the capability degrades instead of dying.
+ */
+export function describeElement(
+  el: UIElement,
+  intent: string,
+  opts: { readonly includeBounds?: boolean } = {},
+): ElementDescriptor {
+  const strategies: ResolutionStrategy[] = [];
+
+  if (el.name) {
+    strategies.push({
+      kind: "role_name",
+      confidence: NAME_SOURCE_CONFIDENCE[el.nameSource] ?? 0.5,
+      role: el.role,
+      name: el.name,
+      match: "exact",
+    });
+  }
+
+  // Only meaningful when the name came from somewhere OTHER than the anchor
+  // itself — otherwise this rung is rung 1 wearing a different hat.
+  if (el.nearbyText.leftCell) {
+    strategies.push({
+      kind: "label_anchor",
+      confidence: 0.82,
+      role: el.role,
+      labelText: el.nearbyText.leftCell,
+      relation: "same-row",
+    });
+  } else if (el.nearbyText.aboveCell) {
+    strategies.push({
+      kind: "label_anchor",
+      confidence: 0.72,
+      role: el.role,
+      labelText: el.nearbyText.aboveCell,
+      relation: "same-column",
+    });
+  } else if (el.nearbyText.precedingText) {
+    strategies.push({
+      kind: "label_anchor",
+      confidence: 0.6,
+      role: el.role,
+      labelText: el.nearbyText.precedingText,
+      relation: "preceding-text",
+    });
+  }
+
+  if (el.nearbyText.columnHeader && el.nearbyText.rowKey) {
+    strategies.push({
+      kind: "table_cell",
+      confidence: 0.9,
+      columnHeader: el.nearbyText.columnHeader,
+      rowKey: el.nearbyText.rowKey,
+    });
+  }
+
+  strategies.push({
+    kind: "frame_role_ordinal",
+    confidence: 0.55,
+    role: el.role,
+    name: el.name || undefined,
+    ordinal: el.ordinal,
+  });
+
+  strategies.push({ kind: "structural", confidence: 0.3, path: el.structuralPath });
+
+  if (opts.includeBounds && el.bounds) {
+    strategies.push({ kind: "bounds", confidence: 0, bounds: el.bounds });
+  }
+
+  return { intent, role: el.role, framePath: el.framePath, strategies };
+}
+
+/** Highest confidence on the ladder — a quick health signal for reviewers. */
+export function descriptorConfidence(d: ElementDescriptor): number {
+  return d.strategies.reduce((max, s) => Math.max(max, s.confidence), 0);
+}
+
+/** Snapshot elements confined to the descriptor's frame. */
+export function elementsInFrame(
+  snapshot: UISnapshot,
+  framePath: readonly string[],
+): readonly UIElement[] {
+  const want = framePath.join(">");
+  return snapshot.elements.filter((e) => e.framePath.join(">") === want);
+}
