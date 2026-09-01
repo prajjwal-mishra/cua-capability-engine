@@ -1,0 +1,12 @@
+capability: member.savings_balance@1.0.0  (draft)
+inputs:     {"memberId":"10099"}
+
+business outcome — permission_denied: The operator is not authorized to view this member record.
+
+step telemetry:
+  s1   label_anchor         1x  29ms
+  s2   role_name            1x  572ms
+
+evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-01T10-20-57-315Z-d1eaf3d1
+policy checks: 4
+exit 10

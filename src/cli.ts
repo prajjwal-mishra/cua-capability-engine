@@ -23,7 +23,7 @@ const USAGE = `cua — computer-use capability engine
 
   replay     --capability <id>[@<version>] [--input k=v ...] [--tenant <id>]
              [--allow-writes] [--inject <mode>] [--inject-path <substr>] [--stability N]
-             [--attended]
+             [--attended] [--no-escalate] [--variant <id>]
              Re-run a saved capability with no model in the decision loop.
              --attended hands the live session to an operator console if it escalates.
 

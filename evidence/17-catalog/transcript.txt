@@ -1,0 +1,161 @@
+$ cua catalog list
+2 capability(ies):
+
+  member.open_subaccount@1.0.0  [draft]  risk=reversible_write
+    open a new sub-account for member 10042 and reach the confirmation screen
+    args: memberId, nickname, initialDeposit, accountKind   returns: none   stability: 100% of 1
+
+  member.savings_balance@1.0.0  [approved]  risk=read_only
+    look up member 10042 and read their current savings balance
+    args: memberId   returns: savings_balance   stability: 100% of 11
+
+describe one:  cua catalog describe member.open_subaccount
+
+$ cua catalog describe member.savings_balance
+member.savings_balance@1.0.0   [approved]
+look up member 10042 and read their current savings balance
+
+app:        legacy-cu (corevantage-backoffice)
+entry:      /frame/search
+discovered: openai/gpt-oss-120b on 2026-08-31T06:57:25.348Z
+risk:       read_only (highest of any step)
+stability:  11/11 replays succeeded (100%) where it was recorded
+            0/1 replays succeeded (0%) at variant:variant-b
+            1/1 replays succeeded (100%) at summit-fcu
+
+input contract (JSON Schema):
+  {
+    "type": "object",
+    "properties": {
+      "memberId": {
+        "type": "string",
+        "pattern": "^[0-9]{5}$",
+        "description": "The member's identifier as printed on their statement."
+      }
+    },
+    "required": [
+      "memberId"
+    ],
+    "additionalProperties": false
+  }
+
+output contract (JSON Schema):
+  {
+    "type": "object",
+    "properties": {
+      "savings_balance": {
+        "type": "string"
+      }
+    }
+  }
+
+steps:
+  s1  type     read_only         Enter the member ID to search for the member
+        via label_anchor → role_name → frame_role_ordinal → frame_role_ordinal → structural
+  s2  click    read_only         Click Search to look up member 10042
+        via role_name → frame_role_ordinal → frame_role_ordinal → structural
+  s3  click    read_only         Open member detail page for member 10042
+        via role_name → label_anchor → frame_role_ordinal → frame_role_ordinal → structural
+
+business outcomes a caller must handle:
+  member_not_found       No member matches the supplied identifier.
+  permission_denied      The operator is not authorized to view this member record.
+  validation_rejected    The application rejected the supplied input.
+  deposit_below_minimum  The initial deposit is below the product minimum.
+
+conditions it recovers from on its own:
+  session_expired        Re-authenticate the service operator on the interstitial, then retry the step that was interrupted. (max 2)
+  maintenance_notice     Acknowledge the maintenance notice and retry the interrupted step. (max 2)
+  service_unavailable    Back off briefly and re-request the failing page. The 503 body contains none of the step's controls, so the request is retried rather than the click repeated; this host succeeds on the second attempt. (max 3)
+
+$ cua catalog describe member.open_subaccount --tenant summit-fcu
+member.open_subaccount@1.0.0   [draft]
+open a new sub-account for member 10042 and reach the confirmation screen
+
+app:        legacy-cu (corevantage-backoffice) variant variant-b
+entry:      /frame/search
+discovered: openai/gpt-oss-120b on 2026-09-01T09:26:04.604Z
+risk:       irreversible (highest of any step)
+stability:  1/1 replays succeeded (100%) where it was recorded
+            1/1 replays succeeded (100%) at summit-fcu
+
+overlay summit-fcu.member.open_subaccount for tenant summit-fcu:
+  step s1: patched target
+  step s2: patched target
+  step s8: patched checkpoint
+  step s8b: inserted after s8 (Commit the sub-account request on Summit's review screen)
+
+input contract (JSON Schema):
+  {
+    "type": "object",
+    "properties": {
+      "memberId": {
+        "type": "string",
+        "pattern": "^[0-9]{5}$",
+        "description": "The member's identifier as printed on their statement."
+      },
+      "nickname": {
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 40,
+        "description": "A short label for the new sub-account."
+      },
+      "initialDeposit": {
+        "type": "string",
+        "pattern": "^[0-9]+(\\.[0-9]{1,2})?$",
+        "description": "Opening deposit amount, in dollars."
+      },
+      "accountKind": {
+        "type": "string",
+        "enum": [
+          "Savings",
+          "Certificate"
+        ],
+        "description": "Product type for the new sub-account."
+      }
+    },
+    "required": [
+      "memberId",
+      "nickname",
+      "initialDeposit",
+      "accountKind"
+    ],
+    "additionalProperties": false
+  }
+
+output contract (JSON Schema):
+  {
+    "type": "object",
+    "properties": {}
+  }
+
+steps:
+  s1  type     read_only         Enter the member ID to locate the member before creating a sub-account
+        via label_anchor → frame_role_ordinal
+  s2  click    read_only         Click Search to locate member 10042 and proceed to member details
+        via role_name → frame_role_ordinal
+  s3  click    read_only         Open member 10042 details to access sub-account creation
+        via role_name → label_anchor → frame_role_ordinal → frame_role_ordinal → structural
+  s4  click    reversible_write  Open sub-account creation form for member 10042
+        via role_name → frame_role_ordinal → frame_role_ordinal → structural
+  s5  select   read_only         Select the product type for the new sub-account
+        via label_anchor → role_name → frame_role_ordinal → frame_role_ordinal → structural
+  s6  type     read_only         Enter nickname for the new sub-account
+        via label_anchor → role_name → frame_role_ordinal → frame_role_ordinal → structural
+  s7  type     read_only         Enter the opening deposit amount for the new sub-account
+        via label_anchor → role_name → frame_role_ordinal → frame_role_ordinal → structural
+  s8  click    reversible_write  Submit the sub-account creation form to reach the confirmation screen
+        via role_name → frame_role_ordinal → frame_role_ordinal → structural
+  s8b  click    irreversible      Commit the sub-account request on Summit's review screen
+        via role_name
+
+business outcomes a caller must handle:
+  member_not_found       No member matches the supplied identifier.
+  permission_denied      The operator is not authorized to view this member record.
+  validation_rejected    The application rejected the supplied input.
+  deposit_below_minimum  The initial deposit is below the product minimum.
+
+conditions it recovers from on its own:
+  session_expired        Re-authenticate the service operator on the interstitial, then retry the step that was interrupted. (max 2)
+  maintenance_notice     Acknowledge the maintenance notice and retry the interrupted step. (max 2)
+  service_unavailable    Back off briefly and re-request the failing page. The 503 body contains none of the step's controls, so the request is retried rather than the click repeated; this host succeeds on the second attempt. (max 3)

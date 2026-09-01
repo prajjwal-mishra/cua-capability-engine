@@ -566,16 +566,18 @@ async function handleDetected(
     return { kind: "recovered", snapshot: after };
   }
 
-  /* --- declared hard, or anything we could not classify ------------------ */
+  /* --- declared hard: the application broke, and we recognised it -------- */
   return {
     kind: "result",
     result: await fail(
       ctx,
       step,
-      "unclassified_condition",
-      step.intent,
+      "application_error",
+      `${step.intent}, without the application failing`,
       `${outcome.message} (${outcome.code})`,
       snapshot,
+      `the target application reported a fault, so this is not a defect in the capability. ` +
+        `Retrying later is reasonable; re-recording is not.`,
     ),
   };
 }
@@ -586,12 +588,33 @@ async function finish(
   ctx: RunContext,
   snapshot: UISnapshot,
   bound: Readonly<Record<string, string>>,
+  /** Bounds the recover-and-reverify loop below. One retry, then answer. */
+  attempt = 0,
 ): Promise<ReplayResult> {
   const { artifact } = ctx;
 
   const success = evaluateCondition(artifact.successCondition, snapshot);
   if (!success.passed) {
     const last = artifact.steps[artifact.steps.length - 1]!;
+
+    // Ask what is actually on screen before blaming the artifact.
+    //
+    // A failing success condition has two very different causes, and reporting
+    // the wrong one sends the wrong person to investigate. If the end state is
+    // missing because a frame came back 503, that is the application faulting
+    // and the artifact is fine — the case that motivated this is a transient
+    // error inside the accounts iframe, where the outer route matched, every
+    // step's checkpoint passed, and the balance was simply never rendered. The
+    // detectors already know how to say so; they were just not being consulted
+    // at the one point where the whole run's verdict is decided.
+    if (attempt === 0) {
+      const detected = await handleDetected(ctx, last, snapshot, new Map(), [], bound);
+      if (detected?.kind === "result") return detected.result;
+      if (detected?.kind === "recovered") {
+        return finish(ctx, detected.snapshot, bound, attempt + 1);
+      }
+    }
+
     return fail(
       ctx,
       last,
@@ -599,8 +622,9 @@ async function finish(
       artifact.successCondition.describe ?? "the capability's success condition",
       observations(success),
       snapshot,
-      `every step completed, so the flow ran — but the end state the artifact expects is not what is on screen. ` +
-        `If this is a tenant the capability was not recorded against, that is what an overlay is for.`,
+      `every step completed and nothing on screen matches a known fault, so the flow ran — but the end ` +
+        `state the artifact expects is not what is there. If this is a tenant the capability was not ` +
+        `recorded against, that is what an overlay is for.`,
     );
   }
 
@@ -617,6 +641,12 @@ async function finish(
         `output '${output.name}' from ${descriptor.intent}`,
         `the output descriptor was ${resolution.status}`,
         snapshot,
+        // Reaching the end and being unable to read the answer is the specific
+        // signature of a relabelled or restructured results grid, which is
+        // exactly what an overlay exists to absorb.
+        `the flow completed but the value could not be located. If this tenant's screen labels or ` +
+          `table structure differ from the recording, patch the output descriptor in their overlay ` +
+          `rather than re-recording the capability.`,
       );
     }
     const read = await ctx.surface.act({ kind: "read", ref: resolution.ref });
@@ -655,7 +685,7 @@ async function fail(
   expected: string,
   observed: string,
   snapshot: UISnapshot,
-  detail?: string,
+  remediation?: string,
 ): Promise<ReplayResult> {
   const shot = await ctx.evidence.saveScreenshot(`failure-${step.id}`, ctx.surface, snapshot);
   if (shot) ctx.screenshots.push(shot);
@@ -666,7 +696,12 @@ async function fail(
     classification,
     expected,
     observed,
-    detail,
+    remediation,
+    // Same context an intervention carries. A failure is not a lesser event
+    // than an escalation; it is the one nobody is coming to look at live.
+    visibleText: describeScreen(snapshot),
+    screenshotPath: shot,
+    url: snapshot.page.url,
   };
 
   ctx.log.write({

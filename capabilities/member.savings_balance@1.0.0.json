@@ -520,11 +520,23 @@
     "maxDurationMs": 120000
   },
   "lifecycle": {
-    "state": "draft",
+    "state": "approved",
     "stability": {
-      "runs": 13,
-      "successes": 6,
-      "lastVerifiedAt": "2026-09-01T09:35:29.998Z"
+      "runs": 12,
+      "successes": 12,
+      "lastVerifiedAt": "2026-09-01T10:21:51.262Z"
+    },
+    "stabilityByTenant": {
+      "variant:variant-b": {
+        "runs": 1,
+        "successes": 0,
+        "lastVerifiedAt": "2026-09-01T10:21:19.881Z"
+      },
+      "summit-fcu": {
+        "runs": 1,
+        "successes": 1,
+        "lastVerifiedAt": "2026-09-01T10:21:22.410Z"
+      }
     }
   }
 }

@@ -1,0 +1,1 @@
+cua catalog invoke member.savings_balance --args {"memberId":"10042"}

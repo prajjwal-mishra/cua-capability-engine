@@ -1,0 +1,11 @@
+capability: member.savings_balance@1.0.0  (draft)
+inputs:     {"memberId":"99999"}
+
+business outcome — member_not_found: No member matches the supplied identifier.
+
+step telemetry:
+  s1   label_anchor         1x  138ms
+
+evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-01T10-20-55-300Z-c38637dc
+policy checks: 3
+exit 10

@@ -813,9 +813,16 @@
   "lifecycle": {
     "state": "draft",
     "stability": {
-      "runs": 4,
-      "successes": 3,
-      "lastVerifiedAt": "2026-09-01T09:35:06.059Z"
+      "runs": 1,
+      "successes": 1,
+      "lastVerifiedAt": "2026-09-01T10:21:27.615Z"
+    },
+    "stabilityByTenant": {
+      "summit-fcu": {
+        "runs": 1,
+        "successes": 1,
+        "lastVerifiedAt": "2026-09-01T10:21:34.927Z"
+      }
     }
   }
 }

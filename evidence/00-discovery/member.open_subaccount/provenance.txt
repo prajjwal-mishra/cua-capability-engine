@@ -1,0 +1,4 @@
+capability: member.open_subaccount
+model:      openai/gpt-oss-120b
+run:        discover-2026-09-01T09-24-27-636Z-004d5c26
+recorded:   2026-09-01T09:26:04.604Z

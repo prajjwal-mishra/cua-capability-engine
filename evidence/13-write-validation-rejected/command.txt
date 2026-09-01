@@ -1,0 +1,1 @@
+cua replay --capability member.open_subaccount --input memberId=10042 --input nickname=ab --input initialDeposit=250.00 --input accountKind=Certificate --allow-writes --attended

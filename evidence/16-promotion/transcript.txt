@@ -1,0 +1,9 @@
+$ cua catalog approve member.savings_balance
+member.savings_balance@1.0.0: draft → approved  (11/11 replays succeeded)
+
+# and the same request for the capability that has not earned it:
+$ cua catalog approve member.open_subaccount
+
+member.open_subaccount@1.0.0 has not earned approval: only 1 recorded replay(s); at least 5 are needed.
+Prove it with a shadow replay: cua replay --capability member.open_subaccount --stability 5 --allow-writes --attended
+

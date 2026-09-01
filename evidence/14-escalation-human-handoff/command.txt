@@ -1,0 +1,1 @@
+npx tsx scripts/operator-handoff-demo.ts

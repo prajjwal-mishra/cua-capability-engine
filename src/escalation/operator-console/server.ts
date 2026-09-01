@@ -302,8 +302,25 @@ export async function startOperatorConsole(
 
   /* ------------------------------------------------------------- listen -- */
 
-  const server = await new Promise<import("node:http").Server>((resolve) => {
-    const s = app.listen(options.port, () => resolve(s));
+  // A bind failure here is a real scenario, not an edge case: a console left
+  // over from an abandoned run holds the port, and the default is fixed so the
+  // URL printed to an operator is predictable. Unhandled, it surfaces as a raw
+  // 'error' event that kills the process mid-run and strands a live browser
+  // session with the lease released and nobody able to claim it.
+  const server = await new Promise<import("node:http").Server>((resolve, reject) => {
+    const s = app.listen(options.port);
+    s.once("listening", () => resolve(s));
+    s.once("error", (err: NodeJS.ErrnoException) => {
+      reject(
+        err.code === "EADDRINUSE"
+          ? new Error(
+              `operator console cannot start: port ${options.port} is already in use. ` +
+                `Another run's console is probably still holding it — stop it, or pass ` +
+                `--console-port <n> / set OPERATOR_PORT.`,
+            )
+          : err,
+      );
+    });
   });
   const address = server.address();
   const port = typeof address === "object" && address ? address.port : options.port;

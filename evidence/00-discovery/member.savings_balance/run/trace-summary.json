@@ -1,0 +1,101 @@
+{
+  "runId": "discover-2026-08-31T06-57-09-488Z-878ceaef",
+  "status": "success",
+  "stopReason": "model declared the goal reached",
+  "model": "openai/gpt-oss-120b",
+  "goal": {
+    "goal": "look up member 10042 and read their current savings balance",
+    "targetUrl": "http://localhost:4000",
+    "tenant": "demo-cu",
+    "params": [
+      {
+        "name": "memberId",
+        "description": "The member's identifier as printed on their statement.",
+        "sensitivity": "internal"
+      }
+    ]
+  },
+  "steps": [
+    {
+      "index": 0,
+      "tool": "type",
+      "rationale": "Enter the member ID to search for the member",
+      "action": {
+        "kind": "type",
+        "ref": "e7",
+        "text": "10042",
+        "submit": false
+      },
+      "target": {
+        "role": "textbox",
+        "name": "Member ID",
+        "framePath": [
+          "contentFrame"
+        ]
+      },
+      "paramBinding": "memberId"
+    },
+    {
+      "index": 1,
+      "tool": "click",
+      "rationale": "Click Search to look up member 10042",
+      "action": {
+        "kind": "click",
+        "ref": "e10"
+      },
+      "target": {
+        "role": "button",
+        "name": "Search",
+        "framePath": [
+          "contentFrame"
+        ]
+      }
+    },
+    {
+      "index": 2,
+      "tool": "click",
+      "rationale": "Open member detail page for member 10042",
+      "action": {
+        "kind": "click",
+        "ref": "e10"
+      },
+      "target": {
+        "role": "link",
+        "name": "10042",
+        "framePath": [
+          "contentFrame"
+        ]
+      }
+    },
+    {
+      "index": 3,
+      "tool": "click",
+      "rationale": "Acknowledge system notice to access member details",
+      "action": {
+        "kind": "click",
+        "ref": "e7"
+      },
+      "target": {
+        "role": "button",
+        "name": "Acknowledge",
+        "framePath": [
+          "contentFrame"
+        ]
+      }
+    }
+  ],
+  "outputs": [
+    {
+      "name": "savings_balance",
+      "from": "$8,241.17",
+      "parse": "currency"
+    }
+  ],
+  "outcomes": [],
+  "redaction": {
+    "counts": {
+      "dob": 4,
+      "account_number": 32
+    }
+  }
+}

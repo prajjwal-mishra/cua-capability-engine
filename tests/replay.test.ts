@@ -22,7 +22,12 @@ import { EvidenceWriter } from "../src/obs/evidence.js";
 import { InterventionQueue } from "../src/escalation/intervention.js";
 import { InputValidationError, replayCapability } from "../src/replay/executor.js";
 import type { ReplayResult } from "../src/replay/result.js";
-import { savingsBalanceCapability, testAllowlist } from "./helpers/capability.js";
+import {
+  savingsBalanceCapability,
+  testAllowlist,
+  VARIANT_B_LABELS,
+  type RecordedLabels,
+} from "./helpers/capability.js";
 
 let server: Server;
 let browser: Browser;
@@ -78,9 +83,17 @@ let runSeq = 0;
 
 async function replay(
   inputs: Record<string, string>,
-  opts: { variant?: string; allowWrites?: boolean; noEscalate?: boolean } = {},
+  opts: {
+    variant?: string;
+    allowWrites?: boolean;
+    noEscalate?: boolean;
+    /** Which labels the capability was RECORDED against, independent of the
+     *  variant it is pointed at. The two differing is the whole cross-tenant
+     *  problem, so a test has to be able to set them apart. */
+    labels?: RecordedLabels;
+  } = {},
 ): Promise<RunHandle> {
-  const artifact = savingsBalanceCapability(opts.variant ?? "variant-a");
+  const artifact = savingsBalanceCapability(opts.variant ?? "variant-a", opts.labels);
   const runId = `t${++runSeq}`;
   const redactor = new Redactor();
   const evidence = new EvidenceWriter(workdir, runId, redactor);
@@ -200,20 +213,67 @@ describe("recoverable conditions are cleared and the run continues", () => {
     const { result } = await replay({ memberId: "10042" });
     expect(result.status).toBe("success");
   }, 60_000);
+
+  it("clears a fault that only shows up when the run is verified", async () => {
+    // Two 503s: the second lands on the nested accounts frame, AFTER the last
+    // step's checkpoint has already passed on the outer route. Nothing looks
+    // wrong until the success condition is evaluated and the balance is simply
+    // not there.
+    //
+    // The bug this guards against reported that as `success_condition_failed`,
+    // i.e. "the artifact's idea of done is wrong" — sending someone to re-record
+    // a capability over a transient server error. The detectors have to be
+    // consulted at the point the verdict is reached, not only after each step.
+    await arm("transient_503", "/frame/member", 2);
+    const { result } = await replay({ memberId: "10042" });
+    expect(result.status).toBe("success");
+    if (result.status === "success") {
+      expect(result.outputs.savingsBalance).toMatch(/^\$[\d,]+\.\d{2}$/);
+    }
+  }, 60_000);
 });
 
 /* ------------------------------------------------------ hard failures ---- */
 
 describe("hard failures stop and explain themselves", () => {
   it("returns a debuggable payload on an application error", async () => {
-    await arm("app_error_500", "/frame/member");
+    await arm("app_error_500", "/frame/member", 6);
     const { result } = await replay({ memberId: "10042" });
     expect(result.status).toBe("failed");
     if (result.status === "failed") {
-      expect(result.error.classification).toBe("unclassified_condition");
+      // The bank's software broke. Distinct from a screen we cannot identify,
+      // because it routes to a different person and no re-recording fixes it.
+      expect(result.error.classification).toBe("application_error");
       expect(result.error.stepId).toBeTruthy();
       expect(result.error.stepIntent).toBeTruthy();
       expect(result.error.observed).toContain("application_error");
+      // Debuggable without a repro: what was on screen, and a picture of it.
+      expect(result.error.visibleText).toBeTruthy();
+      expect(result.error.screenshotPath).toMatch(/\.png$/);
+    }
+  }, 45_000);
+
+  it("says so plainly when the end state is simply not the recorded one", async () => {
+    // A capability whose STEPS have been specialized for this tenant but whose
+    // notion of "done" has not — the shape a half-finished overlay takes. Every
+    // step runs and every checkpoint passes; the accounts grid just calls the
+    // product something else, so the success condition can never hold.
+    const { result } = await replay(
+      { memberId: "10042" },
+      {
+        variant: "variant-b",
+        noEscalate: true,
+        labels: {
+          ...VARIANT_B_LABELS,
+          savingsRowLabel: "Savings",
+          balanceColumnHeader: "Current Balance",
+        },
+      },
+    );
+    expect(result.status).toBe("failed");
+    if (result.status === "failed") {
+      expect(result.error.classification).toBe("success_condition_failed");
+      expect(result.error.remediation).toMatch(/overlay/);
     }
   }, 45_000);
 });

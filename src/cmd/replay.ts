@@ -19,7 +19,12 @@ import { startOperatorConsole, type Handback } from "../escalation/operator-cons
 import { ArtifactStore } from "../artifact/store.js";
 import { replayCapability, type ReplayOptions } from "../replay/executor.js";
 import { openSession, type Session } from "../replay/session.js";
-import { exitCodeFor, summarize, type ReplayResult } from "../replay/result.js";
+import {
+  exitCodeFor,
+  stabilitySignal,
+  summarize,
+  type ReplayResult,
+} from "../replay/result.js";
 import type { CapabilityArtifact } from "../artifact/schema.js";
 
 /** How many times one run may bounce between automation and a human before we
@@ -34,6 +39,16 @@ export async function replayCommand(args: Args): Promise<void> {
   const allowWrites = args.flags["allow-writes"] === true;
   const stability = Number(args.flags.stability ?? 1);
   const attended = args.flags.attended === true;
+  /**
+   * Report a hard failure instead of queueing an intervention.
+   *
+   * Wanted for two situations: a stability sweep, where nobody is watching and
+   * a queued request would just sit there, and demonstrating what a genuine
+   * dead end looks like. Escalation is the better default precisely because it
+   * does not throw away a live session — which is also why it is unhelpful when
+   * what you want to see is the failure.
+   */
+  const noEscalate = args.flags["no-escalate"] === true || stability > 1;
   const consolePort = Number(args.flags["console-port"] ?? process.env.OPERATOR_PORT ?? 4100);
   const inject = args.flags.inject ? String(args.flags.inject) : undefined;
   const injectCount = Number(args.flags["inject-count"] ?? 1);
@@ -42,6 +57,11 @@ export async function replayCommand(args: Args): Promise<void> {
   // would be showing a nav frame failing, not a recovery mid-capability.
   const injectPath = String(args.flags["inject-path"] ?? "/frame/member");
 
+  if (attended && args.flags["no-escalate"] === true) {
+    throw new Error(
+      "--attended and --no-escalate contradict each other: one waits for a human, the other refuses to ask for one",
+    );
+  }
   if (attended && stability > 1) {
     throw new Error(
       "--attended and --stability are mutually exclusive: a stability sweep is by definition unattended",
@@ -86,7 +106,7 @@ export async function replayCommand(args: Args): Promise<void> {
         allowWrites,
         tenant,
         variant: args.flags.variant ? String(args.flags.variant) : undefined,
-        noEscalate: stability > 1,
+        noEscalate,
       };
 
       let result = await replay(session, artifact, options);
@@ -116,7 +136,24 @@ export async function replayCommand(args: Args): Promise<void> {
         console.log(`  run ${run + 1}/${stability}: ${result.status}`);
       }
 
-      store.recordRun(`${artifact.capabilityId}@${artifact.version}`, result.status === "success");
+      // A run with a fault deliberately armed says nothing about whether the
+      // capability is stable — we broke the app on purpose. Recording it would
+      // let a demonstration of error handling degrade the thing being
+      // demonstrated.
+      //
+      // A --variant override counts the same way as a tenant: both mean "aimed
+      // somewhere other than where this was recorded", and neither should move
+      // the headline number.
+      if (!inject) {
+        const signal = stabilitySignal(result);
+        if (signal !== "ignore") {
+          store.recordRun(
+            `${artifact.capabilityId}@${artifact.version}`,
+            signal === "success",
+            tenant ?? (options.variant ? `variant:${options.variant}` : undefined),
+          );
+        }
+      }
       await session.close();
     }
   } finally {
@@ -143,6 +180,10 @@ const replay = (
   );
 
 /* ------------------------------------------------------- attended handoff -- */
+
+/** How long an attended run holds a live browser waiting for a human. Generous,
+ *  because a real operator has to read the screen and think, but finite. */
+const HANDOFF_TIMEOUT_MS = Number(process.env.CUA_HANDOFF_TIMEOUT_MS ?? 15 * 60_000);
 
 /**
  * Pause, cede control, resume — on the same session.
@@ -195,23 +236,45 @@ async function attend(
   );
   console.log(`waiting for an operator to take control and hand back …`);
 
-  const handback = await handedBack;
+  // Bounded, because "wait forever" is not a behaviour a CLI should have. On
+  // timeout the intervention stays queued and the operator console can still
+  // pick it up later; we just stop holding a browser open for it.
+  const handback = await Promise.race([
+    handedBack,
+    new Promise<"timeout">((resolve) =>
+      setTimeout(() => resolve("timeout"), HANDOFF_TIMEOUT_MS).unref(),
+    ),
+  ]);
   await operatorConsole.close();
 
-  // What the human did is evidence, recorded in the automation's own vocabulary
-  // so it could later be proposed as an artifact patch rather than re-derived.
-  for (const action of handback.capturedActions) {
-    session.log.write({
-      phase: "intervention",
-      stepId: intervention.stepId,
-      intent: action.describe,
-      action: `human:${action.kind}`,
-      leaseOwner: "operator",
-      outcome: "human_action",
-      extra: { role: action.role, name: action.name, framePath: action.framePath, at: action.at },
-    });
+  if (handback === "timeout") {
+    console.log(
+      `\nno operator took control within ${Math.round(HANDOFF_TIMEOUT_MS / 60_000)} minutes. ` +
+        `Intervention ${intervention.interventionId} is still queued; triage it with:\n` +
+        `  cua operator`,
+    );
+    return {
+      status: "escalated",
+      capability: `${artifact.capabilityId}@${artifact.version}`,
+      interventionId: intervention.interventionId,
+      reason: intervention.reason,
+      resumeToken: intervention.resumeToken,
+      telemetry: [],
+      evidence: {
+        runId: session.evidence.runId,
+        dir: session.evidence.dir,
+        logPath: session.evidence.logPath,
+        screenshots: [],
+        snapshots: [],
+      },
+      timing: { startedAt: new Date().toISOString(), durationMs: 0, stepsExecuted: 0 },
+    };
   }
 
+  // The human's actions are already in the run log — the console writes them at
+  // handback, so they are recorded whether or not this particular caller is the
+  // one waiting. Duplicating them here would double every entry in the audit
+  // trail for the actions that matter most.
   const resumeAtStepId = handback.resumeAtStepId ?? intervention.stepId;
   session.log.write({
     phase: "intervention",

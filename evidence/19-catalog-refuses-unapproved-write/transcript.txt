@@ -1,0 +1,7 @@
+invoking member.open_subaccount with {"memberId":"10042","nickname":"Vacation","initialDeposit":"250.00","accountKind":"Certificate"}
+
+{
+  "status": "rejected",
+  "reason": "member.open_subaccount@1.0.0 is 'draft', not approved. Approve it (cua catalog approve member.open_subaccount) or pass allowDraft to call it anyway."
+}
+exit 40

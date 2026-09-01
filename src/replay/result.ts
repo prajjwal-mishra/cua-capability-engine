@@ -64,11 +64,37 @@ export type FailureClassification =
   | "precondition_failed"
   | "policy_denied"
   | "recovery_exhausted"
+  /**
+   * The application itself broke, and the artifact says so.
+   *
+   * Kept apart from `unclassified_condition` because the two route to different
+   * people: this one is the bank's software failing, which no amount of
+   * re-recording fixes and which a caller may sensibly retry later.
+   */
+  | "application_error"
+  /**
+   * The screen is one nothing in the artifact describes.
+   *
+   * The honest and least dangerous answer, and deliberately the default. On
+   * this surface, continuing from a screen you cannot identify is how you act
+   * on the wrong member's account.
+   */
   | "unclassified_condition"
   | "surface_error"
   | "budget_exceeded"
   | "input_invalid";
 
+/**
+ * Enough to debug the failure without reproducing it.
+ *
+ * That constraint is the whole design of this payload. These runs happen
+ * unattended against a system nobody can safely re-drive on demand, so "run it
+ * again with the browser open" is not available. Whatever a person needs in
+ * order to understand what happened has to be captured at the moment it
+ * happened — which is also why an escalation and a failure carry the same
+ * context. Which of the two you got is a routing decision, not a reason to know
+ * less.
+ */
 export interface ReplayFailure {
   readonly stepId: string;
   readonly stepIntent: string;
@@ -78,6 +104,16 @@ export interface ReplayFailure {
   /** What was actually on screen. */
   readonly observed: string;
   readonly detail?: string;
+  /**
+   * What a person should do about it, when the classification implies something
+   * specific. Absent when it does not — a guess here is worse than a silence,
+   * because it sends someone down the wrong path with apparent authority.
+   */
+  readonly remediation?: string;
+  /** The screen, in text, redacted. */
+  readonly visibleText?: string;
+  readonly screenshotPath?: string;
+  readonly url?: string;
 }
 
 export type ReplayResult =
@@ -136,6 +172,48 @@ export function exitCodeFor(result: ReplayResult): number {
   }
 }
 
+/**
+ * Whether a run says anything about whether this CAPABILITY works.
+ *
+ * The stability record gates approval, so what it counts decides what approval
+ * means. It has to measure one thing: do this artifact's locators still resolve
+ * and does its flow still execute. Several outcomes look like failures and are
+ * not evidence about that at all —
+ *
+ *   business_outcome  the flow worked perfectly and the bank said no. Counting
+ *                     "member not found" against a capability would mean
+ *                     probing for absent members degrades it.
+ *   application_error the bank's software fell over. Nothing about the
+ *                     recording caused it and no re-recording fixes it.
+ *   policy_denied     the caller did not ask for writes. That is a statement
+ *                     about the invocation, not the artifact.
+ *   escalated         we stopped early on purpose. Indeterminate, so silent.
+ *
+ * — and folding them in would produce a number that drifts downward with
+ * ordinary use, which is worse than having no number, because it looks like
+ * one.
+ */
+export function stabilitySignal(result: ReplayResult): "success" | "failure" | "ignore" {
+  switch (result.status) {
+    case "success":
+      return "success";
+    case "business_outcome":
+      return "success";
+    case "escalated":
+      return "ignore";
+    case "failed":
+      switch (result.error.classification) {
+        case "application_error":
+        case "policy_denied":
+        case "input_invalid":
+        case "surface_error":
+          return "ignore";
+        default:
+          return "failure";
+      }
+  }
+}
+
 export function summarize(result: ReplayResult): string {
   switch (result.status) {
     case "success":
@@ -148,7 +226,35 @@ export function summarize(result: ReplayResult): string {
       return `business outcome — ${result.code}: ${result.message}`;
     case "escalated":
       return `escalated — ${result.reason} (intervention ${result.interventionId})`;
-    case "failed":
-      return `failed at ${result.error.stepId} (${result.error.classification})\n  step:     ${result.error.stepIntent}\n  expected: ${result.error.expected}\n  observed: ${result.error.observed}`;
+    case "failed": {
+      const e = result.error;
+      const lines = [
+        `failed at ${e.stepId} (${e.classification})`,
+        `  step:     ${e.stepIntent}`,
+        `  expected: ${e.expected}`,
+        `  observed: ${e.observed}`,
+      ];
+      if (e.remediation) lines.push(`  what now: ${wrap(e.remediation, 68, 12)}`);
+      if (e.screenshotPath) lines.push(`  screen:   ${e.screenshotPath}`);
+      return lines.join("\n");
+    }
   }
+}
+
+/** Wrap to `width`, indenting continuation lines, so a remediation sentence
+ *  stays readable in a terminal instead of becoming one long line. */
+function wrap(text: string, width: number, indent: number): string {
+  const pad = " ".repeat(indent);
+  const out: string[] = [];
+  let line = "";
+  for (const word of text.split(/\s+/)) {
+    if (line.length + word.length + 1 > width) {
+      out.push(line);
+      line = word;
+    } else {
+      line = line ? `${line} ${word}` : word;
+    }
+  }
+  if (line) out.push(line);
+  return out.join(`\n${pad}`);
 }

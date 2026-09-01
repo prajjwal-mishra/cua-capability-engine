@@ -1,0 +1,6 @@
+capability: member.savings_balance@1.0.0  (draft)
+inputs:     {"memberId":"abc"}
+
+input 'memberId'='abc' does not match ^[0-9]{5}$ — rejected before a browser was launched
+
+exit 1

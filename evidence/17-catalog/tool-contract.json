@@ -1,0 +1,75 @@
+{
+  "capabilityId": "member.savings_balance",
+  "version": "1.0.0",
+  "name": "Read member savings balance",
+  "description": "look up member 10042 and read their current savings balance",
+  "state": "approved",
+  "maxRisk": "read_only",
+  "appId": "legacy-cu",
+  "vendorProduct": "corevantage-backoffice",
+  "stability": {
+    "runs": 11,
+    "successes": 11,
+    "rate": 1
+  },
+  "stabilityByTenant": {
+    "variant:variant-b": {
+      "runs": 1,
+      "successes": 0,
+      "rate": 0
+    },
+    "summit-fcu": {
+      "runs": 1,
+      "successes": 1,
+      "rate": 1
+    }
+  },
+  "tool": {
+    "name": "member.savings_balance",
+    "description": "look up member 10042 and read their current savings balance",
+    "inputSchema": {
+      "type": "object",
+      "properties": {
+        "memberId": {
+          "type": "string",
+          "pattern": "^[0-9]{5}$",
+          "description": "The member's identifier as printed on their statement."
+        }
+      },
+      "required": [
+        "memberId"
+      ],
+      "additionalProperties": false
+    },
+    "outputSchema": {
+      "type": "object",
+      "properties": {
+        "savings_balance": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "outcomes": [
+    {
+      "code": "member_not_found",
+      "severity": "business",
+      "message": "No member matches the supplied identifier."
+    },
+    {
+      "code": "permission_denied",
+      "severity": "business",
+      "message": "The operator is not authorized to view this member record."
+    },
+    {
+      "code": "validation_rejected",
+      "severity": "business",
+      "message": "The application rejected the supplied input."
+    },
+    {
+      "code": "deposit_below_minimum",
+      "severity": "business",
+      "message": "The initial deposit is below the product minimum."
+    }
+  ]
+}

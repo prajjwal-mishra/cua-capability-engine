@@ -1,0 +1,1 @@
+cua replay --capability member.savings_balance --input memberId=99999

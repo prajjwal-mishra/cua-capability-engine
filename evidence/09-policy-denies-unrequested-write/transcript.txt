@@ -1,0 +1,18 @@
+capability: member.open_subaccount@1.0.0  (draft)
+inputs:     {"memberId":"10042","nickname":"Vacation","initialDeposit":"250.00","accountKind":"Certificate"}
+
+failed at s4 (policy_denied)
+  step:     Open sub-account creation form for member 10042
+  expected: Open sub-account creation form for member 10042
+  observed: 'Open Sub-Account' writes state; re-run with --allow-writes to permit it
+  what now: writes_not_enabled
+  screen:   screenshots/failure-s4.png
+
+step telemetry:
+  s1   label_anchor         1x  33ms
+  s2   role_name            1x  573ms
+  s3   role_name            1x  593ms
+
+evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-01T10-21-15-521Z-dce1b948
+policy checks: 5
+exit 30

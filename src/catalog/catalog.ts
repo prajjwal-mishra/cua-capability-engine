@@ -20,7 +20,7 @@ import { ArtifactStore } from "../artifact/store.js";
 import { loadAllowlist } from "../policy/allowlist.js";
 import { replayCapability, InputValidationError } from "../replay/executor.js";
 import { openSession } from "../replay/session.js";
-import type { ReplayResult } from "../replay/result.js";
+import { stabilitySignal, type ReplayResult } from "../replay/result.js";
 import { compareVersions } from "../artifact/version.js";
 
 /** What an agent sees when it lists the catalog: contract, not implementation. */
@@ -36,6 +36,12 @@ export interface CatalogEntry {
   readonly appId: string;
   readonly vendorProduct: string;
   readonly stability: { runs: number; successes: number; rate: number | null };
+  /** Per tenant, for the same reason the artifact tracks it that way: a caller
+   *  reusing this somewhere it was not recorded needs that tenant's number, not
+   *  an average across institutions. */
+  readonly stabilityByTenant: Readonly<
+    Record<string, { runs: number; successes: number; rate: number | null }>
+  >;
   readonly tool: ReturnType<typeof toolContract>;
   /** The business outcomes a caller must be prepared to receive. */
   readonly outcomes: readonly { code: string; severity: string; message: string }[];
@@ -43,8 +49,13 @@ export interface CatalogEntry {
 
 export class CapabilityNotInvocable extends Error {}
 
+const rateOf = (r: { runs: number; successes: number }) => ({
+  runs: r.runs,
+  successes: r.successes,
+  rate: r.runs === 0 ? null : r.successes / r.runs,
+});
+
 export function entryFor(artifact: CapabilityArtifact): CatalogEntry {
-  const { runs, successes } = artifact.lifecycle.stability;
   return {
     capabilityId: artifact.capabilityId,
     version: artifact.version,
@@ -54,7 +65,10 @@ export function entryFor(artifact: CapabilityArtifact): CatalogEntry {
     maxRisk: maxRisk(artifact),
     appId: artifact.target.appId,
     vendorProduct: artifact.target.vendorProduct,
-    stability: { runs, successes, rate: runs === 0 ? null : successes / runs },
+    stability: rateOf(artifact.lifecycle.stability),
+    stabilityByTenant: Object.fromEntries(
+      Object.entries(artifact.lifecycle.stabilityByTenant).map(([t, r]) => [t, rateOf(r)]),
+    ),
     tool: toolContract(artifact),
     outcomes: artifact.knownOutcomes
       .filter((o) => o.severity === "business")
@@ -151,10 +165,14 @@ export async function invokeCapability(
       session.evidence,
       { inputs, allowWrites: options.allowWrites === true, tenant: options.tenant },
     );
-    store.recordRun(
-      `${artifact.capabilityId}@${artifact.version}`,
-      result.status === "success",
-    );
+    const signal = stabilitySignal(result);
+    if (signal !== "ignore") {
+      store.recordRun(
+        `${artifact.capabilityId}@${artifact.version}`,
+        signal === "success",
+        options.tenant,
+      );
+    }
     return result;
   } finally {
     await session.close();

@@ -121,19 +121,37 @@ export class ArtifactStore {
     return { artifact: applyOverlay(base, overlay), overlay };
   }
 
-  /** Record a replay outcome against the capability's stability signal. */
-  recordRun(ref: string, success: boolean): void {
+  /**
+   * Record a replay outcome against the capability's stability signal.
+   *
+   * A run for a named tenant counts only towards that tenant. It deliberately
+   * does NOT roll up into the headline figure: the headline is "does this
+   * recording still work where it was recorded", and letting a half-overlaid
+   * tenant drag it down would punish the act of trying a capability somewhere
+   * new — which is the only way to discover what an overlay needs to cover.
+   */
+  recordRun(ref: string, success: boolean, tenant?: string): void {
     const artifact = this.load(ref);
-    const stability = artifact.lifecycle.stability;
+    const { lifecycle } = artifact;
+    const bump = (r: { runs: number; successes: number }) => ({
+      runs: r.runs + 1,
+      successes: r.successes + (success ? 1 : 0),
+      lastVerifiedAt: new Date().toISOString(),
+    });
+
     this.save({
       ...artifact,
       lifecycle: {
-        ...artifact.lifecycle,
-        stability: {
-          runs: stability.runs + 1,
-          successes: stability.successes + (success ? 1 : 0),
-          lastVerifiedAt: new Date().toISOString(),
-        },
+        ...lifecycle,
+        stability: tenant ? lifecycle.stability : bump(lifecycle.stability),
+        stabilityByTenant: tenant
+          ? {
+              ...lifecycle.stabilityByTenant,
+              [tenant]: bump(
+                lifecycle.stabilityByTenant[tenant] ?? { runs: 0, successes: 0 },
+              ),
+            }
+          : lifecycle.stabilityByTenant,
       },
     });
   }

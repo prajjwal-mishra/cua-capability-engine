@@ -1,0 +1,329 @@
+{
+  "capturedAt": "2026-09-01T10:21:10.967Z",
+  "page": {
+    "url": "http://localhost:4000/",
+    "routePattern": "/",
+    "title": "Riverbend Credit Union — Back Office",
+    "frames": [
+      {
+        "framePath": [],
+        "url": "http://localhost:4000/",
+        "routePattern": "/"
+      },
+      {
+        "framePath": [
+          "navFrame"
+        ],
+        "url": "http://localhost:4000/frame/nav",
+        "routePattern": "/frame/nav"
+      },
+      {
+        "framePath": [
+          "contentFrame"
+        ],
+        "url": "http://localhost:4000/frame/results?variant=variant-a&q=10042&branch=",
+        "routePattern": "/frame/results"
+      }
+    ]
+  },
+  "elements": [
+    {
+      "ref": "e1",
+      "role": "cell",
+      "name": "Riverbend Credit Union",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "navFrame"
+      ],
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 180,
+        "height": 44
+      },
+      "ordinal": 0,
+      "roleOrdinal": 0,
+      "nearbyText": {},
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e2",
+      "role": "link",
+      "name": "Member Search",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "navFrame"
+      ],
+      "bounds": {
+        "x": 8,
+        "y": 48,
+        "width": 102,
+        "height": 16
+      },
+      "ordinal": 0,
+      "roleOrdinal": 0,
+      "nearbyText": {
+        "aboveCell": "Riverbend Credit Union"
+      },
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[2]/TD[1]/FONT[1]/A[1]",
+      "tag": "a"
+    },
+    {
+      "ref": "e3",
+      "role": "link",
+      "name": "Reports",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "navFrame"
+      ],
+      "bounds": {
+        "x": 8,
+        "y": 72,
+        "width": 50,
+        "height": 16
+      },
+      "ordinal": 0,
+      "roleOrdinal": 1,
+      "nearbyText": {
+        "aboveCell": "Member Search"
+      },
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[3]/TD[1]/FONT[1]/A[1]",
+      "tag": "a"
+    },
+    {
+      "ref": "e4",
+      "role": "link",
+      "name": "Batch Jobs",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "navFrame"
+      ],
+      "bounds": {
+        "x": 8,
+        "y": 96,
+        "width": 70,
+        "height": 16
+      },
+      "ordinal": 0,
+      "roleOrdinal": 2,
+      "nearbyText": {
+        "aboveCell": "Reports"
+      },
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[4]/TD[1]/FONT[1]/A[1]",
+      "tag": "a"
+    },
+    {
+      "ref": "e5",
+      "role": "cell",
+      "name": "Search Results",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "contentFrame"
+      ],
+      "bounds": {
+        "x": 180,
+        "y": 0,
+        "width": 1100,
+        "height": 28
+      },
+      "ordinal": 0,
+      "roleOrdinal": 0,
+      "nearbyText": {},
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e6",
+      "role": "cell",
+      "name": "Results for \"10042\"",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "contentFrame"
+      ],
+      "bounds": {
+        "x": 180,
+        "y": 28,
+        "width": 135,
+        "height": 24
+      },
+      "ordinal": 0,
+      "roleOrdinal": 1,
+      "nearbyText": {},
+      "structuralPath": "BODY[1]/TABLE[2]/TBODY[1]/TR[1]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e7",
+      "role": "columnheader",
+      "name": "Member ID",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "contentFrame"
+      ],
+      "bounds": {
+        "x": 181,
+        "y": 53,
+        "width": 94,
+        "height": 23
+      },
+      "ordinal": 0,
+      "roleOrdinal": 0,
+      "nearbyText": {},
+      "structuralPath": "BODY[1]/TABLE[3]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TH[1]",
+      "tag": "th"
+    },
+    {
+      "ref": "e8",
+      "role": "columnheader",
+      "name": "Name",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "contentFrame"
+      ],
+      "bounds": {
+        "x": 275,
+        "y": 53,
+        "width": 136,
+        "height": 23
+      },
+      "ordinal": 0,
+      "roleOrdinal": 1,
+      "nearbyText": {
+        "leftCell": "Member ID",
+        "precedingText": "Member ID"
+      },
+      "structuralPath": "BODY[1]/TABLE[3]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TH[2]",
+      "tag": "th"
+    },
+    {
+      "ref": "e9",
+      "role": "columnheader",
+      "name": "Branch",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "contentFrame"
+      ],
+      "bounds": {
+        "x": 411,
+        "y": 53,
+        "width": 114,
+        "height": 23
+      },
+      "ordinal": 0,
+      "roleOrdinal": 2,
+      "nearbyText": {
+        "leftCell": "Name",
+        "precedingText": "Name"
+      },
+      "structuralPath": "BODY[1]/TABLE[3]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TH[3]",
+      "tag": "th"
+    },
+    {
+      "ref": "e10",
+      "role": "link",
+      "name": "10042",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "contentFrame"
+      ],
+      "bounds": {
+        "x": 187,
+        "y": 79,
+        "width": 41,
+        "height": 16
+      },
+      "ordinal": 0,
+      "roleOrdinal": 0,
+      "nearbyText": {
+        "aboveCell": "Member ID",
+        "columnHeader": "Member ID"
+      },
+      "structuralPath": "BODY[1]/TABLE[3]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[2]/TD[1]/FONT[1]/A[1]",
+      "tag": "a"
+    },
+    {
+      "ref": "e11",
+      "role": "cell",
+      "name": "Vantreight, Marisol",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "contentFrame"
+      ],
+      "bounds": {
+        "x": 275,
+        "y": 76,
+        "width": 136,
+        "height": 23
+      },
+      "ordinal": 0,
+      "roleOrdinal": 2,
+      "nearbyText": {
+        "leftCell": "10042",
+        "aboveCell": "Name",
+        "columnHeader": "Name",
+        "rowKey": "10042"
+      },
+      "structuralPath": "BODY[1]/TABLE[3]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[2]/TD[2]",
+      "tag": "td"
+    },
+    {
+      "ref": "e12",
+      "role": "cell",
+      "name": "Riverbend Main",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "contentFrame"
+      ],
+      "bounds": {
+        "x": 411,
+        "y": 76,
+        "width": 114,
+        "height": 23
+      },
+      "ordinal": 0,
+      "roleOrdinal": 3,
+      "nearbyText": {
+        "leftCell": "Vantreight, Marisol",
+        "aboveCell": "Branch",
+        "columnHeader": "Branch",
+        "rowKey": "10042"
+      },
+      "structuralPath": "BODY[1]/TABLE[3]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[2]/TD[3]",
+      "tag": "td"
+    },
+    {
+      "ref": "e13",
+      "role": "link",
+      "name": "New Search",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "contentFrame"
+      ],
+      "bounds": {
+        "x": 184,
+        "y": 103,
+        "width": 78,
+        "height": 16
+      },
+      "ordinal": 0,
+      "roleOrdinal": 1,
+      "nearbyText": {},
+      "structuralPath": "BODY[1]/TABLE[4]/TBODY[1]/TR[1]/TD[1]/FONT[1]/A[1]",
+      "tag": "a"
+    }
+  ]
+}

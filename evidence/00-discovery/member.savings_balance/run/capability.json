@@ -1,0 +1,529 @@
+{
+  "schemaVersion": "1.0.0",
+  "capabilityId": "member.savings_balance",
+  "version": "1.0.0",
+  "name": "Read member savings balance",
+  "description": "look up member 10042 and read their current savings balance",
+  "provenance": {
+    "discoveredBy": "openai/gpt-oss-120b",
+    "runId": "discover-2026-08-31T06-57-09-488Z-878ceaef",
+    "recordedAt": "2026-08-31T06:57:25.348Z",
+    "gitSha": "2b5129c",
+    "surfaceType": "legacy-web",
+    "evidenceRef": "evidence/discovery/discover-2026-08-31T06-57-09-488Z-878ceaef",
+    "recoveryStepsDropped": [
+      "maintenance_notice: \"Acknowledge system notice to access member details\""
+    ]
+  },
+  "target": {
+    "surfaceType": "legacy-web",
+    "appId": "legacy-cu",
+    "vendorProduct": "corevantage-backoffice",
+    "entryPoint": "/frame/search"
+  },
+  "inputs": [
+    {
+      "name": "memberId",
+      "jsonSchema": {
+        "type": "string",
+        "pattern": "^[0-9]{5}$"
+      },
+      "required": true,
+      "sensitivity": "internal",
+      "example": "10042",
+      "description": "The member's identifier as printed on their statement."
+    }
+  ],
+  "outputs": [
+    {
+      "name": "savings_balance",
+      "jsonSchema": {
+        "type": "string"
+      },
+      "required": true,
+      "extraction": {
+        "descriptor": {
+          "intent": "the savings balance value",
+          "role": "cell",
+          "framePath": [
+            "contentFrame",
+            "acctFrame"
+          ],
+          "strategies": [
+            {
+              "kind": "table_cell",
+              "confidence": 0.9,
+              "columnHeader": "Current Balance",
+              "rowKey": "Savings"
+            },
+            {
+              "kind": "label_anchor",
+              "confidence": 0.82,
+              "role": "cell",
+              "labelText": "[REDACTED:account_number]",
+              "relation": "same-row"
+            },
+            {
+              "kind": "frame_role_ordinal",
+              "confidence": 0.4,
+              "role": "cell",
+              "ordinal": 2,
+              "ordinalScope": "role"
+            },
+            {
+              "kind": "structural",
+              "confidence": 0.3,
+              "path": "BODY[1]/TABLE[1]/TBODY[1]/TR[2]/TD[3]"
+            }
+          ]
+        },
+        "parse": {
+          "kind": "currency"
+        }
+      },
+      "sensitivity": "internal"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1",
+      "intent": "Enter the member ID to search for the member",
+      "action": "type",
+      "target": {
+        "intent": "Enter the member ID to search for the member",
+        "role": "textbox",
+        "framePath": [
+          "contentFrame"
+        ],
+        "strategies": [
+          {
+            "kind": "label_anchor",
+            "confidence": 0.82,
+            "role": "textbox",
+            "labelText": "Member ID",
+            "relation": "same-row"
+          },
+          {
+            "kind": "role_name",
+            "confidence": 0.65,
+            "role": "textbox",
+            "name": "Member ID",
+            "match": "exact"
+          },
+          {
+            "kind": "frame_role_ordinal",
+            "confidence": 0.55,
+            "role": "textbox",
+            "name": "Member ID",
+            "ordinal": 0,
+            "ordinalScope": "role_and_name"
+          },
+          {
+            "kind": "frame_role_ordinal",
+            "confidence": 0.4,
+            "role": "textbox",
+            "ordinal": 0,
+            "ordinalScope": "role"
+          },
+          {
+            "kind": "structural",
+            "confidence": 0.3,
+            "path": "TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[2]/TD[2]/INPUT[1]"
+          }
+        ]
+      },
+      "value": {
+        "$param": "memberId"
+      },
+      "waitPolicy": {
+        "strategy": "settled",
+        "timeoutMs": 10000
+      },
+      "retryPolicy": {
+        "maxAttempts": 3,
+        "backoffMs": 750
+      },
+      "risk": "read_only",
+      "onCondition": []
+    },
+    {
+      "id": "s2",
+      "intent": "Click Search to look up member 10042",
+      "action": "click",
+      "target": {
+        "intent": "Click Search to look up member 10042",
+        "role": "button",
+        "framePath": [
+          "contentFrame"
+        ],
+        "strategies": [
+          {
+            "kind": "role_name",
+            "confidence": 0.9,
+            "role": "button",
+            "name": "Search",
+            "match": "exact"
+          },
+          {
+            "kind": "frame_role_ordinal",
+            "confidence": 0.55,
+            "role": "button",
+            "name": "Search",
+            "ordinal": 0,
+            "ordinalScope": "role_and_name"
+          },
+          {
+            "kind": "frame_role_ordinal",
+            "confidence": 0.4,
+            "role": "button",
+            "ordinal": 0,
+            "ordinalScope": "role"
+          },
+          {
+            "kind": "structural",
+            "confidence": 0.3,
+            "path": "TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[4]/TD[2]/INPUT[1]"
+          }
+        ]
+      },
+      "checkpoint": {
+        "all": [
+          {
+            "type": "routeMatches",
+            "pattern": "/frame/results",
+            "framePath": [
+              "contentFrame"
+            ]
+          }
+        ],
+        "describe": "the contentFrame frame is at /frame/results"
+      },
+      "waitPolicy": {
+        "strategy": "conditionMet",
+        "timeoutMs": 10000
+      },
+      "retryPolicy": {
+        "maxAttempts": 3,
+        "backoffMs": 750
+      },
+      "risk": "read_only",
+      "onCondition": []
+    },
+    {
+      "id": "s3",
+      "intent": "Open member detail page for member 10042",
+      "action": "click",
+      "target": {
+        "intent": "Open member detail page for member 10042",
+        "role": "link",
+        "framePath": [
+          "contentFrame"
+        ],
+        "strategies": [
+          {
+            "kind": "role_name",
+            "confidence": 0.88,
+            "role": "link",
+            "name": "{{param:memberId}}",
+            "match": "exact"
+          },
+          {
+            "kind": "label_anchor",
+            "confidence": 0.72,
+            "role": "link",
+            "labelText": "Member ID",
+            "relation": "same-column"
+          },
+          {
+            "kind": "frame_role_ordinal",
+            "confidence": 0.55,
+            "role": "link",
+            "name": "{{param:memberId}}",
+            "ordinal": 0,
+            "ordinalScope": "role_and_name"
+          },
+          {
+            "kind": "frame_role_ordinal",
+            "confidence": 0.4,
+            "role": "link",
+            "ordinal": 0,
+            "ordinalScope": "role"
+          },
+          {
+            "kind": "structural",
+            "confidence": 0.3,
+            "path": "BODY[1]/TABLE[3]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[2]/TD[1]/FONT[1]/A[1]"
+          }
+        ]
+      },
+      "checkpoint": {
+        "all": [
+          {
+            "type": "routeMatches",
+            "pattern": "/frame/member/:memberId",
+            "framePath": [
+              "contentFrame"
+            ]
+          }
+        ],
+        "describe": "the contentFrame frame is at /frame/member/:memberId"
+      },
+      "waitPolicy": {
+        "strategy": "conditionMet",
+        "timeoutMs": 10000
+      },
+      "retryPolicy": {
+        "maxAttempts": 3,
+        "backoffMs": 750
+      },
+      "risk": "read_only",
+      "onCondition": []
+    }
+  ],
+  "successCondition": {
+    "all": [
+      {
+        "type": "elementPresent",
+        "role": "cell",
+        "name": "Savings",
+        "framePath": [
+          "contentFrame",
+          "acctFrame"
+        ]
+      }
+    ],
+    "describe": "the Savings row is present in the results grid"
+  },
+  "knownOutcomes": [
+    {
+      "code": "member_not_found",
+      "detector": {
+        "all": [
+          {
+            "type": "textPresent",
+            "text": "No member records match"
+          }
+        ],
+        "describe": "the results screen reports no matching records"
+      },
+      "severity": "business",
+      "message": "No member matches the supplied identifier.",
+      "mapsTo": "NOT_FOUND"
+    },
+    {
+      "code": "permission_denied",
+      "detector": {
+        "all": [
+          {
+            "type": "textPresent",
+            "text": "SEC-4031"
+          }
+        ],
+        "describe": "the access-denied screen with its reference code"
+      },
+      "severity": "business",
+      "message": "The operator is not authorized to view this member record.",
+      "mapsTo": "FORBIDDEN"
+    },
+    {
+      "code": "validation_rejected",
+      "detector": {
+        "all": [
+          {
+            "type": "textPresent",
+            "text": "is required"
+          }
+        ],
+        "describe": "a required-field validation message is showing"
+      },
+      "severity": "business",
+      "message": "The application rejected the supplied input.",
+      "mapsTo": "INVALID_INPUT"
+    },
+    {
+      "code": "deposit_below_minimum",
+      "detector": {
+        "all": [
+          {
+            "type": "textPresent",
+            "text": "at least $25.00"
+          }
+        ],
+        "describe": "the deposit minimum validation message is showing"
+      },
+      "severity": "business",
+      "message": "The initial deposit is below the product minimum.",
+      "mapsTo": "INVALID_INPUT"
+    },
+    {
+      "code": "session_expired",
+      "detector": {
+        "all": [
+          {
+            "type": "textPresent",
+            "text": "session has timed out"
+          }
+        ],
+        "describe": "the login interstitial replaced the requested page"
+      },
+      "severity": "recoverable",
+      "message": "The application session timed out and was re-established."
+    },
+    {
+      "code": "maintenance_notice",
+      "detector": {
+        "all": [
+          {
+            "type": "textPresent",
+            "text": "Scheduled maintenance window"
+          }
+        ],
+        "describe": "the maintenance interstitial is showing"
+      },
+      "severity": "recoverable",
+      "message": "A scheduled-maintenance notice interrupted the flow and was acknowledged."
+    },
+    {
+      "code": "service_unavailable",
+      "detector": {
+        "all": [
+          {
+            "type": "textPresent",
+            "text": "Service Unavailable"
+          }
+        ],
+        "describe": "the host returned a 503 page"
+      },
+      "severity": "recoverable",
+      "message": "The core banking host was briefly unavailable; the step was retried."
+    },
+    {
+      "code": "application_error",
+      "detector": {
+        "all": [
+          {
+            "type": "textPresent",
+            "text": "Server Error in"
+          }
+        ],
+        "describe": "the ASP.NET unhandled-exception page"
+      },
+      "severity": "hard",
+      "message": "The application raised an unhandled server error."
+    }
+  ],
+  "recoveries": [
+    {
+      "code": "session_expired",
+      "detector": {
+        "all": [
+          {
+            "type": "textPresent",
+            "text": "session has timed out"
+          }
+        ]
+      },
+      "actions": [
+        {
+          "kind": "click",
+          "target": {
+            "intent": "resume the timed-out session",
+            "role": "button",
+            "framePath": [
+              "contentFrame"
+            ],
+            "strategies": [
+              {
+                "kind": "role_name",
+                "confidence": 0.9,
+                "role": "button",
+                "name": "Resume Session",
+                "match": "exact"
+              }
+            ]
+          }
+        },
+        {
+          "kind": "retryStep"
+        }
+      ],
+      "maxAttempts": 2,
+      "describe": "Re-authenticate the service operator on the interstitial, then retry the step that was interrupted."
+    },
+    {
+      "code": "maintenance_notice",
+      "detector": {
+        "all": [
+          {
+            "type": "textPresent",
+            "text": "Scheduled maintenance window"
+          }
+        ]
+      },
+      "actions": [
+        {
+          "kind": "click",
+          "target": {
+            "intent": "acknowledge the maintenance notice",
+            "role": "button",
+            "framePath": [
+              "contentFrame"
+            ],
+            "strategies": [
+              {
+                "kind": "role_name",
+                "confidence": 0.9,
+                "role": "button",
+                "name": "Acknowledge",
+                "match": "exact"
+              }
+            ]
+          }
+        },
+        {
+          "kind": "retryStep"
+        }
+      ],
+      "maxAttempts": 2,
+      "describe": "Acknowledge the maintenance notice and retry the interrupted step."
+    },
+    {
+      "code": "service_unavailable",
+      "detector": {
+        "all": [
+          {
+            "type": "textPresent",
+            "text": "Service Unavailable"
+          }
+        ]
+      },
+      "actions": [
+        {
+          "kind": "wait",
+          "ms": 1200
+        },
+        {
+          "kind": "reload",
+          "framePath": [
+            "contentFrame"
+          ]
+        }
+      ],
+      "maxAttempts": 3,
+      "describe": "Back off briefly and re-request the failing page. The 503 body contains none of the step's controls, so the request is retried rather than the click repeated; this host succeeds on the second attempt."
+    }
+  ],
+  "policy": {
+    "allowlistRef": "config/allowlist.demo-cu.json",
+    "requiresApprovalForRisk": "irreversible",
+    "maxSteps": 40,
+    "maxDurationMs": 120000
+  },
+  "lifecycle": {
+    "state": "draft",
+    "stability": {
+      "runs": 0,
+      "successes": 0
+    }
+  }
+}

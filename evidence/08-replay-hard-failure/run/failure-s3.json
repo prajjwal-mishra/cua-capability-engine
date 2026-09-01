@@ -1,0 +1,14 @@
+{
+  "error": {
+    "stepId": "s3",
+    "stepIntent": "Open member detail page for member 10042",
+    "classification": "application_error",
+    "expected": "Open member detail page for member 10042, without the application failing",
+    "observed": "The application raised an unhandled server error. (application_error)",
+    "remediation": "the target application reported a fault, so this is not a defect in the capability. Retrying later is reasonable; re-recording is not.",
+    "visibleText": "[navFrame=/frame/nav contentFrame=/frame/member/:id] Riverbend Credit Union | Member Search | Reports | Batch Jobs | Server Error in '/' Application. Object reference not set to an instance of an object. Correlation Id: c1920e2d",
+    "screenshotPath": "screenshots/failure-s3.png",
+    "url": "http://localhost:4000/"
+  },
+  "screen": "[navFrame=/frame/nav contentFrame=/frame/member/:id] Riverbend Credit Union | Member Search | Reports | Batch Jobs | Server Error in '/' Application. Object reference not set to an instance of an object. Correlation Id: c1920e2d"
+}

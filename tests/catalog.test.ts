@@ -112,6 +112,26 @@ describe("what an agent can discover", () => {
     store.recordRun(`${ID}@1.0.0`, false);
     expect(entryFor(store.load(ID)).stability).toEqual({ runs: 2, successes: 1, rate: 0.5 });
   });
+
+  it("keeps each tenant's track record separate from the recording's own", () => {
+    put();
+    store.recordRun(`${ID}@1.0.0`, true);
+    store.recordRun(`${ID}@1.0.0`, true);
+    // Aiming the same capability at an institution whose overlay is unfinished.
+    store.recordRun(`${ID}@1.0.0`, false, "summit-fcu");
+    store.recordRun(`${ID}@1.0.0`, false, "summit-fcu");
+
+    const entry = entryFor(store.load(ID));
+    // The headline still reflects where it was recorded. Otherwise probing a
+    // new tenant — the only way to find out what needs overlaying — would
+    // damage the capability's standing everywhere it already works.
+    expect(entry.stability).toMatchObject({ runs: 2, successes: 2, rate: 1 });
+    expect(entry.stabilityByTenant["summit-fcu"]).toMatchObject({
+      runs: 2,
+      successes: 0,
+      rate: 0,
+    });
+  });
 });
 
 /* ------------------------------------------------------------- refusals --- */

@@ -1,0 +1,6 @@
+capability: member.open_subaccount@1.0.0  (draft)
+inputs:     {"memberId":"10042","nickname":"ab","initialDeposit":"250.00","accountKind":"Certificate"}
+
+input 'nickname' must be at least 3 characters
+
+exit 1

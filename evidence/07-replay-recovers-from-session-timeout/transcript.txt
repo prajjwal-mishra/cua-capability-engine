@@ -1,0 +1,13 @@
+capability: member.savings_balance@1.0.0  (draft)
+inputs:     {"memberId":"10042"}
+
+success — savings_balance=$8,241.17
+
+step telemetry:
+  s1   label_anchor         1x  61ms
+  s2   role_name            1x  560ms
+  s3   role_name            1x  1155ms  recovered:session_expired
+
+evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-01T10-21-09-769Z-61aff693
+policy checks: 6
+exit 0

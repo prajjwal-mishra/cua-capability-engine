@@ -1,0 +1,92 @@
+{
+  "interventionId": "int-32873eb5",
+  "runId": "replay-2026-09-01T10-21-29-384Z-ab426ded",
+  "capability": "member.open_subaccount@1.0.0",
+  "goal": "open a new sub-account for member 10042 and reach the confirmation screen",
+  "stepId": "s8b",
+  "stepIntent": "Commit the sub-account request on Summit's review screen",
+  "reason": "'Commit Sub-Account' is irreversible and requires human confirmation",
+  "classification": "policy_denied",
+  "createdAt": "2026-09-01T10:21:33.880Z",
+  "flow": [
+    {
+      "id": "s1",
+      "intent": "Enter the member ID to locate the member before creating a sub-account",
+      "risk": "read_only"
+    },
+    {
+      "id": "s2",
+      "intent": "Click Search to locate member 10042 and proceed to member details",
+      "risk": "read_only"
+    },
+    {
+      "id": "s3",
+      "intent": "Open member 10042 details to access sub-account creation",
+      "risk": "read_only"
+    },
+    {
+      "id": "s4",
+      "intent": "Open sub-account creation form for member 10042",
+      "risk": "reversible_write"
+    },
+    {
+      "id": "s5",
+      "intent": "Select the product type for the new sub-account",
+      "risk": "read_only"
+    },
+    {
+      "id": "s6",
+      "intent": "Enter nickname for the new sub-account",
+      "risk": "read_only"
+    },
+    {
+      "id": "s7",
+      "intent": "Enter the opening deposit amount for the new sub-account",
+      "risk": "read_only"
+    },
+    {
+      "id": "s8",
+      "intent": "Submit the sub-account creation form to reach the confirmation screen",
+      "risk": "reversible_write"
+    },
+    {
+      "id": "s8b",
+      "intent": "Commit the sub-account request on Summit's review screen",
+      "risk": "irreversible"
+    }
+  ],
+  "snapshotPath": "snapshots/intervention-s8b.json",
+  "screenshotPath": "screenshots/intervention-s8b.png",
+  "visibleText": "[navFrame=/frame/nav contentFrame=/frame/subaccount/:id] Riverbend Credit Union | Member Search | Reports | Batch Jobs | Review Request | Please review the details below before committing. | Field | Value | Account Type | Certificate | Nickname | Vacation | Initial Deposit | 250.00",
+  "resumeToken": "e022c99d-a2aa-4065-afa3-9cbb93972daf",
+  "status": "resolved",
+  "resolution": {
+    "resolvedAt": "2026-09-01T10:21:34.875Z",
+    "note": "Reviewed the sub-account request against the member record and committed it manually. Automation may verify and finish.",
+    "resumeAtStepId": "$verify",
+    "capturedActions": [
+      {
+        "at": "2026-09-01T10:21:34.350Z",
+        "kind": "click",
+        "describe": "clicked the button \"Commit Sub-Account\"",
+        "role": "button",
+        "name": "Commit Sub-Account",
+        "framePath": [
+          "contentFrame"
+        ],
+        "url": "http://localhost:4000/frame/subaccount/10042"
+      },
+      {
+        "at": "2026-09-01T10:21:34.351Z",
+        "kind": "submit",
+        "describe": "submitted the form \"/frame/subaccount/10042/commit\"",
+        "role": "form",
+        "name": "/frame/subaccount/10042/commit",
+        "framePath": [
+          "contentFrame"
+        ],
+        "url": "http://localhost:4000/frame/subaccount/10042"
+      }
+    ]
+  }
+}

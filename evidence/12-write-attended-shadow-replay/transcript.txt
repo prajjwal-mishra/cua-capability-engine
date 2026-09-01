@@ -1,0 +1,18 @@
+capability: member.open_subaccount@1.0.0  (draft)
+inputs:     {"memberId":"10042","nickname":"Vacation","initialDeposit":"250.00","accountKind":"Certificate"}
+
+success — no outputs
+
+step telemetry:
+  s1   label_anchor         1x  34ms
+  s2   role_name            1x  568ms
+  s3   role_name            1x  600ms
+  s4   role_name            1x  559ms
+  s5   label_anchor         1x  1524ms
+  s6   label_anchor         1x  13ms
+  s7   label_anchor         1x  9ms
+  s8   role_name            1x  583ms
+
+evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-01T10-21-23-105Z-25334317
+policy checks: 9
+exit 0

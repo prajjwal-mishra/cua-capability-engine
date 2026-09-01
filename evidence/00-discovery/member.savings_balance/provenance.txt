@@ -1,0 +1,4 @@
+capability: member.savings_balance
+model:      openai/gpt-oss-120b
+run:        discover-2026-08-31T06-57-09-488Z-878ceaef
+recorded:   2026-08-31T06:57:25.348Z

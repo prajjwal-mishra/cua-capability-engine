@@ -293,15 +293,27 @@ export const TargetSchema = z.object({
   entryPoint: z.string(),
 });
 
+const StabilityRecordSchema = z.object({
+  runs: z.number().int().min(0).default(0),
+  successes: z.number().int().min(0).default(0),
+  lastVerifiedAt: z.string().optional(),
+});
+
 export const LifecycleSchema = z.object({
   state: z.enum(["draft", "approved", "deprecated"]).default("draft"),
-  stability: z
-    .object({
-      runs: z.number().int().min(0).default(0),
-      successes: z.number().int().min(0).default(0),
-      lastVerifiedAt: z.string().optional(),
-    })
-    .default({ runs: 0, successes: 0 }),
+  /** Runs against the tenant this capability was recorded for. */
+  stability: StabilityRecordSchema.default({ runs: 0, successes: 0 }),
+  /**
+   * The same signal, per tenant.
+   *
+   * One global number is the wrong shape once a capability is reused. A flow
+   * can be rock-solid at the institution it was recorded against and broken at
+   * the one whose overlay is half-finished, and averaging those together hides
+   * the only fact anybody needed: WHERE it is broken. It also means probing a
+   * capability against a new tenant — the thing you must do to find out what
+   * needs overlaying — silently degrades its reputation everywhere else.
+   */
+  stabilityByTenant: z.record(z.string(), StabilityRecordSchema).default({}),
 });
 
 export const CapabilityPolicySchema = z.object({

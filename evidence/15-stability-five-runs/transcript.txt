@@ -1,0 +1,12 @@
+capability: member.savings_balance@1.0.0  (draft)
+inputs:     {"memberId":"10042"}
+  run 1/5: success
+  run 2/5: success
+  run 3/5: success
+  run 4/5: success
+  run 5/5: success
+
+stability: 5/5 succeeded (100.0%)
+breakdown: {"success":5}
+drift:     none — every step resolved on its recorded top strategy
+exit 0

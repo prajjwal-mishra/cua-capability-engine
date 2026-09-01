@@ -14,9 +14,26 @@
  */
 
 import { spawn } from "node:child_process";
+import { createServer } from "node:net";
 
-const CONSOLE = `http://localhost:${process.env.OPERATOR_PORT ?? 4100}`;
 const TARGET_CONTROL = "Commit Sub-Account";
+
+/** Ask the OS for a port nobody is using, rather than hoping 4100 is free. A
+ *  console abandoned by an earlier run holds its port, and this script is meant
+ *  to be re-runnable without cleanup. */
+async function freePort(): Promise<number> {
+  return new Promise((resolve, reject) => {
+    const probe = createServer();
+    probe.once("error", reject);
+    probe.listen(0, () => {
+      const address = probe.address();
+      const port = typeof address === "object" && address ? address.port : 0;
+      probe.close(() => resolve(port));
+    });
+  });
+}
+
+let CONSOLE = "";
 
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
@@ -34,9 +51,11 @@ async function waitForConsole(timeoutMs = 60_000): Promise<void> {
   while (Date.now() < deadline) {
     try {
       const state = await api<{ leaseOwner: string }>("/api/live/state");
-      // The console only reports an operator-held lease once the executor has
-      // escalated and released it. Acting before that is the race this avoids.
-      if (state.leaseOwner === "operator") return;
+      // `awaiting_operator` is the signal: automation has escalated and let go
+      // of the session, and nobody has claimed it. Waiting for `operator`
+      // instead would deadlock, because THIS script is the one who makes that
+      // true. Acting before it is the race the wait exists to avoid.
+      if (state.leaseOwner === "awaiting_operator" || state.leaseOwner === "operator") return;
     } catch {
       // not listening yet
     }
@@ -46,9 +65,14 @@ async function waitForConsole(timeoutMs = 60_000): Promise<void> {
 }
 
 async function main(): Promise<void> {
+  const port = Number(process.env.OPERATOR_PORT ?? (await freePort()));
+  CONSOLE = `http://127.0.0.1:${port}`;
+
   const args = [
     "src/cli.ts",
     "replay",
+    "--console-port",
+    String(port),
     "--capability",
     "member.open_subaccount",
     "--tenant",
@@ -70,7 +94,7 @@ async function main(): Promise<void> {
   const exited = new Promise<number>((resolve) => child.on("exit", (code) => resolve(code ?? 0)));
 
   await waitForConsole();
-  console.log(`\n[operator-demo] console is live and holds the lease — taking control`);
+  console.log(`\n[operator-demo] the run escalated and released the session — taking control`);
   await api("/api/live/take", { method: "POST" });
 
   const snapshot = await api<{

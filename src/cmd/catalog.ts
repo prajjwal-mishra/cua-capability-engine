@@ -67,6 +67,11 @@ function list(): void {
   console.log(`describe one:  cua catalog describe ${entries[0]!.capabilityId}`);
 }
 
+const stabilityLine = (r: { runs: number; successes: number; rate: number | null }): string =>
+  r.rate === null
+    ? "never replayed"
+    : `${r.successes}/${r.runs} replays succeeded (${(r.rate * 100).toFixed(0)}%)`;
+
 /* ------------------------------------------------------------- describe --- */
 
 function describe(args: Args): void {
@@ -87,6 +92,10 @@ function describe(args: Args): void {
   console.log(`entry:      ${artifact.target.entryPoint}`);
   console.log(`discovered: ${artifact.provenance.discoveredBy} on ${artifact.provenance.recordedAt}`);
   console.log(`risk:       ${maxRisk(artifact)} (highest of any step)`);
+  console.log(`stability:  ${stabilityLine(e.stability)} where it was recorded`);
+  for (const [name, rec] of Object.entries(e.stabilityByTenant)) {
+    console.log(`            ${stabilityLine(rec)} at ${name}`);
+  }
 
   if (overlay) {
     console.log(`\noverlay ${overlay.overlayId} for tenant ${overlay.tenant}:`);
@@ -180,17 +189,41 @@ function agentView(result: ReplayResult): Record<string, unknown> {
 
 /* ------------------------------------------------------------ lifecycle --- */
 
+/** Low, and honestly so: a real deployment would want dozens of runs across
+ *  days and tenants. Five is enough to make the gate real in a demo without
+ *  pretending the number is the interesting part. */
+const MIN_RUNS_FOR_APPROVAL = 5;
+
 function setState(args: Args, state: "approved" | "deprecated"): void {
   const ref = requireRef(args, state === "approved" ? "approve" : "deprecate");
   const store = new ArtifactStore();
   const artifact = store.load(ref);
 
   const { runs, successes } = artifact.lifecycle.stability;
-  if (state === "approved" && runs === 0) {
-    throw new Error(
-      `${artifact.capabilityId}@${artifact.version} has never been replayed. Approve it only after a ` +
-        `shadow replay proves it works: cua replay --capability ${artifact.capabilityId} --stability 5`,
-    );
+  if (state === "approved") {
+    // Approval is what lets an agent run this unattended against a system of
+    // record, so it is gated on evidence rather than on someone's judgement of
+    // the diff. Two conditions, and both matter:
+    //
+    //   enough runs   — one green run says nothing about a locator ladder that
+    //                   degrades only when the page is slow
+    //   no red runs   — a capability that fails one time in five will fail
+    //                   unattended, at night, on a real member's account. There
+    //                   is no useful sense in which that is "mostly working".
+    const reasons: string[] = [];
+    if (runs < MIN_RUNS_FOR_APPROVAL) {
+      reasons.push(`only ${runs} recorded replay(s); at least ${MIN_RUNS_FOR_APPROVAL} are needed`);
+    }
+    if (runs > 0 && successes < runs) {
+      reasons.push(`${runs - successes} of ${runs} recorded replays did not succeed`);
+    }
+    if (reasons.length > 0) {
+      throw new Error(
+        `${artifact.capabilityId}@${artifact.version} has not earned approval: ${reasons.join("; ")}.\n` +
+          `Prove it with a shadow replay: cua replay --capability ${artifact.capabilityId} --stability ${MIN_RUNS_FOR_APPROVAL}` +
+          (maxRisk(artifact) === "read_only" ? "" : " --allow-writes --attended"),
+      );
+    }
   }
 
   store.save(

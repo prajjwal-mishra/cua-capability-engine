@@ -1,0 +1,14 @@
+{
+  "error": {
+    "stepId": "s4",
+    "stepIntent": "Open sub-account creation form for member 10042",
+    "classification": "policy_denied",
+    "expected": "Open sub-account creation form for member 10042",
+    "observed": "'Open Sub-Account' writes state; re-run with --allow-writes to permit it",
+    "remediation": "writes_not_enabled",
+    "visibleText": "[navFrame=/frame/nav contentFrame=/frame/member/:id contentFrame>acctFrame=/frame/accounts/:id] Riverbend Credit Union | Member Search | Reports | Batch Jobs | Member Detail — Marisol Vantreight | Member ID | 10042 | Name | Vantreight, Marisol | Branch | Riverbend Main | Member Since | [REDACTED:dob] | Accounts",
+    "screenshotPath": "screenshots/failure-s4.png",
+    "url": "http://localhost:4000/"
+  },
+  "screen": "[navFrame=/frame/nav contentFrame=/frame/member/:id contentFrame>acctFrame=/frame/accounts/:id] Riverbend Credit Union | Member Search | Reports | Batch Jobs | Member Detail — Marisol Vantreight | Member ID | 10042 | Name | Vantreight, Marisol | Branch | Riverbend Main | Member Since | [REDACTED:dob] | Accounts"
+}

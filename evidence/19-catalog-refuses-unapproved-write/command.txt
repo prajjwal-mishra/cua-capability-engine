@@ -1,0 +1,1 @@
+cua catalog invoke member.open_subaccount --args {"memberId":"10042","nickname":"Vacation","initialDeposit":"250.00","accountKind":"Certificate"}
