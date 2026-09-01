@@ -91,6 +91,9 @@ export interface InvokeOptions {
    *  recording is safe to run against a system of record. */
   readonly allowDraft?: boolean;
   readonly headless?: boolean;
+  /** Where capabilities are read from. Injectable so a test — or a process
+   *  hosting more than one catalogue — is not forced to write into the repo. */
+  readonly store?: ArtifactStore;
 }
 
 /**
@@ -107,7 +110,7 @@ export async function invokeCapability(
   args: Readonly<Record<string, unknown>>,
   options: InvokeOptions = {},
 ): Promise<ReplayResult> {
-  const store = new ArtifactStore();
+  const store = options.store ?? new ArtifactStore();
   const { artifact } = store.resolve(ref, options.tenant);
 
   if (artifact.lifecycle.state !== "approved" && options.allowDraft !== true) {

@@ -66,6 +66,8 @@ export const OverlaySchema = z.object({
 });
 
 export type Overlay = z.infer<typeof OverlaySchema>;
+/** What an author writes: everything the schema defaults may be left out. */
+export type OverlayInput = z.input<typeof OverlaySchema>;
 
 export class OverlayMismatch extends Error {}
 

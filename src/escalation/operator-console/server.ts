@@ -25,6 +25,7 @@ import { join } from "node:path";
 import type { WebSurface } from "../../surface/web.surface.js";
 import type { Redactor } from "../../policy/redact.js";
 import type { SessionControl } from "../control.js";
+import type { RunLog } from "../../obs/log.js";
 import {
   InterventionQueue,
   listAllInterventions,
@@ -45,6 +46,17 @@ export interface LiveSession {
   readonly redactor: Redactor;
   readonly queue: InterventionQueue;
   readonly intervention: Intervention;
+  /**
+   * The run's log, so the human's actions land in the same audit trail as the
+   * automation's.
+   *
+   * A handoff where the machine's steps are recorded and the human's are not
+   * produces a run record that reads as if the automation did everything —
+   * which is precisely backwards for the actions most worth attributing. These
+   * are written here rather than by the caller so that attribution does not
+   * depend on which caller attached the console.
+   */
+  readonly log?: RunLog;
 }
 
 export interface Handback {
@@ -108,6 +120,28 @@ export async function startOperatorConsole(
     return live;
   };
 
+  /**
+   * A console may only drive a session it has explicitly claimed.
+   *
+   * The lease reading `awaiting_operator` is not enough. That state means
+   * automation has stepped back, which is not the same as a human having
+   * arrived — and acting on the weaker signal would dispatch clicks into a live
+   * banking session with no recorder installed and nothing attributing them to
+   * anyone.
+   */
+  const requireControl = (res: express.Response): LiveSession | undefined => {
+    const session = requireLive(res);
+    if (!session) return undefined;
+    if (session.control.owner !== "operator") {
+      res.status(409).json({
+        error: "take control before acting on the session",
+        leaseOwner: session.control.owner,
+      });
+      return undefined;
+    }
+    return session;
+  };
+
   app.get("/api/live/state", (_req, res) => {
     if (!live) {
       res.json({ leaseOwner: "none", status: "none", captured: [] });
@@ -162,6 +196,12 @@ export async function startOperatorConsole(
   app.post("/api/live/take", async (_req, res) => {
     const session = requireLive(res);
     if (!session) return;
+    // You cannot seize a session automation is still driving. Interrupting a
+    // run mid-action is what the intervention queue is for.
+    if (session.control.owner === "automation") {
+      res.status(409).json({ error: "automation is driving this session; it has not escalated" });
+      return;
+    }
     session.control.transferTo(
       "operator",
       `operator took control for ${session.intervention.interventionId}`,
@@ -176,12 +216,8 @@ export async function startOperatorConsole(
 
   /** Manual action injection, so takeover is real on a headless browser too. */
   app.post("/api/live/act", async (req, res) => {
-    const session = requireLive(res);
+    const session = requireControl(res);
     if (!session) return;
-    if (session.control.owner !== "operator") {
-      res.status(409).json({ error: "take control before acting" });
-      return;
-    }
     const { kind, ref, text } = req.body as { kind: string; ref: string; text?: string };
     try {
       // Dispatched on the RAW surface: the policy gate governs what the
@@ -203,7 +239,9 @@ export async function startOperatorConsole(
 
   /** Hand back: record what happened, return the lease, let the run resume. */
   app.post("/api/live/handback", async (req, res) => {
-    const session = requireLive(res);
+    // Handing back a session you never took would resolve someone else's
+    // intervention and restart the automation under them.
+    const session = requireControl(res);
     if (!session) return;
 
     const captured = await readCaptured(session);
@@ -211,6 +249,34 @@ export async function startOperatorConsole(
     const body = (req.body ?? {}) as { note?: string; resumeAtStepId?: string };
     const note = String(body.note ?? "");
     const resumeAtStepId = body.resumeAtStepId ? String(body.resumeAtStepId) : undefined;
+
+    for (const action of captured) {
+      session.log?.write({
+        phase: "intervention",
+        stepId: session.intervention.stepId,
+        intent: session.intervention.stepIntent,
+        action: `human:${action.kind}`,
+        leaseOwner: "operator",
+        outcome: action.describe,
+        extra: {
+          interventionId: session.intervention.interventionId,
+          role: action.role,
+          name: action.name,
+          framePath: action.framePath,
+          url: action.url,
+          at: action.at,
+        },
+      });
+    }
+    session.log?.write({
+      phase: "intervention",
+      stepId: session.intervention.stepId,
+      intent: session.intervention.stepIntent,
+      action: "handback",
+      leaseOwner: "operator",
+      outcome: `operator returned control after ${captured.length} action(s)`,
+      extra: { interventionId: session.intervention.interventionId, note, resumeAtStepId },
+    });
 
     const current = session.queue.get(session.intervention.interventionId);
     if (current) {

@@ -17,7 +17,18 @@ import { mkdirSync, readFileSync, writeFileSync, existsSync } from "node:fs";
 import { dirname } from "node:path";
 import { randomUUID } from "node:crypto";
 
-export type LeaseOwner = "automation" | "operator";
+/**
+ * Three states, not two.
+ *
+ * `awaiting_operator` is the one that is easy to leave out and expensive to
+ * omit. When automation escalates it must stop acting immediately, but a human
+ * has not arrived yet — and those are different situations. Collapsing them
+ * into "operator" means anything holding a console can dispatch actions into a
+ * live banking session merely because automation stepped back, with no recorder
+ * installed and nothing attributing the actions to anyone. The brief asks for a
+ * way to know who is, OR SHOULD BE, in control; this is that distinction.
+ */
+export type LeaseOwner = "automation" | "awaiting_operator" | "operator";
 
 export interface Lease {
   readonly leaseId: string;

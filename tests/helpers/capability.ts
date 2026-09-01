@@ -25,7 +25,41 @@ export function testAllowlist(origin: string): Allowlist {
   return AllowlistSchema.parse({ ...raw, origins: [origin] });
 }
 
-export function savingsBalanceCapability(variant = "variant-a"): CapabilityArtifact {
+/**
+ * Labels this capability was RECORDED against — deliberately separate from the
+ * variant it is being replayed against.
+ *
+ * Keeping the two independent is what lets a test say either "this capability
+ * has been specialized for this tenant" (labels match the variant) or "it has
+ * not been yet" (labels are the base recording's). Those are different
+ * scenarios, and a fixture that couldn't express both would only ever be
+ * testing one of them.
+ */
+export interface RecordedLabels {
+  readonly memberIdLabel: string;
+  readonly searchButtonLabel: string;
+  readonly savingsRowLabel: string;
+  readonly balanceColumnHeader: string;
+}
+
+export const VARIANT_A_LABELS: RecordedLabels = {
+  memberIdLabel: "Member ID",
+  searchButtonLabel: "Search",
+  savingsRowLabel: "Savings",
+  balanceColumnHeader: "Current Balance",
+};
+
+export const VARIANT_B_LABELS: RecordedLabels = {
+  memberIdLabel: "Member Number",
+  searchButtonLabel: "Find Member",
+  savingsRowLabel: "Share Savings",
+  balanceColumnHeader: "Balance",
+};
+
+export function savingsBalanceCapability(
+  variant = "variant-a",
+  labels: RecordedLabels = VARIANT_A_LABELS,
+): CapabilityArtifact {
   const pack = RecoveryPackSchema.parse(
     JSON.parse(
       readFileSync(join(process.cwd(), "config/recovery-pack.corevantage-backoffice.json"), "utf8"),
@@ -75,8 +109,8 @@ export function savingsBalanceCapability(variant = "variant-a"): CapabilityArtif
               {
                 kind: "table_cell",
                 confidence: 0.9,
-                columnHeader: "Current Balance",
-                rowKey: "Savings",
+                columnHeader: labels.balanceColumnHeader,
+                rowKey: labels.savingsRowLabel,
               },
             ],
           },
@@ -101,14 +135,14 @@ export function savingsBalanceCapability(variant = "variant-a"): CapabilityArtif
               kind: "role_name",
               confidence: 0.65,
               role: "textbox",
-              name: "Member ID",
+              name: labels.memberIdLabel,
               match: "exact",
             },
             {
               kind: "label_anchor",
               confidence: 0.82,
               role: "textbox",
-              labelText: "Member ID",
+              labelText: labels.memberIdLabel,
               relation: "same-row",
             },
             {
@@ -132,7 +166,13 @@ export function savingsBalanceCapability(variant = "variant-a"): CapabilityArtif
           role: "button",
           framePath: ["contentFrame"],
           strategies: [
-            { kind: "role_name", confidence: 0.9, role: "button", name: "Search", match: "exact" },
+            {
+              kind: "role_name",
+              confidence: 0.9,
+              role: "button",
+              name: labels.searchButtonLabel,
+              match: "exact",
+            },
           ],
         },
         checkpoint: {
@@ -179,7 +219,7 @@ export function savingsBalanceCapability(variant = "variant-a"): CapabilityArtif
         {
           type: "elementPresent",
           role: "cell",
-          name: "Savings",
+          name: labels.savingsRowLabel,
           framePath: ["contentFrame", "acctFrame"],
         },
       ],

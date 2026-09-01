@@ -10,7 +10,8 @@ import type { Redactor } from "../policy/redact.js";
 import type { RiskClass } from "../policy/risk.js";
 import type { StrategyKind } from "../locator/descriptor.js";
 
-export type LeaseOwner = "automation" | "operator";
+import type { LeaseOwner } from "../escalation/control.js";
+export type { LeaseOwner };
 
 export interface StepLogRecord {
   readonly ts: string;

@@ -10,7 +10,12 @@
 import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { CapabilityArtifactSchema, type CapabilityArtifact } from "./schema.js";
-import { applyOverlay, OverlaySchema, type Overlay } from "./overlays.js";
+import {
+  applyOverlay,
+  OverlaySchema,
+  type Overlay,
+  type OverlayInput,
+} from "./overlays.js";
 import { compareVersions, latest, parseCapabilityRef } from "./version.js";
 
 export interface StorePaths {
@@ -86,7 +91,10 @@ export class ArtifactStore {
     return join(this.paths.overlays, vendorProduct, tenant, `${capabilityId}.json`);
   }
 
-  saveOverlay(vendorProduct: string, overlay: Overlay): string {
+  /** Takes the schema's INPUT type: an overlay is mostly absences, and making
+   *  a caller spell out five empty arrays to patch one selector is how overlay
+   *  files stop being small enough to review. */
+  saveOverlay(vendorProduct: string, overlay: OverlayInput): string {
     const parsed = OverlaySchema.parse(overlay);
     const path = this.overlayPath(vendorProduct, parsed.tenant, parsed.basedOn.capabilityId);
     mkdirSync(dirname(path), { recursive: true });

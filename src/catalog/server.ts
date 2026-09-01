@@ -16,17 +16,18 @@ import { InputValidationError } from "../replay/executor.js";
 
 export async function startCatalogServer(
   port: number,
+  store: ArtifactStore = new ArtifactStore(),
 ): Promise<{ url: string; close: () => Promise<void> }> {
   const app = express();
   app.use(express.json());
 
   app.get("/capabilities", (_req, res) => {
-    res.json(listCatalog());
+    res.json(listCatalog(store));
   });
 
   app.get("/capabilities/:id", (req, res) => {
     try {
-      res.json(entryFor(new ArtifactStore().load(req.params.id)));
+      res.json(entryFor(store.load(req.params.id)));
     } catch (err) {
       res.status(404).json({ error: err instanceof Error ? err.message : String(err) });
     }
@@ -46,6 +47,7 @@ export async function startCatalogServer(
         tenant: body.tenant,
         allowWrites: body.allowWrites,
         allowDraft: body.allowDraft,
+        store,
       });
       // 200 for every arm of the union that reached the application, including
       // business outcomes and escalations. HTTP status describes the call; the
@@ -71,8 +73,13 @@ export async function startCatalogServer(
     const s = app.listen(port, () => resolve(s));
   });
 
+  // Report the port that was actually bound, not the one that was asked for.
+  // They differ whenever 0 is passed to mean "any free port".
+  const address = server.address();
+  const bound = typeof address === "object" && address !== null ? address.port : port;
+
   return {
-    url: `http://localhost:${port}`,
+    url: `http://127.0.0.1:${bound}`,
     close: () => new Promise<void>((r) => server.close(() => r())),
   };
 }

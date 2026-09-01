@@ -178,6 +178,7 @@ async function attend(
       redactor: session.redactor,
       queue,
       intervention,
+      log: session.log,
     },
     onHandback: resolveHandback,
   });

@@ -23,6 +23,7 @@ import type {
 } from "../surface/types.js";
 import { checkUrl, type Allowlist } from "./allowlist.js";
 import { classifyAction, effectiveRisk, type RiskClass } from "./risk.js";
+import type { LeaseOwner } from "../escalation/control.js";
 
 export type DenyCode =
   | "lease_not_held"
@@ -70,7 +71,7 @@ export interface PolicyContext {
    * so it never gets this.
    */
   readonly attended?: boolean;
-  readonly leaseOwner: "automation" | "operator";
+  readonly leaseOwner: LeaseOwner;
   /** Risk this step declares in a reviewed artifact, if any. Can raise the
    *  heuristic classification, never lower it. */
   readonly declaredRisk?: RiskClass;
@@ -104,7 +105,11 @@ export class PolicyGate {
     //    answer to "who is in control", and it is enforced at the same point
     //    as everything else.
     if (ctx.leaseOwner !== "automation") {
-      return deny("lease_not_held", `lease is held by ${ctx.leaseOwner}; automation must not act`);
+      const held =
+        ctx.leaseOwner === "operator"
+          ? "an operator is driving this session"
+          : "the session is released and waiting for an operator";
+      return deny("lease_not_held", `${held}; automation must not act`);
     }
 
     // 2. Action type.

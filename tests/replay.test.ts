@@ -248,11 +248,13 @@ describe("escalation", () => {
     expect(intervention.resumeToken).toBe(result.resumeToken);
   }, 45_000);
 
-  it("releases the lease to the operator as part of escalating", async () => {
+  it("releases the lease as part of escalating, marked as awaiting a human", async () => {
     const { result, evidenceDir } = await replay({ memberId: "10042" }, { variant: "variant-b" });
     expect(result.status).toBe("escalated");
     const control = new SessionControl(join(evidenceDir, "lease.json"));
-    expect(control.owner).toBe("operator");
+    // Not "operator" — nobody has arrived yet, and a console must claim the
+    // session before it is allowed to drive it.
+    expect(control.owner).toBe("awaiting_operator");
     expect(control.lease.interventionId).toBeTruthy();
   }, 45_000);
 

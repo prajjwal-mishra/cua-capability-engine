@@ -717,9 +717,12 @@ async function escalate(
   });
 
   // Automation releases the lease as part of raising the request, so there is
-  // never a window in which both sides believe they may act.
+  // never a window in which both sides believe they may act. It goes to
+  // `awaiting_operator`, not `operator`: nobody has arrived yet, and saying
+  // otherwise would authorise a console to start driving on the strength of
+  // automation having stopped.
   ctx.control.transferTo(
-    "operator",
+    "awaiting_operator",
     `intervention ${intervention.interventionId}: ${reason}`,
     intervention.interventionId,
   );
@@ -729,7 +732,7 @@ async function escalate(
     stepId: step.id,
     intent: step.intent,
     action: "escalate",
-    leaseOwner: "operator",
+    leaseOwner: "awaiting_operator",
     outcome: `escalated:${classification}`,
     error: reason,
     extra: { interventionId: intervention.interventionId },

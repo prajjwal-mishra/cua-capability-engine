@@ -25,7 +25,8 @@ header {
 header h1 { font-size: 14px; margin: 0; font-weight: 600; letter-spacing: .02em; }
 .badge { padding: 2px 9px; border-radius: 999px; font-size: 11px; border: 1px solid var(--line); }
 .badge.automation { color: var(--accent); border-color: #24406e; background: #101a2b; }
-.badge.operator { color: var(--warn); border-color: #4d3f18; background: #221c0d; }
+.badge.awaiting_operator { color: var(--warn); border-color: #4d3f18; background: #221c0d; }
+.badge.operator { color: var(--ok); border-color: #1c3d24; background: #0d1f13; }
 .badge.none { color: var(--muted); }
 main { display: grid; grid-template-columns: minmax(320px, 460px) 1fr; gap: 18px; padding: 18px 20px; align-items: start; }
 @media (max-width: 900px) { main { grid-template-columns: 1fr; } }
@@ -187,7 +188,11 @@ async function poll() {
   try {
     const s = await (await fetch("/api/live/state")).json();
     const badge = $("lease");
-    badge.textContent = "lease: " + s.leaseOwner;
+    badge.textContent = {
+      automation: "automation is driving",
+      awaiting_operator: "waiting for you to take control",
+      operator: "you are driving this session",
+    }[s.leaseOwner] || s.leaseOwner;
     badge.className = "badge " + s.leaseOwner;
     $("status").textContent = s.status;
     if (s.captured && s.captured.length) {
