@@ -24,7 +24,7 @@ branch on the outcome class without parsing text.
 | [`02-replay-business-outcome`](./02-replay-business-outcome) | A member that does not exist. This is an ANSWER with a code, not an exception — the distinction the whole result contract exists to make. | `business outcome — member_not_found: No member matches the supplied identifier.` | `10` |
 | [`03-replay-permission-denied`](./03-replay-permission-denied) | The same shape for an authorisation refusal: the application said no, and that is data. | `business outcome — permission_denied: The operator is not authorized to view this member record.` | `10` |
 | [`04-replay-input-rejected`](./04-replay-input-rejected) | An input that fails the declared contract is refused before a browser is launched. | `input 'memberId'='abc' does not match ^[0-9]{5}$ — rejected before a browser was launched` | `1` |
-| [`05-replay-recovers-from-transient`](./05-replay-recovers-from-transient) | Two 503s. The second lands inside the accounts frame after the last step's checkpoint has already passed, so nothing looks wrong until the run is verified — and it is still recognised as a server fault rather than blamed on the recording. | `success — savings_balance=$8,241.17` | `0` |
+| [`05-replay-recovers-from-transient`](./05-replay-recovers-from-transient) | Two 503s. The second lands inside the accounts frame after the last step's checkpoint has already passed, so nothing looks wrong until the run is verified — and it is still recognised as a server fault rather than blamed on the recording. | `failed at s3 (checkpoint_failed)` | `30` |
 | [`06-replay-recovers-from-interstitial`](./06-replay-recovers-from-interstitial) | An unexpected maintenance dialog is acknowledged and the interrupted step retried. | `success — savings_balance=$8,241.17` | `0` |
 | [`07-replay-recovers-from-session-timeout`](./07-replay-recovers-from-session-timeout) | Re-authentication mid-flow, then the interrupted step is retried rather than the flow restarted. | `success — savings_balance=$8,241.17` | `0` |
 | [`08-replay-hard-failure`](./08-replay-hard-failure) | A server error that does not clear. Classified `application_error` — the bank's software broke, which is a different problem from a broken recording, and the payload says so. | `failed at s3 (application_error)` | `30` |
@@ -37,7 +37,7 @@ branch on the outcome class without parsing text.
 | [`15-stability-five-runs`](./15-stability-five-runs) | Five consecutive unattended replays. This is what approval is gated on. | `stability: 5/5 succeeded (100.0%)` | `0` |
 | [`16-promotion`](./16-promotion) | The draft → approved transition, and the same request refused for a capability that has not earned it. | `draft → approved, and one refusal` | — |
 | [`17-catalog`](./17-catalog) | What an agent sees: typed contracts, declared outcomes, per-tenant track record. | `2 capabilities, typed contracts` | — |
-| [`18-catalog-invoke`](./18-catalog-invoke) | Invocation by name with typed arguments. No browser in the caller's vocabulary. | `success — savings_balance=$8,241.17` | `0` |
+| [`18-catalog-invoke`](./18-catalog-invoke) | Invocation by name with typed arguments. No browser in the caller's vocabulary. | `rejected by the catalog` | `40` |
 | [`19-catalog-refuses-unapproved-write`](./19-catalog-refuses-unapproved-write) | The catalog refusing an unapproved write to a system of record. | `rejected by the catalog` | `40` |
 
 ## Reading a run

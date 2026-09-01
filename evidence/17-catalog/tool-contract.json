@@ -1,16 +1,16 @@
 {
   "capabilityId": "member.savings_balance",
   "version": "1.0.0",
-  "name": "Read member savings balance",
+  "name": "look up member 10042 and read their current savings balance",
   "description": "look up member 10042 and read their current savings balance",
-  "state": "approved",
+  "state": "draft",
   "maxRisk": "read_only",
   "appId": "legacy-cu",
   "vendorProduct": "corevantage-backoffice",
   "stability": {
     "runs": 11,
-    "successes": 11,
-    "rate": 1
+    "successes": 10,
+    "rate": 0.9090909090909091
   },
   "stabilityByTenant": {
     "variant:variant-b": {

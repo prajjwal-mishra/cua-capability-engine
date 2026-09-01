@@ -9,10 +9,10 @@ failed at s4 (policy_denied)
   screen:   screenshots/failure-s4.png
 
 step telemetry:
-  s1   label_anchor         1x  33ms
-  s2   role_name            1x  573ms
-  s3   role_name            1x  593ms
+  s1   label_anchor         1x  35ms
+  s2   role_name            1x  572ms
+  s3   role_name            1x  587ms
 
-evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-01T10-21-15-521Z-dce1b948
+evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-01T10-37-10-488Z-c4c191b8
 policy checks: 5
 exit 30

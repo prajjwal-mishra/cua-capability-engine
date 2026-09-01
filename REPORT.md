@@ -93,6 +93,23 @@ with high confidence. So extraction descriptors are built with
 addressing by relation: which column, which row. The value being read is the
 one thing that cannot be part of how you find it.
 
+The same argument extends one step further, and I got this wrong the first time
+before catching it in review. Rung 2 anchors on a neighbouring cell, which is
+sound on a form — the cell to the left of a textbox really is its label. Inside
+a data grid it is not: the neighbour is a *sibling value*, so "the cell in the
+row labelled `4417-99820-01`" is one member's row wearing a relation's clothing.
+It pins the capability to a single member and, because artifacts are committed
+and reviewed, it writes that member's account number into version control. Rung 2
+is therefore dropped for extraction descriptors whenever the element sits in a
+grid, detected by both a column header and a row key being present.
+
+Independently, the compiler passes the redactor into descriptor construction and
+drops any rung whose anchor text matches a sensitivity pattern. Dropping rather
+than redacting is deliberate: a redacted anchor is a locator that can never
+match, and it would fail at 2am on a lower rung instead of at record time. If a
+rung cannot be expressed without someone's data in it, the honest move is to not
+offer the rung.
+
 ## 4. The artifact: reviewable by a human, callable by a machine
 
 Zod schema, so one definition produces the runtime validator, the TypeScript

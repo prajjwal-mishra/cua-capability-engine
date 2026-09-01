@@ -1,13 +1,13 @@
 {
-  "interventionId": "int-32873eb5",
-  "runId": "replay-2026-09-01T10-21-29-384Z-ab426ded",
+  "interventionId": "int-5a5ceb94",
+  "runId": "replay-2026-09-01T10-37-24-262Z-8cb86023",
   "capability": "member.open_subaccount@1.0.0",
   "goal": "open a new sub-account for member 10042 and reach the confirmation screen",
   "stepId": "s8b",
   "stepIntent": "Commit the sub-account request on Summit's review screen",
   "reason": "'Commit Sub-Account' is irreversible and requires human confirmation",
   "classification": "policy_denied",
-  "createdAt": "2026-09-01T10:21:33.880Z",
+  "createdAt": "2026-09-01T10:37:28.766Z",
   "flow": [
     {
       "id": "s1",
@@ -58,15 +58,15 @@
   "snapshotPath": "snapshots/intervention-s8b.json",
   "screenshotPath": "screenshots/intervention-s8b.png",
   "visibleText": "[navFrame=/frame/nav contentFrame=/frame/subaccount/:id] Riverbend Credit Union | Member Search | Reports | Batch Jobs | Review Request | Please review the details below before committing. | Field | Value | Account Type | Certificate | Nickname | Vacation | Initial Deposit | 250.00",
-  "resumeToken": "e022c99d-a2aa-4065-afa3-9cbb93972daf",
+  "resumeToken": "bd4c9ff0-74e2-492f-8386-58169fe47986",
   "status": "resolved",
   "resolution": {
-    "resolvedAt": "2026-09-01T10:21:34.875Z",
+    "resolvedAt": "2026-09-01T10:37:29.821Z",
     "note": "Reviewed the sub-account request against the member record and committed it manually. Automation may verify and finish.",
     "resumeAtStepId": "$verify",
     "capturedActions": [
       {
-        "at": "2026-09-01T10:21:34.350Z",
+        "at": "2026-09-01T10:37:29.293Z",
         "kind": "click",
         "describe": "clicked the button \"Commit Sub-Account\"",
         "role": "button",
@@ -77,7 +77,7 @@
         "url": "http://localhost:4000/frame/subaccount/10042"
       },
       {
-        "at": "2026-09-01T10:21:34.351Z",
+        "at": "2026-09-01T10:37:29.296Z",
         "kind": "submit",
         "describe": "submitted the form \"/frame/subaccount/10042/commit\"",
         "role": "form",

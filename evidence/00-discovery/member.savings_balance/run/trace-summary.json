@@ -1,12 +1,12 @@
 {
-  "runId": "discover-2026-08-31T06-57-09-488Z-878ceaef",
+  "runId": "discover-2026-09-01T10-34-12-439Z-2800126a",
   "status": "success",
   "stopReason": "model declared the goal reached",
   "model": "openai/gpt-oss-120b",
   "goal": {
     "goal": "look up member 10042 and read their current savings balance",
     "targetUrl": "http://localhost:4000",
-    "tenant": "demo-cu",
+    "tenant": "riverbend-cu",
     "params": [
       {
         "name": "memberId",
@@ -62,22 +62,6 @@
       "target": {
         "role": "link",
         "name": "10042",
-        "framePath": [
-          "contentFrame"
-        ]
-      }
-    },
-    {
-      "index": 3,
-      "tool": "click",
-      "rationale": "Acknowledge system notice to access member details",
-      "action": {
-        "kind": "click",
-        "ref": "e7"
-      },
-      "target": {
-        "role": "button",
-        "name": "Acknowledge",
         "framePath": [
           "contentFrame"
         ]

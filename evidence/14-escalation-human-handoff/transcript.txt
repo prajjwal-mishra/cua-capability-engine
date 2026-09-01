@@ -5,10 +5,10 @@ overlay:    summit-fcu.member.open_subaccount for tenant summit-fcu
 inputs:     {"memberId":"10042","nickname":"Vacation","initialDeposit":"250.00","accountKind":"Certificate"}
 
 ── escalated ─────────────────────────────────────────────
-intervention: int-32873eb5  (policy_denied)
+intervention: int-5a5ceb94  (policy_denied)
 reason:       'Commit Sub-Account' is irreversible and requires human confirmation
 lease:        awaiting_operator
-console:      http://localhost:4100/i/int-32873eb5
+console:      http://localhost:4100/i/int-5a5ceb94
 The browser is headless, so drive the session from the console's element list.
 waiting for an operator to take control and hand back …
 
@@ -26,6 +26,6 @@ resuming at:  $verify
 
 success — no outputs
 
-evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-01T10-21-29-384Z-ab426ded
+evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-01T10-37-24-262Z-8cb86023
 policy checks: 10
 exit 0

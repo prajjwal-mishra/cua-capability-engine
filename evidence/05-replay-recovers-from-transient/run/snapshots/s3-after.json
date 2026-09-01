@@ -1,5 +1,5 @@
 {
-  "capturedAt": "2026-09-01T10:21:02.350Z",
+  "capturedAt": "2026-09-01T10:37:01.141Z",
   "page": {
     "url": "http://localhost:4000/",
     "routePattern": "/",
@@ -21,8 +21,8 @@
         "framePath": [
           "contentFrame"
         ],
-        "url": "http://localhost:4000/frame/member/10042?variant=variant-a",
-        "routePattern": "/frame/member/:id"
+        "url": "http://localhost:4000/frame/search?variant=variant-a",
+        "routePattern": "/frame/search"
       }
     ]
   },
@@ -119,24 +119,139 @@
     },
     {
       "ref": "e5",
-      "role": "heading",
-      "name": "Service Unavailable",
+      "role": "cell",
+      "name": "Member Search",
       "nameSource": "text-content",
       "state": {},
       "framePath": [
         "contentFrame"
       ],
       "bounds": {
-        "x": 188,
-        "y": 8,
-        "width": 1084,
-        "height": 37
+        "x": 180,
+        "y": 0,
+        "width": 1100,
+        "height": 28
       },
       "ordinal": 0,
       "roleOrdinal": 0,
       "nearbyText": {},
-      "structuralPath": "BODY[1]/H1[1]",
-      "tag": "h1"
+      "structuralPath": "BODY[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e6",
+      "role": "cell",
+      "name": "Member ID",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "contentFrame"
+      ],
+      "bounds": {
+        "x": 181,
+        "y": 35,
+        "width": 89,
+        "height": 29
+      },
+      "ordinal": 0,
+      "roleOrdinal": 1,
+      "nearbyText": {},
+      "structuralPath": "TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[2]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e7",
+      "role": "textbox",
+      "name": "Member ID",
+      "nameSource": "heuristic-table-cell",
+      "value": "",
+      "state": {},
+      "framePath": [
+        "contentFrame"
+      ],
+      "bounds": {
+        "x": 278,
+        "y": 39,
+        "width": 182,
+        "height": 21
+      },
+      "ordinal": 0,
+      "roleOrdinal": 0,
+      "nearbyText": {
+        "leftCell": "Member ID",
+        "rowKey": "Member ID"
+      },
+      "structuralPath": "TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[2]/TD[2]/INPUT[1]",
+      "tag": "input[text]"
+    },
+    {
+      "ref": "e8",
+      "role": "cell",
+      "name": "Branch",
+      "nameSource": "text-content",
+      "state": {},
+      "framePath": [
+        "contentFrame"
+      ],
+      "bounds": {
+        "x": 181,
+        "y": 64,
+        "width": 89,
+        "height": 29
+      },
+      "ordinal": 0,
+      "roleOrdinal": 2,
+      "nearbyText": {
+        "aboveCell": "Member ID"
+      },
+      "structuralPath": "TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[3]/TD[1]",
+      "tag": "td"
+    },
+    {
+      "ref": "e9",
+      "role": "textbox",
+      "name": "Branch",
+      "nameSource": "heuristic-table-cell",
+      "value": "",
+      "state": {},
+      "framePath": [
+        "contentFrame"
+      ],
+      "bounds": {
+        "x": 278,
+        "y": 68,
+        "width": 182,
+        "height": 21
+      },
+      "ordinal": 0,
+      "roleOrdinal": 1,
+      "nearbyText": {
+        "leftCell": "Branch",
+        "rowKey": "Branch"
+      },
+      "structuralPath": "TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[3]/TD[2]/INPUT[1]",
+      "tag": "input[text]"
+    },
+    {
+      "ref": "e10",
+      "role": "button",
+      "name": "Search",
+      "nameSource": "value",
+      "state": {},
+      "framePath": [
+        "contentFrame"
+      ],
+      "bounds": {
+        "x": 278,
+        "y": 97,
+        "width": 58,
+        "height": 21
+      },
+      "ordinal": 0,
+      "roleOrdinal": 0,
+      "nearbyText": {},
+      "structuralPath": "TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[4]/TD[2]/INPUT[1]",
+      "tag": "input[submit]"
     }
   ]
 }

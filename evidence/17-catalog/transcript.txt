@@ -5,21 +5,21 @@ $ cua catalog list
     open a new sub-account for member 10042 and reach the confirmation screen
     args: memberId, nickname, initialDeposit, accountKind   returns: none   stability: 100% of 1
 
-  member.savings_balance@1.0.0  [approved]  risk=read_only
+  member.savings_balance@1.0.0  [draft]  risk=read_only
     look up member 10042 and read their current savings balance
-    args: memberId   returns: savings_balance   stability: 100% of 11
+    args: memberId   returns: savings_balance   stability: 91% of 11
 
 describe one:  cua catalog describe member.open_subaccount
 
 $ cua catalog describe member.savings_balance
-member.savings_balance@1.0.0   [approved]
+member.savings_balance@1.0.0   [draft]
 look up member 10042 and read their current savings balance
 
 app:        legacy-cu (corevantage-backoffice)
 entry:      /frame/search
-discovered: openai/gpt-oss-120b on 2026-08-31T06:57:25.348Z
+discovered: openai/gpt-oss-120b on 2026-09-01T10:34:54.505Z
 risk:       read_only (highest of any step)
-stability:  11/11 replays succeeded (100%) where it was recorded
+stability:  10/11 replays succeeded (91%) where it was recorded
             0/1 replays succeeded (0%) at variant:variant-b
             1/1 replays succeeded (100%) at summit-fcu
 

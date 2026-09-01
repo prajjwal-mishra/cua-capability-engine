@@ -196,6 +196,19 @@ because every one of these was a wrong belief I held until something disagreed.
     responsibility from the CLI — doubling every entry in the audit trail for the
     actions most worth auditing.
 
+13. **A committed artifact contained a member's account number.** The read
+    capability's extraction descriptor anchored the balance cell on its
+    neighbours, and rung 2 assumes the neighbour is a label. In a grid it is a
+    sibling value, so the artifact shipped `rowKey: "4417-99820-01"` — a locator
+    that only ever matches member 10042, carrying their account number into a
+    file that gets committed and code-reviewed. I found this reading the
+    generated artifact rather than the code, which is the argument for artifacts
+    being human-readable in the first place. Two fixes: rung 2 is suppressed for
+    extraction inside a grid, and the compiler drops any rung whose anchor text
+    trips the redactor. Worth noting what this was *not*: the redaction stage was
+    working correctly on every path it covered — logs, prompts, snapshots. The
+    leak was a path nobody had thought to route through it.
+
 ---
 
 ## If you have ten minutes
