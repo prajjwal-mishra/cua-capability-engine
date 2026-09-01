@@ -75,7 +75,18 @@ export function checkUrl(allowlist: Allowlist, rawUrl: string): OriginCheck {
     return { ok: false, reason: `not a valid URL: ${rawUrl}` };
   }
   if (!allowlist.origins.includes(u.origin)) {
-    return { ok: false, reason: `origin ${u.origin} is not on the allowlist` };
+    // Naming the permitted origins matters more here than anywhere else in the
+    // gate: this is the denial a reviewer hits by running the target app on a
+    // different port, and "denied" without "denied relative to what" reads as a
+    // broken demo rather than as the guardrail working.
+    return {
+      ok: false,
+      reason:
+        `origin ${u.origin} is not on the allowlist for '${allowlist.appId}' ` +
+        `(permitted: ${allowlist.origins.join(", ")}). ` +
+        `An allowlist is per deployment — add the origin to ${allowlist.appId}'s allowlist file, ` +
+        `or point CUA_TARGET_ORIGIN at a permitted one.`,
+    };
   }
   for (const denied of allowlist.deniedRoutePatterns) {
     if (routeMatches(denied, u.pathname)) {

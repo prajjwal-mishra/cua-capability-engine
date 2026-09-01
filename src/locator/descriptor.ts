@@ -123,9 +123,32 @@ const NAME_SOURCE_CONFIDENCE: Record<string, number> = {
 export function describeElement(
   el: UIElement,
   intent: string,
-  opts: { readonly includeBounds?: boolean; readonly forExtraction?: boolean } = {},
+  opts: {
+    readonly includeBounds?: boolean;
+    readonly forExtraction?: boolean;
+    /**
+     * Reject an anchor whose text carries something sensitive.
+     *
+     * A locator anchored on a member's account number is broken twice over: it
+     * only ever matches that one member, and it writes their data into a
+     * document that gets committed, reviewed and shipped. Dropping the rung is
+     * the right response rather than redacting it — a redacted anchor is a
+     * locator that can never match, which fails later and less obviously.
+     */
+    readonly isSensitive?: (text: string) => boolean;
+  } = {},
 ): ElementDescriptor {
   const strategies: ResolutionStrategy[] = [];
+  const usable = (text: string | undefined): text is string =>
+    text !== undefined && text !== "" && !(opts.isSensitive?.(text) ?? false);
+
+  // In a data grid the neighbouring cell holds a SIBLING VALUE, not a label —
+  // "the cell in the row labelled 4417-99820-01" is one member's row, dressed
+  // up as a relation. `columnHeader` and `rowKey` are only both set for grid
+  // cells, which is how a grid is told apart from a form here. On a form,
+  // `leftCell` really is the label, so the rung stays.
+  const inDataGrid = el.nearbyText.columnHeader !== undefined && el.nearbyText.rowKey !== undefined;
+  const anchorIsData = opts.forExtraction === true && inDataGrid;
 
   // An OUTPUT descriptor must never key on the element's own text, because
   // that text is the payload. Recording "the cell named $8,241.17" does not
@@ -134,7 +157,7 @@ export function describeElement(
   // some other row that happens to hold the same amount, resolving on the top
   // rung with high confidence. Extraction is addressed by RELATION: which
   // column, which row.
-  if (el.name && !opts.forExtraction) {
+  if (usable(el.name) && !opts.forExtraction) {
     strategies.push({
       kind: "role_name",
       confidence: NAME_SOURCE_CONFIDENCE[el.nameSource] ?? 0.5,
@@ -146,33 +169,35 @@ export function describeElement(
 
   // Only meaningful when the name came from somewhere OTHER than the anchor
   // itself — otherwise this rung is rung 1 wearing a different hat.
-  if (el.nearbyText.leftCell) {
-    strategies.push({
-      kind: "label_anchor",
-      confidence: 0.82,
-      role: el.role,
-      labelText: el.nearbyText.leftCell,
-      relation: "same-row",
-    });
-  } else if (el.nearbyText.aboveCell) {
-    strategies.push({
-      kind: "label_anchor",
-      confidence: 0.72,
-      role: el.role,
-      labelText: el.nearbyText.aboveCell,
-      relation: "same-column",
-    });
-  } else if (el.nearbyText.precedingText) {
-    strategies.push({
-      kind: "label_anchor",
-      confidence: 0.6,
-      role: el.role,
-      labelText: el.nearbyText.precedingText,
-      relation: "preceding-text",
-    });
+  if (!anchorIsData) {
+    if (usable(el.nearbyText.leftCell)) {
+      strategies.push({
+        kind: "label_anchor",
+        confidence: 0.82,
+        role: el.role,
+        labelText: el.nearbyText.leftCell,
+        relation: "same-row",
+      });
+    } else if (usable(el.nearbyText.aboveCell)) {
+      strategies.push({
+        kind: "label_anchor",
+        confidence: 0.72,
+        role: el.role,
+        labelText: el.nearbyText.aboveCell,
+        relation: "same-column",
+      });
+    } else if (usable(el.nearbyText.precedingText)) {
+      strategies.push({
+        kind: "label_anchor",
+        confidence: 0.6,
+        role: el.role,
+        labelText: el.nearbyText.precedingText,
+        relation: "preceding-text",
+      });
+    }
   }
 
-  if (el.nearbyText.columnHeader && el.nearbyText.rowKey) {
+  if (usable(el.nearbyText.columnHeader) && usable(el.nearbyText.rowKey)) {
     strategies.push({
       kind: "table_cell",
       confidence: 0.9,
@@ -182,7 +207,7 @@ export function describeElement(
   }
 
   // Disambiguates duplicates while the label still matches.
-  if (el.name && !opts.forExtraction) {
+  if (usable(el.name) && !opts.forExtraction) {
     strategies.push({
       kind: "frame_role_ordinal",
       confidence: 0.55,

@@ -9,7 +9,7 @@
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import type { UISnapshot } from "../src/surface/types.js";
+import type { UIElement, UISnapshot } from "../src/surface/types.js";
 import {
   describeElement,
   descriptorConfidence,
@@ -55,6 +55,70 @@ describe("describeElement builds a full ladder", () => {
     const with_ = describeElement(find(searchA, "button", "Search"), "x", { includeBounds: true });
     expect(without.strategies.some((s) => s.kind === "bounds")).toBe(false);
     expect(with_.strategies.some((s) => s.kind === "bounds")).toBe(true);
+  });
+});
+
+/* ------------------------------------------- what extraction must not do --- */
+
+describe("descriptors for reading a value out", () => {
+  /** The savings balance cell in the accounts grid: what the read capability
+   *  actually points at. */
+  const balanceCell = (): UIElement => {
+    const el = framed.elements.find(
+      (e) => e.role === "cell" && e.nearbyText.columnHeader === "Current Balance",
+    );
+    if (!el) throw new Error("fixture has no balance cell");
+    return el;
+  };
+
+  it("never keys on the value being read", () => {
+    const d = describeElement(balanceCell(), "the savings balance", { forExtraction: true });
+    // Recording "the cell named $8,241.17" does not locate the savings balance.
+    // It locates one member's balance, and on the next invocation it either
+    // misses or matches a different row holding the same amount — resolving on
+    // the top rung, with high confidence, on the wrong data.
+    expect(d.strategies.some((s) => s.kind === "role_name")).toBe(false);
+    expect(d.strategies.some((s) => s.kind === "table_cell")).toBe(true);
+  });
+
+  it("does not anchor a grid cell to its neighbours' data", () => {
+    const d = describeElement(balanceCell(), "the savings balance", { forExtraction: true });
+    // In a grid the adjacent cell is a SIBLING VALUE, not a label. Anchoring to
+    // it produces "the cell in the row labelled 4417-99820-01" — one member's
+    // row wearing a relation's clothing. On a form, where leftCell really is a
+    // label, the rung is still allowed.
+    expect(d.strategies.some((s) => s.kind === "label_anchor")).toBe(false);
+
+    const formField = framed.elements.find(
+      (e) =>
+        e.role === "textbox" &&
+        e.nearbyText.leftCell !== undefined &&
+        e.nearbyText.columnHeader === undefined,
+    );
+    if (formField) {
+      const onForm = describeElement(formField, "a form field", { forExtraction: true });
+      expect(onForm.strategies.some((s) => s.kind === "label_anchor")).toBe(true);
+    }
+  });
+
+  it("drops any rung anchored on somebody's data rather than redacting it", () => {
+    const el = balanceCell();
+    const withAccountNumber: UIElement = {
+      ...el,
+      nearbyText: { ...el.nearbyText, rowKey: "4417-99820-01" },
+    };
+    const d = describeElement(withAccountNumber, "the savings balance", {
+      forExtraction: true,
+      isSensitive: (text) => /\b\d{4}-\d{4,6}-\d{2}\b/.test(text),
+    });
+    // Dropped, not masked: a redacted anchor is a locator that can never match,
+    // which fails later and far less obviously than not being there at all.
+    const asText = JSON.stringify(d);
+    expect(asText).not.toContain("4417-99820-01");
+    expect(asText).not.toContain("REDACTED");
+    expect(d.strategies.some((s) => s.kind === "table_cell")).toBe(false);
+    // And the ladder still has the rungs that do not depend on anyone's data.
+    expect(d.strategies.some((s) => s.kind === "frame_role_ordinal")).toBe(true);
   });
 });
 

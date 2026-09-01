@@ -19,6 +19,7 @@
 import { z } from "zod";
 import { describeElement } from "../locator/descriptor.js";
 import { classifyAction } from "../policy/risk.js";
+import { Redactor } from "../policy/redact.js";
 import type { Allowlist } from "../policy/allowlist.js";
 import type { UIElement, UISnapshot } from "../surface/types.js";
 import {
@@ -108,6 +109,13 @@ function partitionRecoverySteps(
 }
 
 /**
+ * Pattern rules only — no registered literals, because this is asking a general
+ * question ("does this text look like somebody's data?") rather than checking
+ * one run's known secrets.
+ */
+const SINK_REDACTOR = new Redactor();
+
+/**
  * Build a descriptor and validate it against the artifact schema in one step.
  * The locator module types its arrays readonly; the schema's inferred type is
  * mutable. Parsing here reconciles the two AND means a malformed ladder is
@@ -120,7 +128,15 @@ function descriptorFor(
   opts: { forExtraction?: boolean } = {},
 ): z.infer<typeof ElementDescriptorSchema> {
   const built = ElementDescriptorSchema.parse(
-    describeElement(el, intent, { forExtraction: opts.forExtraction }),
+    describeElement(el, intent, {
+      forExtraction: opts.forExtraction,
+      // An artifact is a sink like any other — it is committed, reviewed, and
+      // shipped to other people. A rung anchored on a member's account number
+      // would put their data in that document, and would only ever match that
+      // one member. The redactor is the same one every other sink uses, so
+      // "what counts as sensitive" has one definition.
+      isSensitive: (text) => SINK_REDACTOR.redactText(text) !== text,
+    }),
   );
   // Anything whose text IS a parameter value becomes a binding, so a descriptor
   // that identifies "the row for member 10042" becomes "the row for the member
