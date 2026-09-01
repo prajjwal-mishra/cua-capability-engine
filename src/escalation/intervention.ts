@@ -39,6 +39,10 @@ export const InterventionSchema = z.object({
   reason: z.string(),
   classification: z.string(),
   createdAt: z.string(),
+  /** The whole flow, so the operator can see where they are in it and say
+   *  where the automation should pick up. Without this the console would be
+   *  asking a human to guess a step id. */
+  flow: z.array(z.object({ id: z.string(), intent: z.string(), risk: z.string() })).default([]),
   /** Relative to the run directory. */
   snapshotPath: z.string().optional(),
   screenshotPath: z.string().optional(),

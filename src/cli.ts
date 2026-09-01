@@ -23,13 +23,20 @@ const USAGE = `cua — computer-use capability engine
 
   replay     --capability <id>[@<version>] [--input k=v ...] [--tenant <id>]
              [--allow-writes] [--inject <mode>] [--inject-path <substr>] [--stability N]
+             [--attended]
              Re-run a saved capability with no model in the decision loop.
+             --attended hands the live session to an operator console if it escalates.
 
-  catalog    list | describe <id> | invoke <id> --args '<json>'
+  catalog    list
+             describe <id> [--tenant <id>] [--json]
+             invoke <id> --args '<json>' [--allow-writes] [--allow-draft] [--tenant <id>]
+             approve <id> | deprecate <id>
+             serve [--port 4200]
              The agent-facing surface: typed capabilities, invoked by name.
 
   operator   [--port 4100]
-             Operator console: open interventions, live session takeover, hand back.
+             Operator console: triage queued interventions across all runs.
+             Same-session takeover happens via 'replay --attended'.
 `;
 
 async function main(): Promise<void> {

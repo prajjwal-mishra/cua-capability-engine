@@ -1,0 +1,100 @@
+{
+  "overlayId": "summit-fcu.member.savings_balance",
+  "tenant": "summit-fcu",
+  "variant": "variant-b",
+  "basedOn": {
+    "capabilityId": "member.savings_balance",
+    "versionRange": "^1.0.0"
+  },
+  "describe": "Summit Federal CU runs the same CoreVantage back office as Riverbend, relabelled. 'Member ID' is 'Member Number', the search button says 'Find Member', the savings product is branded 'Share Savings', and the balance column is 'Balance'. Nothing about the FLOW differs, so this is a four-line patch rather than a second recording.",
+  "patch": {
+    "steps": {
+      "s1": {
+        "target": {
+          "intent": "Enter the member number to search for the member",
+          "role": "textbox",
+          "framePath": ["contentFrame"],
+          "strategies": [
+            {
+              "kind": "label_anchor",
+              "confidence": 0.82,
+              "role": "textbox",
+              "labelText": "Member Number",
+              "relation": "same-row"
+            },
+            {
+              "kind": "frame_role_ordinal",
+              "confidence": 0.4,
+              "role": "textbox",
+              "ordinal": 0,
+              "ordinalScope": "role"
+            }
+          ]
+        }
+      },
+      "s2": {
+        "target": {
+          "intent": "Click Find Member to look up the member",
+          "role": "button",
+          "framePath": ["contentFrame"],
+          "strategies": [
+            {
+              "kind": "role_name",
+              "confidence": 0.9,
+              "role": "button",
+              "name": "Find Member",
+              "match": "exact"
+            },
+            {
+              "kind": "frame_role_ordinal",
+              "confidence": 0.4,
+              "role": "button",
+              "ordinal": 0,
+              "ordinalScope": "role"
+            }
+          ]
+        }
+      }
+    },
+    "insertSteps": [],
+    "outputs": {
+      "savings_balance": {
+        "extraction": {
+          "descriptor": {
+            "intent": "the share savings balance value",
+            "role": "cell",
+            "framePath": ["contentFrame", "acctFrame"],
+            "strategies": [
+              {
+                "kind": "table_cell",
+                "confidence": 0.9,
+                "columnHeader": "Balance",
+                "rowKey": "Share Savings"
+              },
+              {
+                "kind": "frame_role_ordinal",
+                "confidence": 0.4,
+                "role": "cell",
+                "ordinal": 2,
+                "ordinalScope": "role"
+              }
+            ]
+          }
+        }
+      }
+    },
+    "knownOutcomes": [],
+    "recoveries": [],
+    "successCondition": {
+      "all": [
+        {
+          "type": "elementPresent",
+          "role": "cell",
+          "name": "Share Savings",
+          "framePath": ["contentFrame", "acctFrame"]
+        }
+      ],
+      "describe": "the Share Savings row is present in the accounts grid"
+    }
+  }
+}

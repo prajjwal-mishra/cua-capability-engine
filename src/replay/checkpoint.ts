@@ -113,6 +113,17 @@ export function routePatternMatches(pattern: string, observed: string): boolean 
 /** One-line summary for the run log and for a failure payload. */
 export function explain(result: ConditionResult): string {
   if (result.passed) return result.describe ?? "condition met";
-  const failed = result.clauses.filter((c) => !c.passed);
-  return `${result.describe ?? "condition"} — ${failed.map((c) => c.observed).join("; ")}`;
+  return `${result.describe ?? "condition"} — ${observations(result)}`;
+}
+
+/**
+ * Just what was seen, without restating what was expected. Used where the
+ * expectation is already reported in its own field, so a failure payload reads
+ * `expected: X / observed: Y` rather than `expected: X / observed: X — Y`.
+ */
+export function observations(result: ConditionResult): string {
+  return result.clauses
+    .filter((c) => !c.passed)
+    .map((c) => c.observed)
+    .join("; ");
 }

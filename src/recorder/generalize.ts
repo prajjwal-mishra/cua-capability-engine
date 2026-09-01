@@ -109,6 +109,26 @@ export function contentRoute(
   };
 }
 
+/**
+ * The frame scope to WRITE INTO a compiled condition — and the reason it is a
+ * separate function from `contentRoute`.
+ *
+ * `contentRoute` has to answer with something, because a route pattern needs a
+ * frame. A condition does not: an omitted framePath means "any frame", which is
+ * the correct reading of "we could not tell which frame owns this". Reusing
+ * `contentRoute`'s `[]` fallback here silently compiled the opposite claim —
+ * `[]` scopes a clause to the MAIN frame — so a success condition asserting
+ * text that lives in the content frame could never pass. Same principle as the
+ * locator ladder: when the answer is ambiguous, say so rather than guess.
+ */
+export function assertionFrame(
+  snapshot: UISnapshot,
+  preferFramePath?: readonly string[],
+): string[] | undefined {
+  const { framePath } = contentRoute(snapshot, preferFramePath);
+  return framePath.length > 0 ? framePath : undefined;
+}
+
 /** The URL of the frame `contentRoute` would choose. */
 export function contentUrl(snapshot: UISnapshot, preferFramePath?: readonly string[]): string {
   const { framePath } = contentRoute(snapshot, preferFramePath);

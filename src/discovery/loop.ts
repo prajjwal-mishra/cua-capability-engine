@@ -375,45 +375,70 @@ function buildAction(
       if (!element) return { error: refError(ref) };
       return { action: { kind: "read", ref: element.ref }, element };
 
-    case "select":
+    case "select": {
       if (!element) return { error: refError(ref) };
+      const bound = bindValue(call, paramValues, "option");
+      if ("error" in bound) return bound;
       return {
-        action: { kind: "select", ref: element.ref, option: String(call.args.option ?? "") },
+        action: { kind: "select", ref: element.ref, option: bound.value },
         element,
-        literalValue: String(call.args.option ?? ""),
+        paramBinding: bound.paramBinding,
+        literalValue: bound.literalValue,
       };
+    }
 
     case "type": {
       if (!element) return { error: refError(ref) };
-      const param = call.args.param === undefined ? undefined : String(call.args.param);
-      if (param !== undefined) {
-        const value = paramValues[param];
-        if (value === undefined) {
-          return {
-            error: `no input parameter named '${param}'. Available: ${Object.keys(paramValues).join(", ")}`,
-          };
-        }
-        return {
-          action: {
-            kind: "type",
-            ref: element.ref,
-            text: value,
-            submit: call.args.submit === true,
-          },
-          element,
-          paramBinding: param,
-        };
-      }
-      const text = call.args.text === undefined ? undefined : String(call.args.text);
-      if (text === undefined) return { error: "type requires either 'text' or 'param'" };
+      const bound = bindValue(call, paramValues, "text");
+      if ("error" in bound) return bound;
       return {
-        action: { kind: "type", ref: element.ref, text, submit: call.args.submit === true },
+        action: {
+          kind: "type",
+          ref: element.ref,
+          text: bound.value,
+          submit: call.args.submit === true,
+        },
         element,
-        literalValue: text,
+        paramBinding: bound.paramBinding,
+        literalValue: bound.literalValue,
       };
     }
 
     default:
       return { error: `unknown tool '${call.name}'` };
   }
+}
+
+/**
+ * Resolve a value-carrying tool call into either a parameter binding or a
+ * literal — never both, and never a literal that merely equals a parameter
+ * value. Provenance is the whole point: the compiler generalizes a step because
+ * the model SAID this value came from an input, not because a string matched.
+ *
+ * Shared by `type` and `select` because the argument is identical for both, and
+ * because a divergence between them is exactly how one of the two silently
+ * stops parameterizing.
+ */
+function bindValue(
+  call: LlmToolCall,
+  paramValues: Readonly<Record<string, string>>,
+  literalKey: "text" | "option",
+):
+  | { value: string; paramBinding?: string; literalValue?: string }
+  | { error: string } {
+  const param = call.args.param === undefined ? undefined : String(call.args.param);
+  if (param !== undefined && param !== "") {
+    const value = paramValues[param];
+    if (value === undefined) {
+      return {
+        error: `no input parameter named '${param}'. Available: ${Object.keys(paramValues).join(", ") || "none"}`,
+      };
+    }
+    return { value, paramBinding: param };
+  }
+  const literal = call.args[literalKey];
+  if (literal === undefined) {
+    return { error: `${call.name} requires either '${literalKey}' or 'param'` };
+  }
+  return { value: String(literal), literalValue: String(literal) };
 }

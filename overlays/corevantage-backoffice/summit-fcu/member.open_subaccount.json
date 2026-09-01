@@ -1,0 +1,120 @@
+{
+  "overlayId": "summit-fcu.member.open_subaccount",
+  "tenant": "summit-fcu",
+  "variant": "variant-b",
+  "basedOn": {
+    "capabilityId": "member.open_subaccount",
+    "versionRange": "^1.0.0"
+  },
+  "describe": "Same CoreVantage build as Riverbend, two differences that matter. The search screen is relabelled ('Member Number' / 'Find Member'), and Summit's configuration interposes a review screen with an explicit commit before the account is actually opened. That commit is IRREVERSIBLE here where Riverbend's Continue was not, so it is declared as such — which is what routes it to a human instead of being clicked.",
+  "patch": {
+    "steps": {
+      "s1": {
+        "target": {
+          "intent": "Enter the member number to locate the member",
+          "role": "textbox",
+          "framePath": ["contentFrame"],
+          "strategies": [
+            {
+              "kind": "label_anchor",
+              "confidence": 0.82,
+              "role": "textbox",
+              "labelText": "Member Number",
+              "relation": "same-row"
+            },
+            {
+              "kind": "frame_role_ordinal",
+              "confidence": 0.4,
+              "role": "textbox",
+              "ordinal": 0,
+              "ordinalScope": "role"
+            }
+          ]
+        }
+      },
+      "s2": {
+        "target": {
+          "intent": "Click Find Member to locate the member",
+          "role": "button",
+          "framePath": ["contentFrame"],
+          "strategies": [
+            {
+              "kind": "role_name",
+              "confidence": 0.9,
+              "role": "button",
+              "name": "Find Member",
+              "match": "exact"
+            },
+            {
+              "kind": "frame_role_ordinal",
+              "confidence": 0.4,
+              "role": "button",
+              "ordinal": 0,
+              "ordinalScope": "role"
+            }
+          ]
+        }
+      },
+      "s8": {
+        "checkpoint": {
+          "all": [
+            {
+              "type": "textPresent",
+              "text": "Please review the details below before committing."
+            }
+          ],
+          "describe": "Summit's review screen is showing, not the confirmation"
+        }
+      }
+    },
+    "insertSteps": [
+      {
+        "after": "s8",
+        "step": {
+          "id": "s8b",
+          "intent": "Commit the sub-account request on Summit's review screen",
+          "action": "click",
+          "target": {
+            "intent": "the Commit Sub-Account button on the review screen",
+            "role": "button",
+            "framePath": ["contentFrame"],
+            "strategies": [
+              {
+                "kind": "role_name",
+                "confidence": 0.9,
+                "role": "button",
+                "name": "Commit Sub-Account",
+                "match": "exact"
+              }
+            ]
+          },
+          "precondition": {
+            "all": [
+              {
+                "type": "textPresent",
+                "text": "Please review the details below before committing."
+              }
+            ],
+            "describe": "we are on the review screen and have not already committed"
+          },
+          "checkpoint": {
+            "all": [
+              {
+                "type": "textPresent",
+                "text": "Sub-account opened successfully."
+              }
+            ],
+            "describe": "the confirmation screen replaced the review screen"
+          },
+          "waitPolicy": { "strategy": "conditionMet", "timeoutMs": 10000 },
+          "retryPolicy": { "maxAttempts": 1, "backoffMs": 500 },
+          "risk": "irreversible",
+          "onCondition": []
+        }
+      }
+    ],
+    "outputs": {},
+    "knownOutcomes": [],
+    "recoveries": []
+  }
+}

@@ -51,7 +51,16 @@ export interface StepTelemetry {
 export type FailureClassification =
   | "descriptor_unresolvable"
   | "descriptor_ambiguous"
+  /** A step's own post-action assertion did not hold. */
   | "checkpoint_failed"
+  /**
+   * Every step landed, but the capability's overall success condition did not
+   * hold. Distinct from `checkpoint_failed` because it points somewhere else:
+   * the steps did what they claimed, so the artifact's model of "done" is what
+   * is wrong — which is the signature of replaying against a variant nobody
+   * has overlaid yet, not of a broken step.
+   */
+  | "success_condition_failed"
   | "precondition_failed"
   | "policy_denied"
   | "recovery_exhausted"

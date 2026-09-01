@@ -35,6 +35,7 @@ import {
 import type { DiscoveryTrace, RecordedStep } from "../discovery/loop.js";
 import { evaluateCondition } from "../replay/checkpoint.js";
 import {
+  assertionFrame,
   canonicalizeEntryPoint,
   changedFrame,
   contentRoute,
@@ -206,7 +207,7 @@ export function compileTrace(trace: DiscoveryTrace, opts: CompileOptions): Capab
       severity: o.severity,
       message: o.message,
       detector: {
-        all: [{ type: "textPresent", text, framePath: contentRoute(o.snapshot).framePath }],
+        all: [{ type: "textPresent", text, framePath: assertionFrame(o.snapshot) }],
         describe: `the screen shows "${text}"`,
       },
     });
@@ -399,7 +400,7 @@ function successCondition(trace: DiscoveryTrace, provenance: ParamProvenance): C
   const { text } = generalizeDetectorText(raw, provenance);
   if (text.length >= 3) {
     return ConditionSchema.parse({
-      all: [{ type: "textPresent", text, framePath: frame.framePath }],
+      all: [{ type: "textPresent", text, framePath: assertionFrame(snapshot) }],
       describe: `the screen shows "${text}"`,
     });
   }

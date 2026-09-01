@@ -8,7 +8,7 @@
  */
 
 import { readdirSync, readFileSync, writeFileSync, mkdirSync, existsSync } from "node:fs";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { CapabilityArtifactSchema, type CapabilityArtifact } from "./schema.js";
 import { applyOverlay, OverlaySchema, type Overlay } from "./overlays.js";
 import { compareVersions, latest, parseCapabilityRef } from "./version.js";
@@ -74,21 +74,28 @@ export class ArtifactStore {
 
   /* ------------------------------------------------------------ overlays -- */
 
-  overlayPath(vendorProduct: string, tenant: string): string {
-    return join(this.paths.overlays, vendorProduct, `${tenant}.json`);
+  /**
+   * `overlays/<vendorProduct>/<tenant>/<capabilityId>.json`.
+   *
+   * Keyed by capability as well as tenant, because a tenant runs ~20 apps with
+   * many capabilities each. Keying only on (product, tenant) would force one
+   * institution's every specialization into a single document — the exact
+   * "unreviewable patch swamp" that separate overlay files exist to avoid.
+   */
+  overlayPath(vendorProduct: string, tenant: string, capabilityId: string): string {
+    return join(this.paths.overlays, vendorProduct, tenant, `${capabilityId}.json`);
   }
 
   saveOverlay(vendorProduct: string, overlay: Overlay): string {
     const parsed = OverlaySchema.parse(overlay);
-    const dir = join(this.paths.overlays, vendorProduct);
-    mkdirSync(dir, { recursive: true });
-    const path = join(dir, `${parsed.tenant}.json`);
+    const path = this.overlayPath(vendorProduct, parsed.tenant, parsed.basedOn.capabilityId);
+    mkdirSync(dirname(path), { recursive: true });
     writeFileSync(path, JSON.stringify(parsed, null, 2) + "\n");
     return path;
   }
 
-  loadOverlay(vendorProduct: string, tenant: string): Overlay | undefined {
-    const path = this.overlayPath(vendorProduct, tenant);
+  loadOverlay(vendorProduct: string, tenant: string, capabilityId: string): Overlay | undefined {
+    const path = this.overlayPath(vendorProduct, tenant, capabilityId);
     if (!existsSync(path)) return undefined;
     return OverlaySchema.parse(JSON.parse(readFileSync(path, "utf8")));
   }
@@ -101,7 +108,7 @@ export class ArtifactStore {
   resolve(ref: string, tenant?: string): { artifact: CapabilityArtifact; overlay?: Overlay } {
     const base = this.load(ref);
     if (!tenant) return { artifact: base };
-    const overlay = this.loadOverlay(base.target.vendorProduct, tenant);
+    const overlay = this.loadOverlay(base.target.vendorProduct, tenant, base.capabilityId);
     if (!overlay) return { artifact: base };
     return { artifact: applyOverlay(base, overlay), overlay };
   }

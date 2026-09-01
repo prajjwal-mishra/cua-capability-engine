@@ -25,7 +25,7 @@ import type { RunLog } from "../obs/log.js";
 import type { EvidenceWriter } from "../obs/evidence.js";
 import type { SessionControl } from "../escalation/control.js";
 import { InterventionQueue } from "../escalation/intervention.js";
-import { evaluateCondition, explain } from "./checkpoint.js";
+import { evaluateCondition, explain, observations } from "./checkpoint.js";
 import { detectOutcome, recoveryFor } from "./detectors.js";
 import { applyRecovery } from "./recovery.js";
 import type {
@@ -41,12 +41,32 @@ export interface ReplayOptions {
   readonly inputs: Readonly<Record<string, string>>;
   readonly allowWrites: boolean;
   readonly tenant?: string;
+  /**
+   * Which instance of the app to enter. In production this comes from the
+   * tenant record — "your CoreVantage install lives here" is deployment
+   * configuration, not a property of the recording. `variant` is this project's
+   * stand-in for that, and it is overridable so one capability can be aimed at
+   * a second tenant's instance BEFORE an overlay exists for them, which is how
+   * you find out what needs overlaying.
+   */
+  readonly variant?: string;
   /** Fail instead of escalating. Used by the stability runner, which must not
    *  leave a queue of interventions behind after twenty unattended runs. */
   readonly noEscalate?: boolean;
-  /** Resume an escalated run at this step, after a human handed control back. */
+  /**
+   * Resume an escalated run after a human handed control back. The step id to
+   * continue from, or VERIFY_ONLY when the operator finished the flow by hand
+   * and all that is left is to verify the success condition and extract.
+   */
   readonly resumeAtStepId?: string;
 }
+
+/**
+ * Resume sentinel: the operator says the flow is already at the end state.
+ * We still verify it — an operator's word that they finished is a claim about
+ * the screen, and the success condition is how we check the claim.
+ */
+export const VERIFY_ONLY = "$verify";
 
 export class InputValidationError extends Error {}
 
@@ -99,16 +119,21 @@ export async function replayCapability(
   // distinguishable, to the caller, from any other invalid argument.
   const bound = validateInputs(artifact, options.inputs);
 
-  await surface.act({ kind: "navigate", url: entryUrl(artifact) });
+  // A resume picks up a session a human has been driving. Navigating to the
+  // entry point would throw their work away and land us on a screen the
+  // remaining steps do not expect, so resume re-OBSERVES instead of resetting,
+  // and every step it then runs re-checks its own precondition.
+  const resuming = options.resumeAtStepId !== undefined;
+  if (!resuming) {
+    await surface.act({ kind: "navigate", url: entryUrl(artifact, options.variant) });
+  }
   let snapshot = await surface.observe();
-  ctx.snapshots.push(saveSnapshot(ctx, "000-entry", snapshot));
+  ctx.snapshots.push(saveSnapshot(ctx, resuming ? "000-resume" : "000-entry", snapshot));
 
-  const startIndex = options.resumeAtStepId
-    ? Math.max(
-        0,
-        artifact.steps.findIndex((s) => s.id === options.resumeAtStepId),
-      )
-    : 0;
+  const startIndex = resumeIndex(artifact, options.resumeAtStepId);
+  if (startIndex instanceof Error) {
+    throw new InputValidationError(startIndex.message);
+  }
 
   for (let i = startIndex; i < artifact.steps.length; i++) {
     const step = artifact.steps[i]!;
@@ -118,6 +143,24 @@ export async function replayCapability(
   }
 
   return finish(ctx, snapshot, bound);
+}
+
+/**
+ * Where a resume starts. An unknown step id is rejected rather than coerced to
+ * step 0: silently restarting a flow a human has half-completed is how you
+ * open two sub-accounts.
+ */
+function resumeIndex(artifact: CapabilityArtifact, stepId: string | undefined): number | Error {
+  if (stepId === undefined) return 0;
+  if (stepId === VERIFY_ONLY) return artifact.steps.length;
+  const index = artifact.steps.findIndex((s) => s.id === stepId);
+  if (index === -1) {
+    return new Error(
+      `cannot resume at '${stepId}': ${artifact.capabilityId}@${artifact.version} has no such step ` +
+        `(steps: ${artifact.steps.map((s) => s.id).join(", ")}, or '${VERIFY_ONLY}' to verify only)`,
+    );
+  }
+  return index;
 }
 
 /* ---------------------------------------------------------------- step --- */
@@ -157,8 +200,8 @@ async function runStep(
           ctx,
           step,
           "precondition_failed",
-          explain({ ...pre, passed: true }),
-          explain(pre),
+          step.precondition.describe ?? "the step's precondition",
+          observations(pre),
           snapshot,
         ),
       };
@@ -340,7 +383,7 @@ async function runStep(
         lastFailure = {
           classification: "checkpoint_failed",
           expected: step.checkpoint.describe ?? "the step's checkpoint",
-          observed: explain(check),
+          observed: observations(check),
         };
         if (attempts < step.retryPolicy.maxAttempts) {
           await sleep(step.retryPolicy.backoffMs);
@@ -552,10 +595,12 @@ async function finish(
     return fail(
       ctx,
       last,
-      "checkpoint_failed",
+      "success_condition_failed",
       artifact.successCondition.describe ?? "the capability's success condition",
-      explain(success),
+      observations(success),
       snapshot,
+      `every step completed, so the flow ran — but the end state the artifact expects is not what is on screen. ` +
+        `If this is a tenant the capability was not recorded against, that is what an overlay is for.`,
     );
   }
 
@@ -665,6 +710,7 @@ async function escalate(
     stepIntent: step.intent,
     reason,
     classification,
+    flow: ctx.artifact.steps.map((s) => ({ id: s.id, intent: s.intent, risk: s.risk })),
     snapshotPath: snapPath,
     screenshotPath: shot,
     visibleText: describeScreen(snapshot),
@@ -763,9 +809,9 @@ export function validateInputs(
   return bound;
 }
 
-function entryUrl(artifact: CapabilityArtifact): string {
+function entryUrl(artifact: CapabilityArtifact, override?: string): string {
   const origin = process.env.CUA_TARGET_ORIGIN ?? "http://localhost:4000";
-  const variant = artifact.target.variant;
+  const variant = override ?? artifact.target.variant;
   return variant ? `${origin}/?variant=${variant}` : `${origin}/`;
 }
 

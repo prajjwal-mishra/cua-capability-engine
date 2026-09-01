@@ -55,15 +55,20 @@ export const DISCOVERY_TOOLS: readonly ToolSpec[] = [
   },
   {
     name: "select",
-    description: "Choose an option in a combobox by its visible label.",
+    description:
+      "Choose an option in a combobox. Supply EITHER option (a literal visible label) OR param " +
+      "(the name of a goal input holding the label). Prefer param whenever the choice came from " +
+      "the task inputs — a hard-coded product type would make the capability only able to open " +
+      "that one product.",
     parameters: {
       type: "object",
       properties: {
         ref: str("element ref"),
-        option: str("visible option label"),
+        option: str("literal visible option label; omit if using param"),
+        param: str("name of an input parameter to bind; omit if using option"),
         why: str("rationale"),
       },
-      required: ["ref", "option", "why"],
+      required: ["ref", "why"],
       additionalProperties: false,
     },
   },

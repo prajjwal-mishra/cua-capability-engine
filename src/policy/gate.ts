@@ -60,6 +60,16 @@ export interface PolicyContext {
   readonly allowWrites: boolean;
   /** Replay only: unattended writes require an approved artifact. */
   readonly artifactApproved?: boolean;
+  /**
+   * A human is supervising this run and can see what it does.
+   *
+   * This is what makes the approval gate a gate rather than a deadlock: a draft
+   * cannot be approved until it has proven it replays, and it cannot prove that
+   * without being allowed to run. A supervised shadow replay is how a recording
+   * earns approval. An agent invoking through the catalog is never supervised,
+   * so it never gets this.
+   */
+  readonly attended?: boolean;
   readonly leaseOwner: "automation" | "operator";
   /** Risk this step declares in a reviewed artifact, if any. Can raise the
    *  heuristic classification, never lower it. */
@@ -143,10 +153,11 @@ export class PolicyGate {
           `'${describeTarget(action, ctx.element)}' writes state; re-run with --allow-writes to permit it`,
         );
       }
-      if (ctx.mode === "replay" && ctx.artifactApproved === false) {
+      if (ctx.mode === "replay" && ctx.artifactApproved === false && ctx.attended !== true) {
         return deny(
           "artifact_not_approved",
-          "unattended writes require an approved capability; this artifact is still draft",
+          "unattended writes require an approved capability; this artifact is still draft. " +
+            "Shadow-replay it with a human watching (--attended) to earn approval.",
         );
       }
       return { verdict: "allow", risk };

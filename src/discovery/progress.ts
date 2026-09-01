@@ -12,16 +12,27 @@ import { createHash } from "node:crypto";
 import type { UISnapshot } from "../surface/types.js";
 
 /**
- * A stable identity for "what screen is this". Deliberately excludes refs,
- * ordinals and geometry, which change for reasons that are not progress, and
- * includes the frame routes plus the multiset of role+name pairs.
+ * A stable identity for "what state is this", not "what screen is this".
+ *
+ * Excludes refs, ordinals and geometry, which change for reasons that are not
+ * progress. INCLUDES the value of every editable control, which is the
+ * distinction that matters: filling the second field of a five-field form
+ * changes nothing about the page, and a screen-only fingerprint calls that a
+ * stall — declaring the single most common back-office flow stuck three fields
+ * in. Typing the SAME value into the same field again still fingerprints
+ * identically, which is correct: that genuinely is no progress.
+ *
+ * The trade-off, named honestly: on a surface with a clock or a live token in
+ * the markup, nothing ever fingerprints twice and this monitor goes blind. The
+ * budget and the wall clock are the backstop for that case. The hash is never
+ * written anywhere, so including values leaks nothing.
  */
 export function snapshotFingerprint(snapshot: UISnapshot): string {
   const routes = snapshot.page.frames
     .map((f) => `${f.framePath.join(">")}=${f.routePattern}`)
     .sort();
   const elements = snapshot.elements
-    .map((e) => `${e.framePath.join(">")}|${e.role}|${e.name}`)
+    .map((e) => `${e.framePath.join(">")}|${e.role}|${e.name}|${e.value ?? ""}`)
     .sort();
   return createHash("sha1")
     .update([...routes, ...elements].join("\n"))

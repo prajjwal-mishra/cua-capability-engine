@@ -1,19 +1,16 @@
 {
   "schemaVersion": "1.0.0",
-  "capabilityId": "member.savings_balance",
+  "capabilityId": "member.open_subaccount",
   "version": "1.0.0",
-  "name": "Read member savings balance",
-  "description": "look up member 10042 and read their current savings balance",
+  "name": "Open a member sub-account",
+  "description": "open a new sub-account for member 10042 and reach the confirmation screen",
   "provenance": {
     "discoveredBy": "openai/gpt-oss-120b",
-    "runId": "discover-2026-08-31T06-57-09-488Z-878ceaef",
-    "recordedAt": "2026-08-31T06:57:25.348Z",
-    "gitSha": "2b5129c",
+    "runId": "discover-2026-09-01T09-24-27-636Z-004d5c26",
+    "recordedAt": "2026-09-01T09:26:04.604Z",
+    "gitSha": "c3b9253",
     "surfaceType": "legacy-web",
-    "evidenceRef": "evidence/discovery/discover-2026-08-31T06-57-09-488Z-878ceaef",
-    "recoveryStepsDropped": [
-      "maintenance_notice: \"Acknowledge system notice to access member details\""
-    ]
+    "evidenceRef": "evidence/discovery/discover-2026-09-01T09-24-27-636Z-004d5c26"
   },
   "target": {
     "surfaceType": "legacy-web",
@@ -32,65 +29,53 @@
       "sensitivity": "internal",
       "example": "10042",
       "description": "The member's identifier as printed on their statement."
-    }
-  ],
-  "outputs": [
+    },
     {
-      "name": "savings_balance",
+      "name": "nickname",
       "jsonSchema": {
-        "type": "string"
+        "type": "string",
+        "minLength": 3,
+        "maxLength": 40
       },
       "required": true,
-      "extraction": {
-        "descriptor": {
-          "intent": "the savings balance value",
-          "role": "cell",
-          "framePath": [
-            "contentFrame",
-            "acctFrame"
-          ],
-          "strategies": [
-            {
-              "kind": "table_cell",
-              "confidence": 0.9,
-              "columnHeader": "Current Balance",
-              "rowKey": "Savings"
-            },
-            {
-              "kind": "label_anchor",
-              "confidence": 0.82,
-              "role": "cell",
-              "labelText": "4417-99820-01",
-              "relation": "same-row"
-            },
-            {
-              "kind": "frame_role_ordinal",
-              "confidence": 0.4,
-              "role": "cell",
-              "ordinal": 2,
-              "ordinalScope": "role"
-            },
-            {
-              "kind": "structural",
-              "confidence": 0.3,
-              "path": "BODY[1]/TABLE[1]/TBODY[1]/TR[2]/TD[3]"
-            }
-          ]
-        },
-        "parse": {
-          "kind": "currency"
-        }
+      "sensitivity": "internal",
+      "example": "Vacation",
+      "description": "A short label for the new sub-account."
+    },
+    {
+      "name": "initialDeposit",
+      "jsonSchema": {
+        "type": "string",
+        "pattern": "^[0-9]+(\\.[0-9]{1,2})?$"
       },
-      "sensitivity": "internal"
+      "required": true,
+      "sensitivity": "internal",
+      "example": "250.00",
+      "description": "Opening deposit amount, in dollars."
+    },
+    {
+      "name": "accountKind",
+      "jsonSchema": {
+        "type": "string",
+        "enum": [
+          "Savings",
+          "Certificate"
+        ]
+      },
+      "required": true,
+      "sensitivity": "internal",
+      "example": "Certificate",
+      "description": "Product type for the new sub-account."
     }
   ],
+  "outputs": [],
   "steps": [
     {
       "id": "s1",
-      "intent": "Enter the member ID to search for the member",
+      "intent": "Enter the member ID to locate the member before creating a sub-account",
       "action": "type",
       "target": {
-        "intent": "Enter the member ID to search for the member",
+        "intent": "Enter the member ID to locate the member before creating a sub-account",
         "role": "textbox",
         "framePath": [
           "contentFrame"
@@ -148,10 +133,10 @@
     },
     {
       "id": "s2",
-      "intent": "Click Search to look up member 10042",
+      "intent": "Click Search to locate member 10042 and proceed to member details",
       "action": "click",
       "target": {
-        "intent": "Click Search to look up member 10042",
+        "intent": "Click Search to locate member 10042 and proceed to member details",
         "role": "button",
         "framePath": [
           "contentFrame"
@@ -211,10 +196,10 @@
     },
     {
       "id": "s3",
-      "intent": "Open member detail page for member 10042",
+      "intent": "Open member 10042 details to access sub-account creation",
       "action": "click",
       "target": {
-        "intent": "Open member detail page for member 10042",
+        "intent": "Open member 10042 details to access sub-account creation",
         "role": "link",
         "framePath": [
           "contentFrame"
@@ -259,14 +244,15 @@
       "checkpoint": {
         "all": [
           {
-            "type": "routeMatches",
-            "pattern": "/frame/member/:memberId",
+            "type": "elementPresent",
+            "role": "button",
+            "name": "Open Sub-Account",
             "framePath": [
               "contentFrame"
             ]
           }
         ],
-        "describe": "the contentFrame frame is at /frame/member/:memberId"
+        "describe": "a button named \"Open Sub-Account\" is present"
       },
       "waitPolicy": {
         "strategy": "conditionMet",
@@ -278,21 +264,326 @@
       },
       "risk": "read_only",
       "onCondition": []
+    },
+    {
+      "id": "s4",
+      "intent": "Open sub-account creation form for member 10042",
+      "action": "click",
+      "target": {
+        "intent": "Open sub-account creation form for member 10042",
+        "role": "button",
+        "framePath": [
+          "contentFrame"
+        ],
+        "strategies": [
+          {
+            "kind": "role_name",
+            "confidence": 0.9,
+            "role": "button",
+            "name": "Open Sub-Account",
+            "match": "exact"
+          },
+          {
+            "kind": "frame_role_ordinal",
+            "confidence": 0.55,
+            "role": "button",
+            "name": "Open Sub-Account",
+            "ordinal": 0,
+            "ordinalScope": "role_and_name"
+          },
+          {
+            "kind": "frame_role_ordinal",
+            "confidence": 0.4,
+            "role": "button",
+            "ordinal": 0,
+            "ordinalScope": "role"
+          },
+          {
+            "kind": "structural",
+            "confidence": 0.3,
+            "path": "BODY[1]/TABLE[4]/TBODY[1]/TR[1]/TD[1]/INPUT[1]"
+          }
+        ]
+      },
+      "checkpoint": {
+        "all": [
+          {
+            "type": "routeMatches",
+            "pattern": "/frame/subaccount/:memberId",
+            "framePath": [
+              "contentFrame"
+            ]
+          }
+        ],
+        "describe": "the contentFrame frame is at /frame/subaccount/:memberId"
+      },
+      "waitPolicy": {
+        "strategy": "conditionMet",
+        "timeoutMs": 10000
+      },
+      "retryPolicy": {
+        "maxAttempts": 1,
+        "backoffMs": 750
+      },
+      "risk": "reversible_write",
+      "onCondition": []
+    },
+    {
+      "id": "s5",
+      "intent": "Select the product type for the new sub-account",
+      "action": "select",
+      "target": {
+        "intent": "Select the product type for the new sub-account",
+        "role": "combobox",
+        "framePath": [
+          "contentFrame"
+        ],
+        "strategies": [
+          {
+            "kind": "label_anchor",
+            "confidence": 0.82,
+            "role": "combobox",
+            "labelText": "Account Type",
+            "relation": "same-row"
+          },
+          {
+            "kind": "role_name",
+            "confidence": 0.65,
+            "role": "combobox",
+            "name": "Account Type",
+            "match": "exact"
+          },
+          {
+            "kind": "frame_role_ordinal",
+            "confidence": 0.55,
+            "role": "combobox",
+            "name": "Account Type",
+            "ordinal": 0,
+            "ordinalScope": "role_and_name"
+          },
+          {
+            "kind": "frame_role_ordinal",
+            "confidence": 0.4,
+            "role": "combobox",
+            "ordinal": 0,
+            "ordinalScope": "role"
+          },
+          {
+            "kind": "structural",
+            "confidence": 0.3,
+            "path": "TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[2]/TD[2]/SELECT[1]"
+          }
+        ]
+      },
+      "value": {
+        "$param": "accountKind"
+      },
+      "waitPolicy": {
+        "strategy": "settled",
+        "timeoutMs": 10000
+      },
+      "retryPolicy": {
+        "maxAttempts": 3,
+        "backoffMs": 750
+      },
+      "risk": "read_only",
+      "onCondition": []
+    },
+    {
+      "id": "s6",
+      "intent": "Enter nickname for the new sub-account",
+      "action": "type",
+      "target": {
+        "intent": "Enter nickname for the new sub-account",
+        "role": "textbox",
+        "framePath": [
+          "contentFrame"
+        ],
+        "strategies": [
+          {
+            "kind": "label_anchor",
+            "confidence": 0.82,
+            "role": "textbox",
+            "labelText": "Nickname",
+            "relation": "same-row"
+          },
+          {
+            "kind": "role_name",
+            "confidence": 0.65,
+            "role": "textbox",
+            "name": "Nickname",
+            "match": "exact"
+          },
+          {
+            "kind": "frame_role_ordinal",
+            "confidence": 0.55,
+            "role": "textbox",
+            "name": "Nickname",
+            "ordinal": 0,
+            "ordinalScope": "role_and_name"
+          },
+          {
+            "kind": "frame_role_ordinal",
+            "confidence": 0.4,
+            "role": "textbox",
+            "ordinal": 0,
+            "ordinalScope": "role"
+          },
+          {
+            "kind": "structural",
+            "confidence": 0.3,
+            "path": "TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[3]/TD[2]/INPUT[1]"
+          }
+        ]
+      },
+      "value": {
+        "$param": "nickname"
+      },
+      "waitPolicy": {
+        "strategy": "settled",
+        "timeoutMs": 10000
+      },
+      "retryPolicy": {
+        "maxAttempts": 3,
+        "backoffMs": 750
+      },
+      "risk": "read_only",
+      "onCondition": []
+    },
+    {
+      "id": "s7",
+      "intent": "Enter the opening deposit amount for the new sub-account",
+      "action": "type",
+      "target": {
+        "intent": "Enter the opening deposit amount for the new sub-account",
+        "role": "textbox",
+        "framePath": [
+          "contentFrame"
+        ],
+        "strategies": [
+          {
+            "kind": "label_anchor",
+            "confidence": 0.82,
+            "role": "textbox",
+            "labelText": "Initial Deposit",
+            "relation": "same-row"
+          },
+          {
+            "kind": "role_name",
+            "confidence": 0.65,
+            "role": "textbox",
+            "name": "Initial Deposit",
+            "match": "exact"
+          },
+          {
+            "kind": "frame_role_ordinal",
+            "confidence": 0.55,
+            "role": "textbox",
+            "name": "Initial Deposit",
+            "ordinal": 0,
+            "ordinalScope": "role_and_name"
+          },
+          {
+            "kind": "frame_role_ordinal",
+            "confidence": 0.4,
+            "role": "textbox",
+            "ordinal": 1,
+            "ordinalScope": "role"
+          },
+          {
+            "kind": "structural",
+            "confidence": 0.3,
+            "path": "TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[4]/TD[2]/INPUT[1]"
+          }
+        ]
+      },
+      "value": {
+        "$param": "initialDeposit"
+      },
+      "waitPolicy": {
+        "strategy": "settled",
+        "timeoutMs": 10000
+      },
+      "retryPolicy": {
+        "maxAttempts": 3,
+        "backoffMs": 750
+      },
+      "risk": "read_only",
+      "onCondition": []
+    },
+    {
+      "id": "s8",
+      "intent": "Submit the sub-account creation form to reach the confirmation screen",
+      "action": "click",
+      "target": {
+        "intent": "Submit the sub-account creation form to reach the confirmation screen",
+        "role": "button",
+        "framePath": [
+          "contentFrame"
+        ],
+        "strategies": [
+          {
+            "kind": "role_name",
+            "confidence": 0.9,
+            "role": "button",
+            "name": "Continue",
+            "match": "exact"
+          },
+          {
+            "kind": "frame_role_ordinal",
+            "confidence": 0.55,
+            "role": "button",
+            "name": "Continue",
+            "ordinal": 0,
+            "ordinalScope": "role_and_name"
+          },
+          {
+            "kind": "frame_role_ordinal",
+            "confidence": 0.4,
+            "role": "button",
+            "ordinal": 0,
+            "ordinalScope": "role"
+          },
+          {
+            "kind": "structural",
+            "confidence": 0.3,
+            "path": "TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[1]/TD[1]/TABLE[1]/TBODY[1]/TR[5]/TD[2]/INPUT[1]"
+          }
+        ]
+      },
+      "checkpoint": {
+        "all": [
+          {
+            "type": "elementPresent",
+            "role": "columnheader",
+            "name": "Field",
+            "framePath": [
+              "contentFrame"
+            ]
+          }
+        ],
+        "describe": "a columnheader named \"Field\" is present"
+      },
+      "waitPolicy": {
+        "strategy": "conditionMet",
+        "timeoutMs": 10000
+      },
+      "retryPolicy": {
+        "maxAttempts": 1,
+        "backoffMs": 750
+      },
+      "risk": "reversible_write",
+      "onCondition": []
     }
   ],
   "successCondition": {
     "all": [
       {
-        "type": "elementPresent",
-        "role": "cell",
-        "name": "Savings",
-        "framePath": [
-          "contentFrame",
-          "acctFrame"
-        ]
+        "type": "textPresent",
+        "text": "Sub-account opened successfully."
       }
     ],
-    "describe": "the Savings row is present in the results grid"
+    "describe": "the screen shows \"Sub-account opened successfully.\""
   },
   "knownOutcomes": [
     {
@@ -522,9 +813,9 @@
   "lifecycle": {
     "state": "draft",
     "stability": {
-      "runs": 13,
-      "successes": 6,
-      "lastVerifiedAt": "2026-09-01T09:35:29.998Z"
+      "runs": 4,
+      "successes": 3,
+      "lastVerifiedAt": "2026-09-01T09:35:06.059Z"
     }
   }
 }

@@ -329,8 +329,14 @@ export class WebSurface implements Surface {
     }
   }
 
-  /** Frame names from the root document down. Empty array = main frame. */
-  private async framePathOf(frame: Frame): Promise<string[]> {
+  /**
+   * Frame names from the root document down. Empty array = main frame.
+   *
+   * Public because the human-action recorder needs to describe an operator's
+   * click in the same frame vocabulary the artifact uses. That translation has
+   * to come from whoever owns the page, and this is the only class that does.
+   */
+  async framePathOf(frame: Frame): Promise<string[]> {
     const path: string[] = [];
     let cur: Frame | null = frame;
     while (cur) {
