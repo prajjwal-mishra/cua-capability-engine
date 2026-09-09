@@ -207,6 +207,10 @@ describe("over HTTP", () => {
       expect(list).toHaveLength(1);
       expect(list[0]!.tool.inputSchema.required).toContain("memberId");
 
+      const desk = await fetch(`${server.url}/`);
+      expect(desk.headers.get("content-type") ?? "").toMatch(/html/);
+      expect(await desk.text()).toMatch(/Capabilities/);
+
       const missing = await fetch(`${server.url}/capabilities/nope.not_a_thing`);
       expect(missing.status).toBe(404);
 

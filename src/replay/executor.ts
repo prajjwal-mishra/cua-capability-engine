@@ -118,6 +118,7 @@ export async function replayCapability(
   // launched. A bad member id should cost nothing and should never be
   // distinguishable, to the caller, from any other invalid argument.
   const bound = validateInputs(artifact, options.inputs);
+  ctx.evidence.bindDeclaredSecrets(artifact.inputs, bound);
 
   // A resume picks up a session a human has been driving. Navigating to the
   // entry point would throw their work away and land us on a screen the
@@ -743,12 +744,12 @@ async function escalate(
     goal: ctx.artifact.description,
     stepId: step.id,
     stepIntent: step.intent,
-    reason,
+    reason: ctx.evidence.redactText(reason),
     classification,
     flow: ctx.artifact.steps.map((s) => ({ id: s.id, intent: s.intent, risk: s.risk })),
     snapshotPath: snapPath,
     screenshotPath: shot,
-    visibleText: describeScreen(snapshot),
+    visibleText: ctx.evidence.redactText(describeScreen(snapshot)),
   });
 
   // Automation releases the lease as part of raising the request, so there is

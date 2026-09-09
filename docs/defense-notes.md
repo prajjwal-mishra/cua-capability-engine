@@ -209,6 +209,20 @@ because every one of these was a wrong belief I held until something disagreed.
     working correctly on every path it covered — logs, prompts, snapshots. The
     leak was a path nobody had thought to route through it.
 
+14. **The operator desk was a second door around the gate.** Clicks injected
+    through `/api/live/act` went straight to the raw surface. The comment said
+    that was fine because a human is not the automation. The desk is also an
+    HTTP API anyone on localhost can hit, so "human" was a story the code was
+    not in a position to verify. Operator actions now pass `PolicyGate.check`
+    with `actor: "operator"`: irreversible is allowed (that is the handoff),
+    leaving the allowlist and typing into a forbidden field are not.
+
+15. **Intervention files skipped the redactor.** `EvidenceWriter.saveJson`
+    redacts; `InterventionQueue.write` did not. Screen text from the moment
+    the run stopped — the one place a member's data is most likely to be —
+    was written verbatim. The queue is still a dumb file store; the executor
+    and the desk now redact before they hand it anything.
+
 ---
 
 ## If you have ten minutes
@@ -219,6 +233,8 @@ npm run app                      # terminal 1
 
 npm run cua -- replay --capability member.savings_balance --input memberId=10042
 npm run demo:handoff             # the control transfer
+npm run desk                     # http://localhost:4100
+npm run catalog:serve            # http://localhost:4200
 npm run cua -- catalog describe member.savings_balance
 ```
 

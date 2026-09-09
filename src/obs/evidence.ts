@@ -59,6 +59,27 @@ export class EvidenceWriter {
     return path;
   }
 
+  redactText(text: string): string {
+    return this.redactor.redactText(text);
+  }
+
+  /**
+   * Schema-driven tokens for anything an artifact declared pii/secret. Called
+   * once at the start of a run so those values never reach a log, a prompt, or
+   * an intervention file even if a pattern rule would have missed them.
+   */
+  bindDeclaredSecrets(
+    inputs: ReadonlyArray<{ name: string; sensitivity: string }>,
+    values: Readonly<Record<string, string>>,
+  ): void {
+    for (const input of inputs) {
+      const value = values[input.name];
+      if (value && (input.sensitivity === "pii" || input.sensitivity === "secret")) {
+        this.redactor.registerLiteral(value, `{{param:${input.name}}}`);
+      }
+    }
+  }
+
   saveText(name: string, text: string): string {
     const path = join(this.dir, name);
     writeFileSync(path, this.redactor.redactText(text));

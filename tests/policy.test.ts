@@ -4,7 +4,8 @@
  */
 
 import { describe, expect, it } from "vitest";
-import { readFileSync } from "node:fs";
+import { mkdtempSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { loadAllowlist, routeMatches, type Allowlist } from "../src/policy/allowlist.js";
 import {
@@ -15,6 +16,7 @@ import {
 } from "../src/policy/gate.js";
 import { classifyAction, effectiveRisk } from "../src/policy/risk.js";
 import { Redactor } from "../src/policy/redact.js";
+import { EvidenceWriter } from "../src/obs/evidence.js";
 import type {
   ActionResult,
   Surface,
@@ -90,6 +92,47 @@ describe("deny by default", () => {
     const d = gate.check({ kind: "click", ref: "e1" }, ctx({ leaseOwner: "operator" }));
     expect(d.verdict).toBe("deny");
     if (d.verdict === "deny") expect(d.code).toBe("lease_not_held");
+  });
+
+  it("lets an operator who holds the lease confirm an irreversible action", () => {
+    const d = gate.check(
+      { kind: "click", ref: "e1" },
+      ctx({
+        actor: "operator",
+        leaseOwner: "operator",
+        allowWrites: true,
+        declaredRisk: "irreversible",
+      }),
+    );
+    expect(d.verdict).toBe("allow");
+  });
+
+  it("still refuses an operator who has not taken the session", () => {
+    const d = gate.check(
+      { kind: "click", ref: "e1" },
+      ctx({ actor: "operator", leaseOwner: "awaiting_operator" }),
+    );
+    expect(d.verdict).toBe("deny");
+    if (d.verdict === "deny") expect(d.code).toBe("lease_not_held");
+  });
+
+  it("does not let an operator leave the allowlist", () => {
+    const d = gate.check(
+      { kind: "navigate", url: "https://evil.example/x" },
+      ctx({ actor: "operator", leaseOwner: "operator" }),
+    );
+    expect(d.verdict).toBe("deny");
+    if (d.verdict === "deny") expect(d.code).toBe("origin_not_allowed");
+  });
+
+  it("does not let an operator type into a forbidden field", () => {
+    const ssn: UIElement = { ...el("textbox", "Member ID"), name: "Social Security Number" };
+    const d = gate.check(
+      { kind: "type", ref: ssn.ref, text: "x" },
+      ctx({ actor: "operator", leaseOwner: "operator", element: ssn }),
+    );
+    expect(d.verdict).toBe("deny");
+    if (d.verdict === "deny") expect(d.code).toBe("forbidden_field");
   });
 });
 
@@ -184,6 +227,28 @@ describe("redaction", () => {
     const r = new Redactor();
     const out = r.redactJson({ a: [{ b: "acct 4417-99820-01" }] });
     expect(JSON.stringify(out)).not.toContain("4417-99820-01");
+  });
+
+  it("tokens declared pii on the replay path, not only during discovery", () => {
+    const dir = mkdtempSync(join(tmpdir(), "cua-redact-"));
+    try {
+      const r = new Redactor();
+      const evidence = new EvidenceWriter(dir, "bind", r);
+      evidence.bindDeclaredSecrets(
+        [
+          { name: "ssn", sensitivity: "pii" },
+          { name: "memberId", sensitivity: "internal" },
+        ],
+        { ssn: "not-a-pattern-secret-xyz", memberId: "10042" },
+      );
+      // The pii value is gone even though no regex would have caught it.
+      // The internal member id is left alone — that is a locator, not a secret.
+      expect(r.redactText("saw not-a-pattern-secret-xyz for 10042")).toBe(
+        "saw {{param:ssn}} for 10042",
+      );
+    } finally {
+      rmSync(dir, { recursive: true, force: true });
+    }
   });
 });
 

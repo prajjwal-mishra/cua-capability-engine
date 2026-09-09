@@ -1,206 +1,186 @@
 /**
- * The operator console's markup.
+ * The operator desk.
  *
- * Deliberately one page and no build step. The brief puts a full co-browsing
- * console out of scope, and the interesting part of a handoff is not the
- * chrome around it — it is that the lease is authoritative, the session is the
- * same one, and the human's actions are captured. Everything here exists to
- * exercise those three things.
+ * Still one page and no build step — the brief puts a full co-browsing product
+ * out of scope. What changed is the chrome. A handoff is a control-room event:
+ * the lease, the live viewport, and the reason we stopped should read that way
+ * at a glance, not as a debug form that happens to have buttons.
  */
 
 import type { Intervention } from "../intervention.js";
+import { deskPage, esc } from "../../desk/chrome.js";
 
-const STYLE = `
-:root {
-  --bg: #0f1216; --panel: #171c22; --line: #262d36; --ink: #e6edf3;
-  --muted: #8b98a5; --accent: #4c8dff; --warn: #e3b341; --bad: #f85149; --ok: #3fb950;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-}
-* { box-sizing: border-box; }
-body { margin: 0; background: var(--bg); color: var(--ink); font-size: 13px; line-height: 1.55; }
-header {
-  display: flex; align-items: center; gap: 14px; padding: 14px 20px;
-  border-bottom: 1px solid var(--line); background: var(--panel);
-}
-header h1 { font-size: 14px; margin: 0; font-weight: 600; letter-spacing: .02em; }
-.badge { padding: 2px 9px; border-radius: 999px; font-size: 11px; border: 1px solid var(--line); }
-.badge.automation { color: var(--accent); border-color: #24406e; background: #101a2b; }
-.badge.awaiting_operator { color: var(--warn); border-color: #4d3f18; background: #221c0d; }
-.badge.operator { color: var(--ok); border-color: #1c3d24; background: #0d1f13; }
-.badge.none { color: var(--muted); }
-main { display: grid; grid-template-columns: minmax(320px, 460px) 1fr; gap: 18px; padding: 18px 20px; align-items: start; }
-@media (max-width: 900px) { main { grid-template-columns: 1fr; } }
-.panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 16px 18px; }
-.panel h2 { font-size: 12px; margin: 0 0 12px; text-transform: uppercase; letter-spacing: .08em; color: var(--muted); font-weight: 600; }
-dl { display: grid; grid-template-columns: 108px 1fr; gap: 6px 12px; margin: 0; }
-dt { color: var(--muted); }
-dd { margin: 0; word-break: break-word; }
-.reason { border-left: 2px solid var(--bad); padding: 8px 12px; background: #1c1416; border-radius: 0 6px 6px 0; margin-top: 12px; }
-.screen { width: 100%; border: 1px solid var(--line); border-radius: 6px; background: #000; display: block; }
-button {
-  font: inherit; padding: 7px 14px; border-radius: 6px; cursor: pointer;
-  border: 1px solid var(--line); background: #202832; color: var(--ink);
-}
-button:hover:not(:disabled) { border-color: var(--accent); }
-button:disabled { opacity: .4; cursor: not-allowed; }
-button.primary { background: #1b3050; border-color: #2c5599; color: #cfe2ff; }
-button.warn { background: #2a2312; border-color: #5a4a1c; color: #f2d585; }
-.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 12px; }
-select, input[type=text] {
-  font: inherit; background: #0f1419; color: var(--ink);
-  border: 1px solid var(--line); border-radius: 6px; padding: 6px 9px; min-width: 0;
-}
-select { max-width: 100%; }
-.log { margin: 12px 0 0; padding: 0; list-style: none; max-height: 190px; overflow-y: auto; }
-.log li { padding: 5px 0; border-bottom: 1px dashed var(--line); color: var(--muted); }
-.log li b { color: var(--ink); font-weight: 500; }
-.empty { color: var(--muted); padding: 20px 0; text-align: center; }
-table.q { width: 100%; border-collapse: collapse; }
-table.q th, table.q td { text-align: left; padding: 8px 10px; border-bottom: 1px solid var(--line); }
-table.q th { color: var(--muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: .06em; }
-a { color: var(--accent); }
-.note { color: var(--muted); margin-top: 14px; font-size: 12px; }
-code { background: #0f1419; padding: 1px 5px; border-radius: 4px; }
-`;
-
-const esc = (s: string): string =>
-  s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
-
-function page(title: string, body: string): string {
-  return `<!doctype html><html><head><meta charset="utf-8"><title>${esc(title)}</title>
-<meta name="viewport" content="width=device-width,initial-scale=1"><style>${STYLE}</style></head>
-<body>${body}</body></html>`;
-}
+const LEASE_LABEL: Record<string, string> = {
+  automation: "automation is driving",
+  awaiting_operator: "waiting for you",
+  operator: "you have the session",
+};
 
 /* ------------------------------------------------------------- queue ----- */
 
 export function queueView(items: readonly Intervention[], hasLive: boolean): string {
-  const rows =
+  const open = items.filter((i) => i.status === "open" || i.status === "operator_control");
+  const cards =
     items.length === 0
-      ? `<tr><td colspan="5" class="empty">No interventions raised.</td></tr>`
-      : items
+      ? `<div class="panel"><p class="empty">The queue is quiet.</p></div>`
+      : `<div class="grid-cards">${items
           .map(
-            (i) => `<tr>
-      <td><a href="/i/${esc(i.interventionId)}">${esc(i.interventionId)}</a></td>
-      <td>${esc(i.capability)}</td>
-      <td>${esc(i.stepId)} — ${esc(i.stepIntent)}</td>
-      <td>${esc(i.classification)}</td>
-      <td>${esc(i.status)}</td>
-    </tr>`,
+            (i) => `<a class="card" href="/i/${esc(i.interventionId)}">
+        <div class="kicker">${esc(i.capability)} · ${esc(i.stepId)}</div>
+        <h3>${esc(i.stepIntent)}</h3>
+        <p>${esc(i.reason)}</p>
+        <div class="foot">
+          <span class="badge ${esc(i.classification === "policy_denied" ? "irreversible" : "awaiting_operator")}">${esc(i.classification)}</span>
+          <span class="badge ${esc(i.status === "resolved" ? "approved" : i.status === "open" ? "awaiting_operator" : "operator")}">${esc(i.status.replace("_", " "))}</span>
+        </div>
+      </a>`,
           )
-          .join("");
+          .join("")}</div>`;
 
-  return page(
-    "Operator console",
-    `<header>
-      <h1>Operator console</h1>
-      <span class="badge ${hasLive ? "operator" : "none"}">${hasLive ? "live session attached" : "no live session"}</span>
-    </header>
-    <main style="grid-template-columns:1fr">
-      <section class="panel">
-        <h2>Intervention queue</h2>
-        <table class="q">
-          <tr><th>id</th><th>capability</th><th>stopped at</th><th>why</th><th>status</th></tr>
-          ${rows}
-        </table>
-        ${hasLive ? "" : `<p class="note">This console is running standalone, so it can review and resolve queued requests but cannot take control of a browser. Same-session takeover requires the console attached to a paused run — that happens automatically when a replay escalates with <code>--console</code>.</p>`}
-      </section>
-    </main>`,
-  );
+  const liveNote = hasLive
+    ? `<p>A paused run is attached to this desk. Open the live intervention to take the session.</p>`
+    : `<p>This desk is standalone: you can review every request a run has raised, but you cannot take a browser from here. Same-session takeover happens when a replay escalates with <code>--attended</code>.</p>`;
+
+  return deskPage({
+    title: "Cue · The Desk",
+    face: "The Desk",
+    liveBadge: hasLive ? "live session attached" : "no live session",
+    liveClass: hasLive ? "operator" : "none",
+    body: `<div class="wrap">
+      <div class="hero">
+        <div>
+          <h1>Interventions.</h1>
+          ${liveNote}
+        </div>
+        <div class="meta">${open.length} open · ${items.length} total</div>
+      </div>
+      ${cards}
+    </div>`,
+  });
 }
 
 /* ------------------------------------------------------- intervention ---- */
 
-export function interventionView(i: Intervention, live: boolean): string {
+export function interventionView(i: Intervention, live: boolean, hasShot = false): string {
   const resumeOptions = [
     ...i.flow.map(
       (s) =>
-        `<option value="${esc(s.id)}"${s.id === i.stepId ? " selected" : ""}>${esc(s.id)} — ${esc(s.intent)}${s.risk === "irreversible" ? " [irreversible]" : ""}</option>`,
+        `<option value="${esc(s.id)}"${s.id === i.stepId ? " selected" : ""}>${esc(s.id)} — ${esc(s.intent)}${s.risk === "irreversible" ? "  · irreversible" : ""}</option>`,
     ),
-    `<option value="$verify">$verify — I finished the flow; just verify and extract</option>`,
+    `<option value="$verify">$verify — I finished the flow; just verify</option>`,
   ].join("");
+
+  const flow = `<ol class="flow">${i.flow
+    .map(
+      (s) => `<li class="${s.id === i.stepId ? "here" : ""}">
+        <span class="sid">${esc(s.id)}</span>
+        <span>${esc(s.intent)} <span class="risk">${esc(s.risk.replace("_", " "))}</span></span>
+      </li>`,
+    )
+    .join("")}</ol>`;
 
   const controls = live
     ? `
+      <h2>Take the session</h2>
       <div class="row">
         <button id="take" class="primary">Take control</button>
       </div>
       <div class="row">
-        <select id="ref"><option value="">— take control to load page elements —</option></select>
+        <label class="field" style="flex:1">Page element
+          <select id="ref"><option value="">— take control to load elements —</option></select>
+        </label>
       </div>
       <div class="row">
-        <input type="text" id="text" placeholder="text to type (for a textbox)" style="flex:1">
+        <input type="text" id="text" placeholder="text to type" style="flex:1">
         <button id="doType" disabled>Type</button>
         <button id="doClick" disabled>Click</button>
       </div>
-      <p class="note">If the browser is running headed you can simply drive the visible window — every action is captured either way. These controls exist so takeover is equally real when the browser is headless.</p>
-      <h2 style="margin-top:18px">Captured operator actions</h2>
+      <p class="note">If the browser is headed, drive the visible window — every action is captured either way. These controls exist so takeover is equally real when it is headless.</p>
+      <h2 style="margin-top:22px">What you did</h2>
       <ul class="log" id="log"><li>Nothing captured yet.</li></ul>
-      <h2 style="margin-top:18px">Hand control back</h2>
+      <h2 style="margin-top:22px">Hand it back</h2>
       <div class="row">
-        <select id="resumeAt">${resumeOptions}</select>
+        <label class="field" style="flex:1">Resume at
+          <select id="resumeAt">${resumeOptions}</select>
+        </label>
       </div>
       <div class="row">
         <input type="text" id="note" placeholder="what you did, for the run record" style="flex:1">
         <button id="hand" class="warn" disabled>Hand back &amp; resume</button>
       </div>
-      <p class="note">Whatever you pick, automation re-observes the live page and re-checks that step's precondition before it acts. Your answer tells it where to look, not what to believe.</p>`
-    : `<p class="note">No live session is attached to this console, so control cannot be transferred here. The request below is preserved with its full context.</p>`;
+      <p class="note">Automation re-observes the live page and re-checks that step's precondition before it acts. Your answer tells it where to look, not what to believe.</p>`
+    : `<p class="note">No live session is attached, so control cannot be transferred here. The request is preserved with its full context.</p>`;
 
-  return page(
-    `Intervention ${i.interventionId}`,
-    `<header>
-      <h1><a href="/">&larr;</a> Intervention ${esc(i.interventionId)}</h1>
-      <span class="badge automation" id="lease">lease: …</span>
-    </header>
-    <main>
-      <section class="panel">
-        <h2>Why the run stopped</h2>
-        <dl>
-          <dt>capability</dt><dd>${esc(i.capability)}</dd>
-          <dt>goal</dt><dd>${esc(i.goal)}</dd>
-          <dt>step</dt><dd>${esc(i.stepId)} — ${esc(i.stepIntent)}</dd>
-          <dt>classification</dt><dd>${esc(i.classification)}</dd>
-          <dt>run</dt><dd>${esc(i.runId)}</dd>
-          <dt>status</dt><dd id="status">${esc(i.status)}</dd>
-        </dl>
-        <div class="reason">${esc(i.reason)}</div>
-        ${i.visibleText ? `<h2 style="margin-top:16px">What the automation could see</h2><div class="note">${esc(i.visibleText)}</div>` : ""}
-        ${controls}
-      </section>
-      <section class="panel">
-        <h2>Live session</h2>
-        <img class="screen" id="shot" alt="live session"
-             src="${live ? "/api/live/screenshot" : esc(i.screenshotPath ?? "")}">
-        <p class="note" id="shotnote">${live ? "Polling the live browser every 1.5s. Sensitive regions are masked before the image is encoded." : "Screenshot captured when the run stopped."}</p>
-      </section>
-    </main>
-    <script>${live ? CLIENT_JS : ""}</script>`,
-  );
+  return deskPage({
+    title: `Cue · ${i.interventionId}`,
+    face: "The Desk",
+    liveBadge: live ? LEASE_LABEL.awaiting_operator : i.status,
+    liveClass: live ? "awaiting_operator" : i.status === "resolved" ? "approved" : "none",
+    script: live ? CLIENT_JS : undefined,
+    body: `<div class="wrap">
+      <div class="hero">
+        <div>
+          <h1>${esc(i.stepId)} stopped.</h1>
+          <p>${esc(i.capability)} · ${esc(i.runId)}</p>
+        </div>
+      </div>
+      <div class="grid-2">
+        <section class="panel">
+          <h2>Why the run stopped</h2>
+          <dl class="kv">
+            <dt>goal</dt><dd>${esc(i.goal)}</dd>
+            <dt>step</dt><dd>${esc(i.stepId)} — ${esc(i.stepIntent)}</dd>
+            <dt>class</dt><dd>${esc(i.classification)}</dd>
+            <dt>status</dt><dd id="status">${esc(i.status)}</dd>
+          </dl>
+          <div class="reason">${esc(i.reason)}</div>
+          ${i.visibleText ? `<p class="note" style="margin-top:14px">${esc(i.visibleText)}</p>` : ""}
+          <h2 style="margin-top:22px">The flow</h2>
+          ${flow}
+          ${controls}
+        </section>
+        <section class="panel">
+          <h2>Live viewport</h2>
+          <div class="viewport">
+            <div class="bezel"><span>session</span><span id="shotnote">${live ? "polling every 1.5s · sensitive regions masked" : "captured when the run stopped"}</span></div>
+            ${
+              live
+                ? `<img class="screen" id="shot" alt="live session" src="/api/live/screenshot">`
+                : hasShot
+                  ? `<img class="screen" id="shot" alt="session at stop" src="/i/${esc(i.interventionId)}/shot">`
+                  : `<div class="screen empty-frame">no frame on disk — the run record still holds the snapshot</div>`
+            }
+          </div>
+        </section>
+      </div>
+    </div>`,
+  });
 }
 
 const CLIENT_JS = `
 const $ = (id) => document.getElementById(id);
+const LEASE = {
+  automation: "automation is driving",
+  awaiting_operator: "waiting for you",
+  operator: "you have the session",
+};
 let controlled = false;
 
 async function poll() {
-  $("shot").src = "/api/live/screenshot?t=" + Date.now();
+  const shot = $("shot");
+  if (shot) shot.src = "/api/live/screenshot?t=" + Date.now();
   try {
     const s = await (await fetch("/api/live/state")).json();
     const badge = $("lease");
-    badge.textContent = {
-      automation: "automation is driving",
-      awaiting_operator: "waiting for you to take control",
-      operator: "you are driving this session",
-    }[s.leaseOwner] || s.leaseOwner;
+    badge.textContent = LEASE[s.leaseOwner] || s.leaseOwner;
     badge.className = "badge " + s.leaseOwner;
     $("status").textContent = s.status;
     if (s.captured && s.captured.length) {
       $("log").innerHTML = s.captured
-        .map((c) => "<li><b>" + c.describe + "</b><br>" + (c.framePath.join(" &rsaquo; ") || "main") + "</li>")
+        .map((c) => "<li><b>" + c.describe + "</b><br>" + (c.framePath.join(" › ") || "main") + "</li>")
         .join("");
     }
-  } catch (e) { /* the run may have resumed and closed the console */ }
+  } catch (e) { /* the run may have resumed and closed the desk */ }
 }
 
 async function loadElements() {
@@ -232,17 +212,22 @@ $("hand").onclick = async () => {
   $("hand").disabled = true;
   $("doType").disabled = true;
   $("doClick").disabled = true;
-  $("shotnote").textContent = "Control handed back at " + body.resumeAtStepId + ". The run re-observes and re-verifies that step's precondition before continuing — it never assumes the page is where it left it.";
+  $("shotnote").textContent = "handed back at " + body.resumeAtStepId + " · the run re-observes before continuing";
   $("status").textContent = body.status || "resolved";
 };
 
 async function act(kind) {
   const ref = $("ref").value;
-  await fetch("/api/live/act", {
+  const r = await fetch("/api/live/act", {
     method: "POST",
     headers: { "content-type": "application/json" },
     body: JSON.stringify({ kind, ref, text: $("text").value }),
   });
+  if (!r.ok) {
+    const body = await r.json().catch(() => ({}));
+    $("shotnote").textContent = body.error || ("action refused (" + r.status + ")");
+    return;
+  }
   await loadElements();
   poll();
 }

@@ -1,11 +1,13 @@
 /**
  * The single choke point.
  *
- * Every action dispatched by this system — discovery and replay alike — passes
- * through PolicyGate.check. That is enforced structurally: the discovery loop
- * and the replay executor are handed a GuardedSurface, never a raw Surface, and
- * GuardedSurface cannot be constructed without a gate. A test asserts the gate
- * was consulted exactly as many times as the surface was driven.
+ * Every action dispatched by this system — discovery, replay, and the operator
+ * desk — passes through PolicyGate.check. Discovery and replay are handed a
+ * GuardedSurface, which cannot be constructed without a gate. The desk calls
+ * check() itself before it touches the raw surface, with actor: "operator":
+ * a human is not the automation, but they are still inside the allowlist.
+ * A test asserts the gate was consulted exactly as many times as the surface
+ * was driven.
  *
  * Gate and GuardedSurface live in one file on purpose: the security-relevant
  * question "can anything act without a check?" should be answerable by reading
@@ -71,6 +73,14 @@ export interface PolicyContext {
    * so it never gets this.
    */
   readonly attended?: boolean;
+  /**
+   * Who is asking. Defaults to automation. An operator who has taken the
+   * lease may act — including on irreversible controls, which is the whole
+   * point of the handoff — but they still cannot leave the allowlist or type
+   * into a forbidden field. The desk is an HTTP API on localhost; without
+   * those checks it would be a second door around the gate.
+   */
+  readonly actor?: "automation" | "operator";
   readonly leaseOwner: LeaseOwner;
   /** Risk this step declares in a reviewed artifact, if any. Can raise the
    *  heuristic classification, never lower it. */
@@ -100,11 +110,16 @@ export class PolicyGate {
       reason,
     });
 
-    // 1. Control. Automation may not act while a human holds the session.
-    //    Checking this here rather than in the executor means there is one
-    //    answer to "who is in control", and it is enforced at the same point
-    //    as everything else.
-    if (ctx.leaseOwner !== "automation") {
+    // 1. Control. One owner, enforced here rather than by convention.
+    const actor = ctx.actor ?? "automation";
+    if (actor === "operator") {
+      if (ctx.leaseOwner !== "operator") {
+        return deny(
+          "lease_not_held",
+          "take control before acting on the session",
+        );
+      }
+    } else if (ctx.leaseOwner !== "automation") {
       const held =
         ctx.leaseOwner === "operator"
           ? "an operator is driving this session"
@@ -148,7 +163,11 @@ export class PolicyGate {
       }
     }
 
-    // 6. Risk.
+    // 6. Risk. An operator who holds the lease is the confirmation that
+    //    irreversible actions exist to wait for. The allowlist still bound
+    //    them in the checks above.
+    if (actor === "operator") return { verdict: "allow", risk };
+
     if (risk === "read_only") return { verdict: "allow", risk };
 
     if (risk === "reversible_write") {

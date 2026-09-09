@@ -35,7 +35,7 @@ const USAGE = `cua — computer-use capability engine
              The agent-facing surface: typed capabilities, invoked by name.
 
   operator   [--port 4100]
-             Operator console: triage queued interventions across all runs.
+             The desk: triage queued interventions across all runs.
              Same-session takeover happens via 'replay --attended'.
 `;
 

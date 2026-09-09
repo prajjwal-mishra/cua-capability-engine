@@ -145,10 +145,18 @@ is of something other than what runs.
 
 ## 5. Policy: one gate, before every action
 
-`GuardedSurface` wraps the raw surface, so there is no code path that acts on the
-UI without passing the gate. The gate checks, in order: lease ownership, action
-type, origin, route, element role, forbidden fields, risk class, write
-authorization, and artifact approval.
+`GuardedSurface` wraps the raw surface for discovery and replay, so those paths
+cannot act without a check. The operator desk is the other caller: it holds the
+raw surface because a human is not the automation, but it still calls
+`PolicyGate.check` with `actor: "operator"` before every click and keystroke.
+An operator who holds the lease may confirm an irreversible action — that is
+why the handoff exists — and still cannot leave the allowlist or type into a
+forbidden field. The desk is an HTTP API on localhost; without those checks it
+would be a second door around the gate.
+
+The gate checks, in order: lease ownership (who is asking, and whether they
+hold it), action type, origin, route, element role, forbidden fields, risk
+class, write authorization, and artifact approval.
 
 Risk is classified heuristically from the action and the element (a button
 reading "Commit" is not the same as a button reading "Search"), and a step's

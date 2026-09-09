@@ -22,7 +22,7 @@ export async function operatorCommand(args: Args): Promise<void> {
   const open = listAllInterventions(runsRoot).filter((x) => x.intervention.status === "open");
   const console_ = await startOperatorConsole({ port, runsRoot });
 
-  console.log(`operator console: ${console_.url}`);
+  console.log(`operator desk:    ${console_.url}`);
   console.log(`interventions:    ${listAllInterventions(runsRoot).length} total, ${open.length} open`);
   console.log(
     `\nThis console is standalone, so it can review and resolve requests but not take control of a\n` +

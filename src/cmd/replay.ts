@@ -217,6 +217,8 @@ async function attend(
       surface: session.web,
       control: session.control,
       redactor: session.redactor,
+      gate: session.gate,
+      allowlist: session.allowlist,
       queue,
       intervention,
       log: session.log,

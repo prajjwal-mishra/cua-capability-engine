@@ -116,6 +116,8 @@ interface Harness {
   web: WebSurface;
   redactor: Redactor;
   log: RunLog;
+  gate: PolicyGate;
+  allowlist: ReturnType<typeof testAllowlist>;
 }
 
 let seq = 0;
@@ -131,8 +133,9 @@ async function harness(artifact: CapabilityArtifact): Promise<Harness> {
   const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
   const page = await context.newPage();
   const web = new WebSurface(page);
+  const gate = new PolicyGate();
   const surface = new GuardedSurface(web, {
-    gate: new PolicyGate(),
+    gate,
     context: () => ({
       mode: "replay",
       allowlist,
@@ -160,6 +163,8 @@ async function harness(artifact: CapabilityArtifact): Promise<Harness> {
     web,
     redactor,
     log,
+    gate,
+    allowlist,
     close: () => context.close(),
   };
 }
@@ -181,6 +186,8 @@ async function attachConsole(h: Harness, interventionId: string) {
       surface: h.web,
       control: h.control,
       redactor: h.redactor,
+      gate: h.gate,
+      allowlist: h.allowlist,
       queue,
       intervention,
       log: h.log,

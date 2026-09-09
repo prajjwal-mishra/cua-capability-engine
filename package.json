@@ -10,6 +10,8 @@
     "app": "tsx apps/legacy-cu/server.ts",
     "app:start": "tsx apps/legacy-cu/server.ts",
     "cua": "tsx src/cli.ts",
+    "desk": "tsx src/cli.ts operator",
+    "catalog:serve": "tsx src/cli.ts catalog serve",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "check": "npm run typecheck && npm test",

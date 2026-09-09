@@ -36,8 +36,9 @@ export interface SessionSpec {
 
 export interface Session {
   readonly page: Page;
-  /** The raw surface. Only the operator handoff uses this: a human is not the
-   *  automation, and the lease — not the gate — is what authorises them. */
+  /** The raw surface. The operator desk drives this after the gate has allowed
+   *  the action: a human is not the automation, but they are still inside the
+   *  allowlist. */
   readonly web: WebSurface;
   /** The only surface the executor ever sees. */
   readonly surface: GuardedSurface;
@@ -46,6 +47,7 @@ export interface Session {
   readonly evidence: EvidenceWriter;
   readonly redactor: Redactor;
   readonly gate: PolicyGate;
+  readonly allowlist: Allowlist;
   readonly close: () => Promise<void>;
 }
 
@@ -88,6 +90,7 @@ export async function openSession(spec: SessionSpec): Promise<Session> {
     evidence,
     redactor,
     gate,
+    allowlist: spec.allowlist,
     close: async () => {
       await context.close();
       if (ownBrowser) await browser.close();

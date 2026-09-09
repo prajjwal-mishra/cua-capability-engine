@@ -13,6 +13,7 @@ import express from "express";
 import { invokeCapability, listCatalog, CapabilityNotInvocable, entryFor } from "./catalog.js";
 import { ArtifactStore } from "../artifact/store.js";
 import { InputValidationError } from "../replay/executor.js";
+import { catalogApp } from "./ui.js";
 
 export async function startCatalogServer(
   port: number,
@@ -20,6 +21,10 @@ export async function startCatalogServer(
 ): Promise<{ url: string; close: () => Promise<void> }> {
   const app = express();
   app.use(express.json());
+
+  app.get("/", (_req, res) => {
+    res.type("html").send(catalogApp());
+  });
 
   app.get("/capabilities", (_req, res) => {
     res.json(listCatalog(store));

@@ -22,8 +22,11 @@
 import express from "express";
 import type { Page } from "playwright";
 import { join } from "node:path";
+import { existsSync } from "node:fs";
 import type { WebSurface } from "../../surface/web.surface.js";
 import type { Redactor } from "../../policy/redact.js";
+import type { Allowlist } from "../../policy/allowlist.js";
+import { PolicyGate, PolicyViolation } from "../../policy/gate.js";
 import type { SessionControl } from "../control.js";
 import type { RunLog } from "../../obs/log.js";
 import {
@@ -44,6 +47,8 @@ export interface LiveSession {
   readonly surface: WebSurface;
   readonly control: SessionControl;
   readonly redactor: Redactor;
+  readonly gate: PolicyGate;
+  readonly allowlist: Allowlist;
   readonly queue: InterventionQueue;
   readonly intervention: Intervention;
   /**
@@ -103,7 +108,23 @@ export async function startOperatorConsole(
       return;
     }
     const isLive = live?.intervention.interventionId === req.params.id;
-    res.send(interventionView(found.intervention, isLive));
+    const shotRel = found.intervention.screenshotPath;
+    const hasShot = Boolean(shotRel && existsSync(join(found.runDir, shotRel)));
+    res.send(interventionView(found.intervention, isLive, hasShot));
+  });
+
+  app.get("/i/:id/shot", (req, res) => {
+    const found = listAllInterventions(options.runsRoot).find(
+      (x) => x.intervention.interventionId === req.params.id,
+    );
+    const rel = found?.intervention.screenshotPath;
+    if (!found || !rel) {
+      res.status(404).end();
+      return;
+    }
+    res.sendFile(join(found.runDir, rel), (err) => {
+      if (err && !res.headersSent) res.status(404).end();
+    });
   });
 
   app.get("/api/interventions", (_req, res) => {
@@ -220,20 +241,41 @@ export async function startOperatorConsole(
     if (!session) return;
     const { kind, ref, text } = req.body as { kind: string; ref: string; text?: string };
     try {
-      // Dispatched on the RAW surface: the policy gate governs what the
-      // automation may do, and a human operator is not the automation. The
-      // lease is what authorises this, and it is checked above.
-      const result =
+      // Observe first so the gate can reason about the actual target, not just
+      // the action's shape — the same order GuardedSurface uses.
+      const snapshot = await session.surface.observe();
+      const element = snapshot.elements.find((e) => e.ref === ref);
+      const action =
         kind === "type"
-          ? await session.surface.act({ kind: "type", ref, text: text ?? "" })
-          : await session.surface.act({ kind: "click", ref });
+          ? ({ kind: "type" as const, ref, text: text ?? "" })
+          : ({ kind: "click" as const, ref });
+      const decision = session.gate.check(action, {
+        mode: "replay",
+        allowlist: session.allowlist,
+        currentUrl: snapshot.page.url,
+        element,
+        allowWrites: true,
+        artifactApproved: true,
+        attended: true,
+        actor: "operator",
+        leaseOwner: session.control.owner,
+      });
+      if (decision.verdict === "deny") {
+        res.status(403).json({
+          error: decision.reason,
+          code: decision.code,
+        });
+        return;
+      }
+      const result = await session.surface.act(action);
       res.json({
         ok: result.ok,
         error: result.error,
         captured: capturedActions(session.page).length,
       });
     } catch (err) {
-      res.status(500).json({ error: err instanceof Error ? err.message : String(err) });
+      const message = err instanceof PolicyViolation ? err.message : err instanceof Error ? err.message : String(err);
+      res.status(err instanceof PolicyViolation ? 403 : 500).json({ error: message });
     }
   });
 
@@ -257,15 +299,15 @@ export async function startOperatorConsole(
         intent: session.intervention.stepIntent,
         action: `human:${action.kind}`,
         leaseOwner: "operator",
-        outcome: action.describe,
-        extra: {
+        outcome: session.redactor.redactText(action.describe),
+        extra: session.redactor.redactJson({
           interventionId: session.intervention.interventionId,
           role: action.role,
           name: action.name,
           framePath: action.framePath,
           url: action.url,
           at: action.at,
-        },
+        }),
       });
     }
     session.log?.write({
@@ -285,9 +327,9 @@ export async function startOperatorConsole(
         status: "resolved",
         resolution: {
           resolvedAt: new Date().toISOString(),
-          note,
+          note: session.redactor.redactText(note),
           resumeAtStepId,
-          capturedActions: captured,
+          capturedActions: session.redactor.redactJson(captured),
         },
       });
     }

@@ -86,6 +86,20 @@ re-recording per tenant.
 
 ([evidence](./evidence/10-cross-tenant-without-overlay), [evidence](./evidence/11-cross-tenant-with-overlay))
 
+### Open the desk
+
+Two pages. Same visual language, no build step.
+
+```bash
+npm run desk             # http://localhost:4100  — intervention queue and live takeover
+npm run catalog:serve    # http://localhost:4200  — typed contracts, invocable from the page
+```
+
+The desk is what an operator sees when a run escalates. The catalog is what an
+agent sees, rendered so a human can read the contract without curling it. Invoke
+from the catalog page hits the same `POST /capabilities/:id/invoke` an agent
+would — drafts and writes still refused unless you opt in.
+
 ### Rediscovering a capability from scratch
 
 This is the only part that needs a model. Copy `.env.example` to `.env` and fill
@@ -157,8 +171,9 @@ artifact shape describe a desktop app later.
 | `src/recorder/` | compiling a successful trace into an artifact |
 | `src/replay/` | the deterministic executor. No model reaches this directory, and a test enforces it |
 | `src/policy/` | allowlist, risk classification, the gate, redaction |
-| `src/escalation/` | the session lease, intervention queue, and operator console |
-| `src/catalog/` | the agent-facing surface: list, describe, invoke |
+| `src/escalation/` | the session lease, intervention queue, and operator desk |
+| `src/catalog/` | the agent-facing surface: list, describe, invoke — JSON and a page |
+| `src/desk/` | shared chrome for the two human-facing surfaces |
 | `evidence/` | 20 real runs, regenerable with `npm run evidence` |
 | `docs/` | design defence and the questions this system does not answer yet |
 

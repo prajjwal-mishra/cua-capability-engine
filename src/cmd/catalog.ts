@@ -243,7 +243,8 @@ function setState(args: Args, state: "approved" | "deprecated"): void {
 async function serve(args: Args): Promise<void> {
   const port = Number(args.flags.port ?? 4200);
   const server = await startCatalogServer(port);
-  console.log(`capability catalog: ${server.url}/capabilities`);
+  console.log(`capability catalog: ${server.url}`);
+  console.log(`contract:           GET  ${server.url}/capabilities`);
   console.log(`invoke:             POST ${server.url}/capabilities/<id>/invoke`);
   console.log(`\nCtrl-C to stop.`);
   await new Promise<void>((resolve) => {

@@ -120,6 +120,25 @@ describe("descriptors for reading a value out", () => {
     // And the ladder still has the rungs that do not depend on anyone's data.
     expect(d.strategies.some((s) => s.kind === "frame_role_ordinal")).toBe(true);
   });
+
+  it("treats a Field/Value review table as a grid, not as labelled form fields", () => {
+    // variant-b's review screen is <th>Field</th><th>Value</th>. Perception
+    // fills both columnHeader and rowKey, so the grid heuristic fires. Rung 2
+    // would duplicate rung 3 (leftCell === rowKey === "Product") at a lower
+    // score — dropping it is the same relation, kept once, ranked higher.
+    const cell: UIElement = {
+      ...balanceCell(),
+      nearbyText: {
+        leftCell: "Product",
+        columnHeader: "Value",
+        rowKey: "Product",
+      },
+    };
+    const d = describeElement(cell, "the product on the review screen", { forExtraction: true });
+    expect(d.strategies.some((s) => s.kind === "label_anchor")).toBe(false);
+    expect(d.strategies.some((s) => s.kind === "table_cell")).toBe(true);
+    expect(d.strategies.some((s) => s.kind === "frame_role_ordinal")).toBe(true);
+  });
 });
 
 describe("resolution", () => {
