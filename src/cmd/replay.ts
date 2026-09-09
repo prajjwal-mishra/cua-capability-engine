@@ -1,11 +1,11 @@
 /**
- * `cua replay` — the production execution path. No model, no API key, no
+ * `cua replay` - the production execution path. No model, no API key, no
  * network beyond the target app.
  *
  * This file also owns the attended path: when a replay escalates and the caller
  * passed --attended, the SAME browser context is handed to an operator console
  * and the run waits. That wiring lives here rather than in the executor on
- * purpose — the executor's job ends at "I stopped safely, here is the resume
+ * purpose - the executor's job ends at "I stopped safely, here is the resume
  * token". Who picks that token up, and whether a human is even available, is a
  * deployment question; in production the answer is a queue worker, not a flag.
  */
@@ -45,7 +45,7 @@ export async function replayCommand(args: Args): Promise<void> {
    * Wanted for two situations: a stability sweep, where nobody is watching and
    * a queued request would just sit there, and demonstrating what a genuine
    * dead end looks like. Escalation is the better default precisely because it
-   * does not throw away a live session — which is also why it is unhelpful when
+   * does not throw away a live session - which is also why it is unhelpful when
    * what you want to see is the failure.
    */
   const noEscalate = args.flags["no-escalate"] === true || stability > 1;
@@ -53,7 +53,7 @@ export async function replayCommand(args: Args): Promise<void> {
   const inject = args.flags.inject ? String(args.flags.inject) : undefined;
   const injectCount = Number(args.flags["inject-count"] ?? 1);
   // Which request the fault lands on. Without this the fault hits whichever
-  // iframe the shell loads first, which is not where the flow is — the demo
+  // iframe the shell loads first, which is not where the flow is - the demo
   // would be showing a nav frame failing, not a recovery mid-capability.
   const injectPath = String(args.flags["inject-path"] ?? "/frame/member");
 
@@ -137,7 +137,7 @@ export async function replayCommand(args: Args): Promise<void> {
       }
 
       // A run with a fault deliberately armed says nothing about whether the
-      // capability is stable — we broke the app on purpose. Recording it would
+      // capability is stable - we broke the app on purpose. Recording it would
       // let a demonstration of error handling degrade the thing being
       // demonstrated.
       //
@@ -186,12 +186,12 @@ const replay = (
 const HANDOFF_TIMEOUT_MS = Number(process.env.CUA_HANDOFF_TIMEOUT_MS ?? 15 * 60_000);
 
 /**
- * Pause, cede control, resume — on the same session.
+ * Pause, cede control, resume - on the same session.
  *
  * The console starts AFTER the executor has already moved the lease to the
  * operator, so at no point do both sides believe they may act. When the human
  * hands back, what they did is written into the run log as evidence and the
- * executor is re-entered at the step they nominated — which re-observes the
+ * executor is re-entered at the step they nominated - which re-observes the
  * page and re-checks that step's precondition before touching anything.
  */
 async function attend(
@@ -234,7 +234,7 @@ async function attend(
   console.log(
     opts.headless
       ? `The browser is headless, so drive the session from the console's element list.`
-      : `The browser window IS the live session — drive it directly, or use the console.`,
+      : `The browser window IS the live session - drive it directly, or use the console.`,
   );
   console.log(`waiting for an operator to take control and hand back …`);
 
@@ -273,7 +273,7 @@ async function attend(
     };
   }
 
-  // The human's actions are already in the run log — the console writes them at
+  // The human's actions are already in the run log - the console writes them at
   // handback, so they are recorded whether or not this particular caller is the
   // one waiting. Duplicating them here would double every entry in the audit
   // trail for the actions that matter most.
@@ -329,7 +329,7 @@ function reportStability(results: readonly ReplayResult[]): void {
   const drifted = results.flatMap((r) => r.telemetry.filter((t) => t.driftSignal));
   console.log(
     drifted.length === 0
-      ? "drift:     none — every step resolved on its recorded top strategy"
+      ? "drift:     none - every step resolved on its recorded top strategy"
       : `drift:     ${drifted.length} step(s) resolved on a lower rung: ${[...new Set(drifted.map((d) => `${d.stepId}→${d.resolvedBy}`))].join(", ")}`,
   );
 }

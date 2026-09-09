@@ -2,13 +2,13 @@
  * Descriptor resolution.
  *
  * Note what this operates on: a UISnapshot, not a live DOM. Resolution is a
- * pure function from (descriptor, snapshot) to a ref. That is deliberate —
+ * pure function from (descriptor, snapshot) to a ref. That is deliberate -
  * it means the locator ladder is unit-testable against saved fixtures with no
  * browser, and it means a DesktopSurface that produces the same snapshot shape
  * gets the same resolution behaviour for free.
  *
  * The rule that matters: A UNIQUE MATCH IS REQUIRED. If a rung matches three
- * elements we do not pick one — we record the ambiguity and try a more specific
+ * elements we do not pick one - we record the ambiguity and try a more specific
  * rung. If no rung resolves uniquely, resolution fails. Guessing here is how
  * automation ends up clicking the wrong customer's account.
  */
@@ -44,8 +44,8 @@ export interface ResolveOptions {
   readonly allowCoordinateFallback?: boolean;
   /**
    * Input values for this invocation, substituted into parameterized strategy
-   * text. Without this, any descriptor that identifies a row BY its key — "the
-   * link named 10042" — is welded to the member it was recorded against, and
+   * text. Without this, any descriptor that identifies a row BY its key - "the
+   * link named 10042" - is welded to the member it was recorded against, and
    * the capability is not a capability at all.
    */
   readonly bindings?: Readonly<Record<string, string>>;
@@ -96,7 +96,7 @@ export function resolveDescriptor(
         attempts,
       };
     }
-    // More than one match is not a coin flip — escalate to a more specific rung.
+    // More than one match is not a coin flip - escalate to a more specific rung.
     if (matches.length > 1) sawAmbiguity = matches.length;
   }
 
@@ -144,7 +144,7 @@ function matchStrategy(
 
     case "frame_role_ordinal": {
       // Two readings, and they resolve to different elements. Scoped to role
-      // alone, the ordinal counts every control of that role in the frame — the
+      // alone, the ordinal counts every control of that role in the frame - the
       // reading that still means something after a relabel. Scoped to role and
       // name, it disambiguates genuine duplicates of the same label.
       if (strategy.ordinalScope === "role") {

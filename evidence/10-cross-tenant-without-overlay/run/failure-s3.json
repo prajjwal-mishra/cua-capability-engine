@@ -5,7 +5,7 @@
     "classification": "success_condition_failed",
     "expected": "the Savings row is present in the results grid",
     "observed": "no cell \"Savings\"",
-    "remediation": "every step completed and nothing on screen matches a known fault, so the flow ran — but the end state the artifact expects is not what is there. If this is a tenant the capability was not recorded against, that is what an overlay is for.",
+    "remediation": "every step completed and nothing on screen matches a known fault, so the flow ran - but the end state the artifact expects is not what is there. If this is a tenant the capability was not recorded against, that is what an overlay is for.",
     "visibleText": "[navFrame=/frame/nav contentFrame=/frame/member/:id contentFrame>acctFrame=/frame/accounts/:id] Riverbend Credit Union | Member Search | Reports | Batch Jobs | Account Servicing : Marisol Vantreight | Member Number | 10042 | Name | Vantreight, Marisol | Branch | Riverbend Main | Member Since | [REDACTED:dob] | Accounts",
     "screenshotPath": "screenshots/failure-s3.png",
     "url": "http://localhost:4000/?variant=variant-b"

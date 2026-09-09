@@ -1,7 +1,7 @@
 /**
  * Human face of the catalog. The JSON contract at /capabilities is the
  * load-bearing artifact; this page exists so a reviewer can see that contract
- * without curling it, and invoke a capability the way an agent would — by name,
+ * without curling it, and invoke a capability the way an agent would - by name,
  * with typed arguments, with no mention of a browser.
  */
 
@@ -86,7 +86,7 @@ async function loadDetail(id) {
   const inputs = schemaFields(e.tool.inputSchema);
   const outputs = schemaFields(e.tool.outputSchema);
   const outcomes = (e.outcomes || []).map((o) =>
-    '<li><b>' + o.code + '</b> — ' + o.message + '</li>'
+    '<li><b>' + o.code + '</b> - ' + o.message + '</li>'
   ).join("") || "<li>none declared</li>";
 
   $("detail").innerHTML = \`

@@ -22,7 +22,7 @@ import { randomUUID } from "node:crypto";
  *
  * `awaiting_operator` is the one that is easy to leave out and expensive to
  * omit. When automation escalates it must stop acting immediately, but a human
- * has not arrived yet — and those are different situations. Collapsing them
+ * has not arrived yet - and those are different situations. Collapsing them
  * into "operator" means anything holding a console can dispatch actions into a
  * live banking session merely because automation stepped back, with no recorder
  * installed and nothing attributing the actions to anyone. The brief asks for a

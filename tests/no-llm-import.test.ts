@@ -3,7 +3,7 @@
  *
  * A comment saying "no LLM here" is worth nothing six months and four
  * contributors later. This walks the ENTIRE transitive import graph from the
- * replay entry points and fails the build if anything in it can reach a model —
+ * replay entry points and fails the build if anything in it can reach a model -
  * so the guarantee survives someone adding a well-intentioned "just retry this
  * one step with the model" helper three layers down.
  */

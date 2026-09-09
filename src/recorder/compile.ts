@@ -2,8 +2,8 @@
  * Compilation: a discovery trace becomes a CapabilityArtifact.
  *
  * This step is deterministic and does not call the model. The model chose the
- * path; every mechanical fact in the artifact — descriptors, checkpoints,
- * routes, ordinals — is read out of the snapshots that were actually captured.
+ * path; every mechanical fact in the artifact - descriptors, checkpoints,
+ * routes, ordinals - is read out of the snapshots that were actually captured.
  * Re-running compilation on the same trace always produces the same artifact,
  * which is what makes the artifact reviewable rather than a second opinion.
  *
@@ -12,7 +12,7 @@
  * for conditions we never saw would be fabricating capability. So recoveries and
  * known outcomes come from two places, both recorded in provenance: whatever the
  * run genuinely hit, plus a REVIEWED PACK authored per vendor product. That pack
- * is data, it is diffable, and attaching it is a human act — which is exactly
+ * is data, it is diffable, and attaching it is a human act - which is exactly
  * what promoting a draft to approved should mean.
  */
 
@@ -109,7 +109,7 @@ function partitionRecoverySteps(
 }
 
 /**
- * Pattern rules only — no registered literals, because this is asking a general
+ * Pattern rules only - no registered literals, because this is asking a general
  * question ("does this text look like somebody's data?") rather than checking
  * one run's known secrets.
  */
@@ -130,7 +130,7 @@ function descriptorFor(
   const built = ElementDescriptorSchema.parse(
     describeElement(el, intent, {
       forExtraction: opts.forExtraction,
-      // An artifact is a sink like any other — it is committed, reviewed, and
+      // An artifact is a sink like any other - it is committed, reviewed, and
       // shipped to other people. A rung anchored on a member's account number
       // would put their data in that document, and would only ever match that
       // one member. The redactor is the same one every other sink uses, so
@@ -185,7 +185,7 @@ export function compileTrace(trace: DiscoveryTrace, opts: CompileOptions): Capab
   // Drop the actions the model took purely to clear a declared exceptional
   // state. During discovery the app may throw an interstitial or a timeout at
   // any moment; the model deals with it and moves on, but that click is NOT
-  // part of the flow. Recording it makes the interstitial mandatory — the next
+  // part of the flow. Recording it makes the interstitial mandatory - the next
   // replay looks for an "Acknowledge" button that is not there, degrades down
   // the ladder, and clicks whatever else happens to be the first button on the
   // page. The condition is already declared in the reviewed pack, with a
@@ -194,7 +194,7 @@ export function compileTrace(trace: DiscoveryTrace, opts: CompileOptions): Capab
 
   const steps = kept.map((recorded, i) => compileStep(recorded, i, opts.allowlist, provenance));
 
-  // The entry point is the route of the frame the flow first touches — not
+  // The entry point is the route of the frame the flow first touches - not
   // whichever frame happens to be deepest, which in a shell app is a coin flip
   // between the menu and the content.
   const first = kept[0]!;
@@ -281,7 +281,7 @@ export function compileTrace(trace: DiscoveryTrace, opts: CompileOptions): Capab
       maxDurationMs: 120_000,
     },
     // Every freshly compiled capability is a draft. Unattended writes require
-    // approval, and approval is a human reading the artifact — including the
+    // approval, and approval is a human reading the artifact - including the
     // recovery pack someone attached to it.
     lifecycle: { state: "draft", stability: { runs: 0, successes: 0 } },
   });
@@ -317,7 +317,7 @@ function compileStep(
     waitPolicy: { strategy: checkpoint ? "conditionMet" : "settled", timeoutMs: 10_000 },
     // Transient slowness is the app's problem, not the step's: a bounded retry
     // here is what turns a 503 into a recoverable condition instead of a hard
-    // failure. Writes are not retried blindly — see the executor.
+    // failure. Writes are not retried blindly - see the executor.
     retryPolicy: { maxAttempts: risk === "read_only" ? 3 : 1, backoffMs: 750 },
     risk,
     onCondition: [],
@@ -328,8 +328,8 @@ function compileStep(
  * A checkpoint is proof the step LANDED, not proof we clicked.
  *
  * Preference order, strongest first: the content frame's route changed; a named
- * element appeared that was not there before. When neither holds — typing into
- * a field usually changes nothing observable — we emit no checkpoint rather
+ * element appeared that was not there before. When neither holds - typing into
+ * a field usually changes nothing observable - we emit no checkpoint rather
  * than a vacuous one, and the following step's checkpoint does the verifying.
  * A checkpoint that always passes is worse than none: it looks like coverage.
  */

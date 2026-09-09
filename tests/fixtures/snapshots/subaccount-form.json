@@ -3,7 +3,7 @@
   "page": {
     "url": "http://localhost:4000/frame/subaccount/10042",
     "routePattern": "/frame/subaccount/:id",
-    "title": "Riverbend Credit Union — Open Sub-Account",
+    "title": "Riverbend Credit Union - Open Sub-Account",
     "frames": [
       {
         "framePath": [],
@@ -16,7 +16,7 @@
     {
       "ref": "e1",
       "role": "cell",
-      "name": "Open Sub-Account — 10042",
+      "name": "Open Sub-Account - 10042",
       "nameSource": "text-content",
       "state": {},
       "framePath": [],

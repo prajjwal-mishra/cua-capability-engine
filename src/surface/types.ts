@@ -52,7 +52,7 @@ export interface NearbyText {
   readonly precedingText?: string;
   /** Column header governing this cell, if the element sits in a data table. */
   readonly columnHeader?: string;
-  /** First cell of this element's row — the natural row key in a data grid. */
+  /** First cell of this element's row - the natural row key in a data grid. */
   readonly rowKey?: string;
 }
 
@@ -138,7 +138,7 @@ export type SurfaceAction =
   | { readonly kind: "scroll"; readonly direction: "up" | "down"; readonly amount?: number }
   /** Re-request a frame's current URL. The honest recovery for a transient
    *  server failure: the step's target is gone from the error page, so
-   *  re-clicking it is impossible — the request itself must be retried. */
+   *  re-clicking it is impossible - the request itself must be retried. */
   | { readonly kind: "reload"; readonly framePath?: readonly string[] };
 
 export interface ActionResult {
@@ -160,8 +160,8 @@ export interface SurfaceCapabilities {
 /**
  * Perception and action against one application surface.
  *
- * Deliberately three methods. Everything else a caller might want — waiting,
- * retrying, checkpointing, recovery — is policy that belongs above this line,
+ * Deliberately three methods. Everything else a caller might want - waiting,
+ * retrying, checkpointing, recovery - is policy that belongs above this line,
  * because it must behave identically no matter which surface is underneath.
  */
 export interface Surface {
@@ -171,7 +171,7 @@ export interface Surface {
   /**
    * Capture evidence, with the given regions painted out before the image is
    * ever encoded. Masking happens here, at the point of capture, rather than
-   * after the fact — an unmasked PNG should never exist, not even in memory.
+   * after the fact - an unmasked PNG should never exist, not even in memory.
    * Present only when `capabilities().canScreenshot`.
    */
   screenshot?(masks: readonly Bounds[]): Promise<Buffer>;

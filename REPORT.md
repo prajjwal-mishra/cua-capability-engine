@@ -1,265 +1,248 @@
 # Design report
 
-The brief is under-specified on purpose. These are the decisions that followed,
-and the alternatives I rejected.
-
 ## Architecture
 
-Discovery and replay are two programs. They share the artifact and nothing else.
+I split discovery and replay into two programs. They share the artifact file
+and nothing else.
 
-Discovery has a model in the loop, is allowed to wander, and is expected to fail.
-Replay has no model, is fast, and is a pure function of `(artifact, inputs, screen)`.
-`tests/no-llm-import.test.ts` walks the import graph from `src/replay/` and fails
-the build if anything in it can reach the LLM client. The tempting failure is real:
-replay hits an ambiguous screen and a model is sitting right there. Taking that
-shortcut once destroys the only property that makes a recording worth keeping —
-you cannot review it, regression-test it, or explain it to an auditor.
+Discovery can wander and it can fail. It has a model. Replay does not: same
+artifact, same inputs, same screen, same actions. I enforced that with
+`tests/no-llm-import.test.ts`, which walks the import graph from `src/replay/`
+and fails the build if a model client is reachable. The obvious shortcut is to
+ask the model when a locator goes ambiguous. I did not take it. A recording you
+cannot replay without a model is not reviewable.
 
-Everything above a `Surface` port speaks roles, accessible names, and frame
-paths. Playwright is a driver, not the abstraction. Perception is
-accessibility-tree-first with a heuristic fallback for markup that has no
-semantics at all — on this target, most of it. `UIElement` records `nameSource`
-so a name the app declared via `aria-label` (0.95) is not scored like a name
-inferred from a neighbouring `<td>` (0.65).
+The target is a local hostile credit-union back office I built for this
+(`apps/legacy-cu/`). The brief allows that. I wanted iframes, table layouts, no
+test IDs, and faults I can inject on demand. A public cart demo would not give
+me session timeouts, permission denials, or a second "tenant" with relabelled
+fields. The cost is real: detectors match copy I also wrote. On a core I have
+never seen, unclassified screens would escalate more often. That is the right
+failure mode, and it is a cost curve, not something this take-home pretends to
+close.
 
-That seam is what a desktop app would actually reuse. UIA/AX speak role and name
-natively; the frame path becomes a window/pane path. The heuristic fallback is
-DOM-shaped and would stay in `WebSurface`. I would rather pay that cost in one
-file than leak selectors into the artifact.
+The engine talks to a `Surface`: roles, accessible names, frame paths.
+Playwright is the current driver. Perception prefers the accessibility tree,
+then a heuristic pass for markup with no semantics (most of this target). Each
+`UIElement` records `nameSource` so an `aria-label` (0.95) is not scored like a
+name scraped from a neighbouring `<td>` (0.65).
 
-A step never records `#ctl00_btnSearch`. It records an ordered ladder, every
-rung that can be populated, scored at record time:
+That is also the desktop story. UIA/AX already speak role and name; the frame
+path becomes a window/pane path. The heuristic layer is DOM-shaped and would
+stay in `WebSurface`. Selectors do not go in the artifact.
+
+A step does not store `#ctl00_btnSearch`. It stores a ladder, filled in at
+record time:
 
 | rung | strategy | survives |
 | --- | --- | --- |
 | 1 | role + accessible name | a re-skin |
 | 2 | label anchor (textbox in the row labelled *Member ID*) | markup churn |
 | 3 | table cell (column header × row key) | row reordering |
-| 4 | frame + role + ordinal | **renames** |
+| 4 | frame + role + ordinal | renames |
 | 5 | structural path | almost nothing |
-| 6 | recorded geometry | diagnostic only; never used unless policy opts in |
+| 6 | recorded geometry | diagnostic only; off unless policy opts in |
 
-Resolution requires a unique match. Ambiguity is a failure, not a coin flip. The
-rung that resolved is logged every time: silent success on a lower rung is the
-most dangerous state in the system, and it is the one thing the log is designed
-to make impossible to miss.
+Resolution needs a unique match. If a rung hits three elements, we do not pick
+one. The log always records which rung won. Sliding from rung 1 to rung 4
+without anyone noticing is how these systems die in production.
 
-An output descriptor never keys on the value being read. "The cell named
-`$8,241.17`" locates one member's balance. Extraction is addressed by relation.
-In a data grid, rung 2 is also dropped: the neighbour is a sibling value, not a
-label, and the first generated artifact shipped `4417-99820-01` as a locator
-anchor. A rung that cannot be expressed without someone's data in it is omitted,
-not redacted — a redacted anchor is a locator that can never match.
+Outputs are addressed by relation, not by the value being read. Locating "the
+cell named `$8,241.17`" only works for one member. In a data grid I also drop
+rung 2: the neighbour is another value, not a label. The first compiled
+artifact used `4417-99820-01` as an anchor. If a rung cannot be written without
+someone's data in it, it is omitted. Redacting it would leave a locator that
+never matches.
 
-The operator desk and the catalog are HTTP faces on the same engine, not a
-second product. The catalog is how an agent invokes a capability by name. The
-desk is how a human takes the live session when the engine stops.
+The catalog and the desk are HTTP faces on this engine. One is how an agent
+calls a capability by name. The other is how a person takes the session when
+the engine stops.
 
-**Rejected:** putting the model in replay as a fallback. **Rejected:** CSS
-selectors as the recorded target. **Rejected:** one process that both explores
-and executes, with a flag switching modes.
+I considered CSS selectors as the recorded target, and a single process with a
+mode flag. Both leak. Both went.
 
 ## Artifact schema
 
-Zod is the single source of truth: runtime validation, TypeScript types, and the
-JSON Schema the catalog publishes. Mechanical facts come from recorded snapshots,
-not from the model's memory. The transcript is evidence; the artifact is the
-capability.
+Zod is the schema: runtime checks, TypeScript types, and the JSON Schema the
+catalog publishes. Facts in the artifact come from snapshots, not from whatever
+the model said in the transcript. The transcript stays in `evidence/`.
 
-A capability declares:
+A capability has:
 
 - `inputs` / `outputs` as JSON Schema, each with a `sensitivity` tag
-- `steps`: intent, action, `ElementDescriptor`, optional `$param` binding,
-  precondition, checkpoint, wait/retry policy, declared `risk`
-- `successCondition` — how to know the whole flow worked
-- `knownOutcomes` — business answers (`member_not_found`, `permission_denied`)
-  with detectors, so they are part of the contract
-- `recoveries` — declared, budgeted responses (dismiss interstitial, re-auth,
-  retry a 503)
+- `steps`: intent, action, `ElementDescriptor`, optional `$param`,
+  precondition, checkpoint, wait/retry, `risk`
+- `successCondition`
+- `knownOutcomes` with detectors (`member_not_found`, `permission_denied`)
+- `recoveries` (dismiss a banner, re-auth, retry a 503), with a budget
 - `provenance`, `lifecycle` (`draft` | `approved` | `deprecated`), stability
 
-The compiler generalizes as it writes: recorded literals that match an input
-become `{$param: "memberId"}`, and `/frame/member/10042` becomes
-`/frame/member/:memberId`. A checkpoint that asserted a concrete member URL
-would be a recording, not a capability.
+The compiler rewrites recorded literals that match an input to
+`{$param: "memberId"}`, and `/frame/member/10042` to `/frame/member/:memberId`.
+Otherwise you have a tape of one member, not a capability.
 
-Reviewability cost verbosity: 542 lines for a three-step lookup. A compact
-format would be smaller. I chose the document a human approves and the document
-the engine executes to be the same document. A compilation step between them
-means the review is of something other than what runs.
+The savings lookup is 542 lines. That is ugly. I kept it because the document
+a person approves is the document that runs. A compiled IR in between means
+the review is of something else.
 
-Detectors and recoveries are data, not code. Approving an artifact means you can
-read what it will tolerate without reading our source.
+Detectors and recoveries are JSON. You can read what an approved capability
+will tolerate without opening `src/`.
 
-**Rejected:** embedding tenant overrides inside the base artifact. A base file
-that re-versions every time one institution drifts gives one document hundreds
-of editors. Overlays are separate files keyed by
-`(vendorProduct, tenant, capabilityId)`.
+Tenant patches are not inside the base file. A base that re-versions every
+time one credit union relabels a button gets hundreds of editors. Overlays
+are separate, keyed `(vendorProduct, tenant, capabilityId)`.
 
 ## Determinism & error handling
 
-Replay never calls a model. Inputs are validated against the artifact's own
-schema before a browser launches. Per step: resolve the descriptor ladder →
-policy check → act → wait on a condition (never `sleep(n)` as the primary
-mechanism) → verify the checkpoint → evaluate detectors.
+Replay never calls a model. Inputs are checked against the artifact schema
+before a browser starts. Each step: resolve the ladder, policy check, act,
+wait on a condition (not `sleep(n)` as the main wait), checkpoint, then run
+detectors.
 
-The result is a discriminated union, because a string to parse is how "no such
-member" becomes an exception six months later:
+The result is a union, not a message to parse:
 
 ```
 success            outputs, evidence
-business_outcome   typed code (member_not_found, permission_denied, …)
-escalated          intervention id; a human has been asked
+business_outcome   typed code (member_not_found, permission_denied, ...)
+escalated          intervention id
 failed             step, expected, observed, classification, screenshot
 ```
 
-Three tiers, applied at every step. Anything unclassified is a hard failure.
-Proceeding from a screen you cannot identify is how you act on the wrong
-member's account.
+Unclassified screens are hard failures. Guessing and clicking is how you hit
+the wrong member.
 
-`failed` is further classified (`descriptor_unresolvable`, `checkpoint_failed`,
+`failed` is split further (`descriptor_unresolvable`, `checkpoint_failed`,
 `success_condition_failed`, `application_error`, `policy_denied`,
-`recovery_exhausted`) because these route to different people. A 503 is not "your
-recording is wrong." An un-overlaid tenant landing on a relabelled grid is.
+`recovery_exhausted`) because those pages go to different people. A 503 is
+the host. A relabelled grid at a tenant with no overlay is the recording.
 
-That distinction was not free. Detectors originally ran after every step but not
-at the run's verdict. A 503 inside a nested accounts frame, arriving after the
-last checkpoint had already passed on the outer route, was reported as
-`success_condition_failed`. Detectors now run when the verdict is decided;
-`tests/replay.test.ts` pins it. `evidence/05` is a 503 recovered mid-step;
-`evidence/06` and `evidence/07` are the interstitial and session-timeout
-recoveries.
+I got that wrong once. Detectors ran after each step but not when the run
+decided its verdict. A 503 in the nested accounts iframe, after the last
+outer checkpoint had already passed, came back as `success_condition_failed`.
+They run at the verdict now (`tests/replay.test.ts`). `evidence/05` is a 503
+cleared mid-step; `evidence/06` and `evidence/07` are the interstitial and
+the session timeout.
 
-`--stability N` replays N times and writes a flake rate back onto the artifact,
-per tenant. A `business_outcome` counts as success (the flow worked). Injected
-faults and policy denials are not counted: they are not evidence about the
-recording.
+`--stability N` writes a per-tenant flake rate. `business_outcome` counts as
+the flow working. Injected faults and policy denials do not count; they are
+not about the locators.
 
-**Rejected:** "ask the model for this one step." **Rejected:** collapsing every
+I did not add "ask the model for this one step," and I did not dump every
 unhappy path into `failed`.
 
 ## Heterogeneity & multi-tenant
 
-Implemented against one hostile web surface. Designed so a second surface is a
-new `Surface` implementation, not a new artifact format. A `DesktopSurface`
-would observe UIA/AX into the same `UISnapshot` and dispatch the same
-`SurfaceAction` union. Replay, locators, policy, and the catalog would not move.
+Built against one hostile web app. A second surface is a new `Surface`, not a
+new artifact. `DesktopSurface` would map UIA/AX into the same `UISnapshot` and
+the same `SurfaceAction` union. Replay, locators, policy, catalog stay put.
 
-Hundreds of institutions run ~20 apps, many on the same vendor product,
-relabelled. One recording per (institution, flow) is hundreds of thousands of
-artifacts nobody can review. One recording per (vendor product, flow), plus a
-sparse overlay, is the unit that can be reviewed.
+The scale problem is hundreds of institutions on ~20 apps, many of them the
+same vendor product with different labels. Recording per (institution, flow)
+does not review. Recording per (vendor product, flow) plus a small overlay
+does.
 
-Summit FCU's overlay for the savings lookup patches four strings — two field
-labels, a column header, a row key — and does not restate the flow. Their
-sub-account overlay *inserts* a step, because their build interposes a review
-screen, and marks that step `irreversible`, which is what routes it to a human.
-`evidence/10` is the same artifact on variant-b without an overlay: it degrades
-to a lower rung, flags drift, and fails cleanly. `evidence/11` is the overlay.
+Summit FCU's savings overlay patches four strings (two labels, a column
+header, a row key). Their sub-account overlay inserts a step for the review
+screen they interpose, marked `irreversible`, which is why it goes to a
+human. `evidence/10` is variant-b with no overlay: ladder drops, drift is
+flagged, run fails. `evidence/11` is the overlay.
 
-Drift is measured as the rung that resolved. A capability that has been
-resolving on rung 4 for a week is a scheduled outage. Nothing watches that
-signal yet; the data is there. Stability is tracked per tenant so probing a new
-institution does not damage the number where the recording already works.
-
-**Rejected:** a global success rate. **Rejected:** forking the artifact per
-tenant.
+Every resolved step logs the rung that won. `cua drift report` walks
+`run.jsonl` trees, aggregates those flags, and exits non-zero when the rate
+crosses a threshold (default: any drift fails). That is the watch: not a
+pager, a check you can put on a schedule. A week of rung-4 hits is still an
+outage that has not fired yet - now at least the check fails before the
+click does. Stability stays per tenant so a probe at a new shop does not
+trash the number where the recording already works.
 
 ## Escalation & handoff
 
-An escalation that files a ticket throws away a live, authenticated session
-already deep in a flow. This is a transfer of control over that session.
+Filing a ticket throws away a live, authenticated session. This is a handoff
+of that session.
 
-The lease has three states, not two:
+The lease is three states:
 
-- `automation` — the engine may act
-- `awaiting_operator` — the engine has stopped; **nobody has arrived**
-- `operator` — a human has claimed the session
+- `automation` - the engine may act
+- `awaiting_operator` - it has stopped; nobody has taken it
+- `operator` - a person has claimed it
 
-Two states made "the engine stepped back" indistinguishable from "a human is
-driving," which let any console dispatch clicks into a live session with no
-recorder installed. The brief asks who is, *or should be*, in control. That is
-two questions.
+With two states, "we stepped back" and "a human is driving" looked the same,
+and a console could click into a live page with no recorder. I found that
+with a 409 test.
 
-Stuck is: unresolvable descriptor, unclassified screen, policy block on a
-required action, recovery exhaustion, stall, or an explicit `request_human_help`.
-The intervention carries capability, goal, step, reason, redacted screen text, a
-screenshot, the whole flow (so the operator can name a resume point), and a
-resume token. It is file-backed under the run.
+Stuck means: locator miss, unclassified screen, policy block on a required
+action, recovery exhausted, stall, or `request_human_help`. The intervention
+has capability, goal, step, reason, redacted screen text, a screenshot, the
+full flow (so the operator can pick a resume point), and a resume token.
+Files under the run directory.
 
-Takeover is the same Playwright page. The lease moves to the operator first,
-then a recorder is installed. Events are pushed to Node as they happen — an
-in-page buffer was destroyed by the navigation that every useful click causes.
-Values are not captured verbatim. Handback re-observes and re-checks the
-nominated step's precondition; it never assumes the page is where it was left,
-and it never navigates back to the entry point (that would discard the human's
-work and re-run a write).
+Takeover is the same Playwright page. Lease flips to operator, then the
+recorder is installed. Events go to Node as they happen. Buffering in the
+page lost every useful click: those clicks navigate the frame and kill the
+buffer. Typed values are not stored raw. On handback we observe again and
+check the nominated step's precondition. We do not assume the page is where
+we left it, and we do not send the browser back to the entry URL (that
+discards the human's work and can re-run a write).
 
-What is real: the lease, same-session takeover, human-action capture, resume.
-What is mocked: no embedded co-browsing stream. Headed, the operator drives the
-visible window; headless, the desk injects clicks through the same API. The
-production version is CDP screencast plus input forwarding, or a WebRTC-backed
-remote browser — same lease, same recorder.
+Real: lease, same-session takeover, capture, resume. Mocked: no embedded
+video stream. Headed, you drive the window. Headless, the desk posts clicks
+through the same API. Production is CDP screencast or a remote browser.
+Lease and recorder stay.
 
-Captured actions are in role + name + frame path, the vocabulary an overlay
-patch would need. `cua overlay propose` turns them into a draft overlay.
-Applying it is a review; the command will not overwrite an existing overlay or
-lower risk on its own.
+Captured actions are role + name + frame path. `cua overlay propose` turns
+them into a draft overlay. It will not overwrite an existing overlay or
+lower risk. Someone still has to apply it. Until then, the same stop costs a
+person every time - that is intentional, not unfinished wiring.
 
 ## Safety
 
-One choke point. `PolicyGate.check` runs before every dispatched action.
-Discovery and replay see only a `GuardedSurface`, which cannot be constructed
-without a gate. The desk holds the raw surface because a human is not the
-automation, but it still calls `check` with `actor: "operator"` before every
-click. An operator who holds the lease may confirm an irreversible action —
-that is the handoff — and still cannot leave the allowlist or type into a
-forbidden field.
+Every dispatched action goes through `PolicyGate.check`. Discovery and replay
+only see a `GuardedSurface`. The desk holds the raw page because the operator
+is not the bot, but `/api/live/act` still calls `check` with
+`actor: "operator"`. Holding the lease lets you confirm irreversible. It does
+not let you leave the allowlist or type into a forbidden field.
 
-Allowlist (config, per app): origins, route patterns, action types, target
-roles, forbidden field names. Deny by default.
+Allowlist is config, per app: origins, route patterns, action types, roles,
+forbidden field names. Default deny.
 
-Risk: `read_only` allowed; `reversible_write` requires `--allow-writes` and, for
-unattended replay, an approved artifact; `irreversible` always escalates. A
-reviewed artifact may raise a step's risk, never lower it. Typing is classified
-read-only: the submit carries the risk, not the keystroke. Classifying typing as
-a write would force `--allow-writes` onto every lookup and train people to pass
-it always.
+`read_only` is allowed. `reversible_write` needs `--allow-writes`, and
+unattended also needs an approved artifact. `irreversible` always escalates.
+Review can raise a step's risk, not lower it. Typing is read-only; the submit
+carries the write. If typing were a write, every lookup would need
+`--allow-writes` and people would pass it by habit.
 
-Approval deadlocked write capabilities (unattended writes need approval;
-approval needs a proven replay; a draft could not replay). `--attended` is a
-supervised shadow replay; a catalog caller cannot claim it.
+Writes and approval deadlocked (unattended writes need approval, approval
+needs a proven replay, a draft could not replay). `--attended` is a
+supervised shadow run. Catalog callers cannot set it.
 
-Redaction sits between the raw world and every sink: pattern-based (SSN, Luhn
-PAN, account numbers, email, phone, DOB) plus schema-driven tokens for
-`pii`/`secret` inputs, on discovery *and* replay. Screenshots mask flagged
-bounds before encode. Limits, plainly: regexes miss names and balances; masking
-is only as good as the flagging; an allowlist cannot stop a semantically
-wrong-but-permitted click. Next: field classification from the app's own schema,
-dual-control for irreversible steps, an audit log shipped off-box.
+Redaction sits in front of logs, artifacts, and screenshots: regexes (SSN,
+Luhn PAN, account numbers, email, phone, DOB) plus tokens for `pii`/`secret`
+inputs, on discovery and replay. Screenshots mask flagged boxes before
+encode. Regexes miss names and balances. Masking is only as good as the
+flags. An allowlist will not stop a permitted click on the wrong row. I
+would add field types from the app's own schema, dual-control on
+irreversible steps, and an audit log that leaves the box.
 
 ## Cuts
 
-**Assisted LLM fallback on replay failure.** The stretch goal I refused. A
-bounded "just this step" model call is the shortcut the architecture exists to
-make impossible. The answer to an ambiguous screen is a human, not a quieter
-model. Recorded as a seam (escalation), not as a second decision loop.
+**LLM on replay failure.** The stretch I skipped on purpose. A bounded "just
+this step" call is the hole the discovery/replay split exists to close.
+Ambiguous screen goes to a human.
 
-**Auto-applying a proposed overlay.** `cua overlay propose` drafts the patch.
-A reviewer still has to accept it, and risk is never lowered automatically.
-Until that review happens, the same escalation costs a human the same amount.
+**Stretch picks.** The brief said at most one or two. I treated
+cross-tenant overlays and draft→approved (with `--stability N`) as the ones
+that load-bear the production story. The catalog is how an agent invokes a
+capability by name - without it, "agent-invocable" is a claim. `cua emit` and
+`cua overlay propose` fell out of the same role+name vocabulary; they are
+projections, not a second engine. Replay still runs the JSON.
 
-**A real desktop surface.** The port makes it a swap. Claiming it is proven
-without having done it would be dishonest.
+**Applying overlay proposals automatically.** A draft is the product. Auto-
+apply would silently change risk and locators under an approved capability.
 
-**Catalog auth, concurrency, a scheduler.** One session per process. Two agents
-invoking the same write for the same member would both proceed. The lease is
-over a session, not a member record. The brief does not reward building that
-infrastructure.
+**Desktop driver.** The port is there. I have not run UIA/AX, so I am not
+claiming it works.
 
-The brief said pick at most one or two stretch goals. Several sat on the
-production path, so they shipped with the core: an agent-facing catalog,
-draft→approved gating on stability, overlays as the cross-tenant demo, and
-`--stability N`. `cua emit` projects an artifact into a Playwright snippet in
-the same role+name vocabulary; it is a projection, not a second engine. Replay
-still executes the JSON.
+**Auth on the catalog, locking a member record, a pager wired to drift,
+a scheduler.** One browser per process. Two agents can both write the same
+member. The lease is on a session. `cua drift report` fails a check; it does
+not page Slack. The brief does not want that plumbing from a take-home.

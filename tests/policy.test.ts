@@ -139,7 +139,7 @@ describe("deny by default", () => {
 describe("risk classes", () => {
   const gate = new PolicyGate();
 
-  it("treats typing as read-only — the submit carries the risk, not the keystroke", () => {
+  it("treats typing as read-only - the submit carries the risk, not the keystroke", () => {
     expect(
       classifyAction(
         { kind: "type", ref: "e1", text: "10042" },
@@ -242,7 +242,7 @@ describe("redaction", () => {
         { ssn: "not-a-pattern-secret-xyz", memberId: "10042" },
       );
       // The pii value is gone even though no regex would have caught it.
-      // The internal member id is left alone — that is a locator, not a secret.
+      // The internal member id is left alone - that is a locator, not a secret.
       expect(r.redactText("saw not-a-pattern-secret-xyz for 10042")).toBe(
         "saw {{param:ssn}} for 10042",
       );

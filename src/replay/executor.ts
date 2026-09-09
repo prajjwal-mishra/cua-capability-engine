@@ -1,12 +1,12 @@
 /**
- * Deterministic replay — the path an AI agent actually triggers in production.
+ * Deterministic replay - the path an AI agent actually triggers in production.
  *
  * THERE IS NO MODEL IN THIS FILE, AND THERE MUST NEVER BE. Not a fallback, not
  * a "just for ambiguous cases" escape hatch. The value of a recorded capability
  * is that its behaviour is a function of the artifact and the inputs; a single
  * conditional model call would destroy that property and make the whole thing
  * impossible to reason about. tests/no-llm-import.test.ts fails the build if an
- * import ever appears — in this file or anything it reaches.
+ * import ever appears - in this file or anything it reaches.
  *
  * Per step: resolve → gate (inside GuardedSurface) → act → wait → checkpoint →
  * detect. Anything unclassified is a hard failure by default. We never guess
@@ -43,7 +43,7 @@ export interface ReplayOptions {
   readonly tenant?: string;
   /**
    * Which instance of the app to enter. In production this comes from the
-   * tenant record — "your CoreVantage install lives here" is deployment
+   * tenant record - "your CoreVantage install lives here" is deployment
    * configuration, not a property of the recording. `variant` is this project's
    * stand-in for that, and it is overridable so one capability can be aimed at
    * a second tenant's instance BEFORE an overlay exists for them, which is how
@@ -63,7 +63,7 @@ export interface ReplayOptions {
 
 /**
  * Resume sentinel: the operator says the flow is already at the end state.
- * We still verify it — an operator's word that they finished is a claim about
+ * We still verify it - an operator's word that they finished is a claim about
  * the screen, and the success condition is how we check the claim.
  */
 export const VERIFY_ONLY = "$verify";
@@ -213,7 +213,7 @@ async function runStep(
     { classification: FailureClassification; expected: string; observed: string } | undefined;
 
   // Retries from the step's own policy, plus one extra pass per recovery we
-  // applied — a recovery that clears an interstitial has not consumed the
+  // applied - a recovery that clears an interstitial has not consumed the
   // step's budget for genuine flakiness.
   while (attempts < step.retryPolicy.maxAttempts + recoveriesApplied.length) {
     attempts += 1;
@@ -344,7 +344,7 @@ async function runStep(
       snapshot = handled.snapshot;
 
       // A recovery frequently lands us exactly where the step was trying to
-      // get to — acknowledging an interstitial continues to the page we asked
+      // get to - acknowledging an interstitial continues to the page we asked
       // for, and re-authenticating returns to the interrupted request. Blindly
       // re-running the step would then repeat an action against a page that has
       // already moved on, and fail looking for a control that is no longer
@@ -603,7 +603,7 @@ async function finish(
     // A failing success condition has two very different causes, and reporting
     // the wrong one sends the wrong person to investigate. If the end state is
     // missing because a frame came back 503, that is the application faulting
-    // and the artifact is fine — the case that motivated this is a transient
+    // and the artifact is fine - the case that motivated this is a transient
     // error inside the accounts iframe, where the outer route matched, every
     // step's checkpoint passed, and the balance was simply never rendered. The
     // detectors already know how to say so; they were just not being consulted
@@ -623,7 +623,7 @@ async function finish(
       artifact.successCondition.describe ?? "the capability's success condition",
       observations(success),
       snapshot,
-      `every step completed and nothing on screen matches a known fault, so the flow ran — but the end ` +
+      `every step completed and nothing on screen matches a known fault, so the flow ran - but the end ` +
         `state the artifact expects is not what is there. If this is a tenant the capability was not ` +
         `recorded against, that is what an overlay is for.`,
     );
@@ -830,7 +830,7 @@ export function validateInputs(
     };
     if (schema.pattern && !new RegExp(schema.pattern).test(value)) {
       throw new InputValidationError(
-        `input '${input.name}'='${value}' does not match ${schema.pattern} — rejected before a browser was launched`,
+        `input '${input.name}'='${value}' does not match ${schema.pattern} - rejected before a browser was launched`,
       );
     }
     if (schema.enum && !schema.enum.includes(value)) {

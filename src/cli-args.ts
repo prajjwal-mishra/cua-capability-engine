@@ -2,7 +2,7 @@
  * Argument parsing, separate from the CLI entry point.
  *
  * Split out because the entry point dispatches to every command, so any module
- * importing a type from it pulls the whole command graph along — which put the
+ * importing a type from it pulls the whole command graph along - which put the
  * LLM back inside `cua replay`'s import graph purely for a type alias.
  * A shared type belongs in a leaf module, not in the thing that wires
  * everything together.

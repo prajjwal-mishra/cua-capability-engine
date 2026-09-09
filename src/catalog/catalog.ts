@@ -1,15 +1,15 @@
 /**
  * The agent-facing capability catalog.
  *
- * This is the seam the whole system exists to produce. Everything upstream —
- * the model, the snapshots, the compiler — is how a capability comes to exist.
+ * This is the seam the whole system exists to produce. Everything upstream -
+ * the model, the snapshots, the compiler - is how a capability comes to exist.
  * This is how it gets used: an agent lists what is available, reads a typed
  * contract, and invokes one by name with typed arguments. It never learns that
  * there is a browser involved, and that is the point. The day a flow moves from
  * a legacy web app to a desktop app, this contract does not change.
  *
- * Deliberately NOT a general-purpose tool router. It answers three questions —
- * what exists, what does this one need, run it — because those are the three an
+ * Deliberately NOT a general-purpose tool router. It answers three questions -
+ * what exists, what does this one need, run it - because those are the three an
  * agent actually has.
  */
 
@@ -83,7 +83,7 @@ export function maxRisk(artifact: CapabilityArtifact): RiskClass {
   );
 }
 
-/** Latest version of each capability — an agent invokes by name, not by build. */
+/** Latest version of each capability - an agent invokes by name, not by build. */
 export function listCatalog(store = new ArtifactStore()): CatalogEntry[] {
   const newest = new Map<string, CapabilityArtifact>();
   for (const artifact of store.list()) {
@@ -105,15 +105,15 @@ export interface InvokeOptions {
    *  recording is safe to run against a system of record. */
   readonly allowDraft?: boolean;
   readonly headless?: boolean;
-  /** Where capabilities are read from. Injectable so a test — or a process
-   *  hosting more than one catalogue — is not forced to write into the repo. */
+  /** Where capabilities are read from. Injectable so a test - or a process
+   *  hosting more than one catalogue - is not forced to write into the repo. */
   readonly store?: ArtifactStore;
 }
 
 /**
  * Invoke a capability by name with typed arguments.
  *
- * Returns the replay result contract unchanged — including `escalated`. That is
+ * Returns the replay result contract unchanged - including `escalated`. That is
  * deliberate: an agent that asks for something needing human judgement should
  * be told a human was asked, with the intervention id, not be left holding a
  * timeout. It is a legitimate answer, and the console picks the request up
@@ -181,7 +181,7 @@ export async function invokeCapability(
 
 /**
  * Agents send JSON, and the artifact's inputs are declared as JSON Schema, but
- * the replay engine binds strings — a form field takes text. Coercing here, at
+ * the replay engine binds strings - a form field takes text. Coercing here, at
  * the boundary, keeps that conversion in one visible place instead of letting
  * `String(x)` appear halfway down the executor.
  *

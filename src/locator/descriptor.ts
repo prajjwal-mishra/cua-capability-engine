@@ -5,7 +5,7 @@
  * never a CSS selector and never a pixel: it is an ORDERED LADDER of resolution
  * strategies, each scored at record time, tried in order at replay. The ladder
  * degrades from "semantically meaningful and stable" down to "structural and
- * brittle", and the replay log records WHICH RUNG RESOLVED — so a capability
+ * brittle", and the replay log records WHICH RUNG RESOLVED - so a capability
  * that silently slid from rung 1 to rung 5 is visible as drift telemetry rather
  * than as a mystery failure three weeks later.
  */
@@ -35,7 +35,7 @@ export interface LabelAnchorStrategy {
   readonly relation: "same-row" | "same-column" | "preceding-text";
 }
 
-/** Rung 3: a data-grid cell, addressed the way a human reads a table —
+/** Rung 3: a data-grid cell, addressed the way a human reads a table -
  *  by column header and row key. */
 export interface TableCellStrategy {
   readonly kind: "table_cell";
@@ -50,8 +50,8 @@ export interface TableCellStrategy {
  * The scope is explicit rather than implied by whether `name` is set, because
  * the two readings resolve to different elements and a reviewer should not have
  * to infer which one an artifact meant:
- *   role_and_name — "the 2nd link named 'Open'"
- *   role          — "the 1st textbox in this frame", regardless of its label
+ *   role_and_name - "the 2nd link named 'Open'"
+ *   role          - "the 1st textbox in this frame", regardless of its label
  */
 export interface FrameRoleOrdinalStrategy {
   readonly kind: "frame_role_ordinal";
@@ -70,7 +70,7 @@ export interface StructuralStrategy {
   readonly path: string;
 }
 
-/** Rung 6: recorded geometry. DIAGNOSTIC ONLY — never used to locate anything
+/** Rung 6: recorded geometry. DIAGNOSTIC ONLY - never used to locate anything
  *  unless the policy explicitly enables coordinate fallback. */
 export interface BoundsStrategy {
   readonly kind: "bounds";
@@ -132,7 +132,7 @@ export function describeElement(
      * A locator anchored on a member's account number is broken twice over: it
      * only ever matches that one member, and it writes their data into a
      * document that gets committed, reviewed and shipped. Dropping the rung is
-     * the right response rather than redacting it — a redacted anchor is a
+     * the right response rather than redacting it - a redacted anchor is a
      * locator that can never match, which fails later and less obviously.
      */
     readonly isSensitive?: (text: string) => boolean;
@@ -142,7 +142,7 @@ export function describeElement(
   const usable = (text: string | undefined): text is string =>
     text !== undefined && text !== "" && !(opts.isSensitive?.(text) ?? false);
 
-  // In a data grid the neighbouring cell holds a SIBLING VALUE, not a label —
+  // In a data grid the neighbouring cell holds a SIBLING VALUE, not a label -
   // "the cell in the row labelled 4417-99820-01" is one member's row, dressed
   // up as a relation. `columnHeader` and `rowKey` are only both set for grid
   // cells, which is how a grid is told apart from a form here. On a form,
@@ -152,7 +152,7 @@ export function describeElement(
 
   // An OUTPUT descriptor must never key on the element's own text, because
   // that text is the payload. Recording "the cell named $8,241.17" does not
-  // locate the savings balance — it locates one particular member's balance,
+  // locate the savings balance - it locates one particular member's balance,
   // and on the next invocation it either misses entirely or, worse, matches
   // some other row that happens to hold the same amount, resolving on the top
   // rung with high confidence. Extraction is addressed by RELATION: which
@@ -168,7 +168,7 @@ export function describeElement(
   }
 
   // Only meaningful when the name came from somewhere OTHER than the anchor
-  // itself — otherwise this rung is rung 1 wearing a different hat.
+  // itself - otherwise this rung is rung 1 wearing a different hat.
   if (!anchorIsData) {
     if (usable(el.nearbyText.leftCell)) {
       strategies.push({
@@ -219,7 +219,7 @@ export function describeElement(
   }
 
   // The rename-tolerant rung: position alone. This is what carries a capability
-  // across a tenant that calls the same field something else — and when it is
+  // across a tenant that calls the same field something else - and when it is
   // the rung that resolves, the run log says so, which is the drift signal.
   strategies.push({
     kind: "frame_role_ordinal",
@@ -246,7 +246,7 @@ export function describeElement(
   return { intent, role: el.role, framePath: el.framePath, strategies: ordered };
 }
 
-/** Highest confidence on the ladder — a quick health signal for reviewers. */
+/** Highest confidence on the ladder - a quick health signal for reviewers. */
 export function descriptorConfidence(d: ElementDescriptor): number {
   return d.strategies.reduce((max, s) => Math.max(max, s.confidence), 0);
 }

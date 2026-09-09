@@ -16,7 +16,7 @@ export interface RiskPatterns {
   readonly irreversible: readonly string[];
   /** Control names that write state but can be undone or re-done. */
   readonly write: readonly string[];
-  /** Control names known to be pure navigation or query in THIS product —
+  /** Control names known to be pure navigation or query in THIS product -
    *  a Search button submits a form but changes nothing. Which controls those
    *  are is per-app knowledge, so it lives in the app's allowlist config
    *  rather than in a heuristic here. */
@@ -39,7 +39,7 @@ const matches = (name: string, patterns: readonly string[]): boolean => {
  *
  * Honest about its limits: this reads control names, so a "Continue" button
  * that quietly wires funds classifies as a write, not as irreversible. That is
- * a real hole, and the mitigation is not a cleverer regex — it is that
+ * a real hole, and the mitigation is not a cleverer regex - it is that
  * irreversible steps are declared in the artifact and reviewed by a human
  * before the capability is ever approved. The patterns here are a backstop for
  * DISCOVERY, where no reviewed artifact exists yet.
@@ -66,7 +66,7 @@ export function classifyAction(
       // Risk is about durable effect on the system of record. Keystrokes are
       // not durable; the submit that follows them is. Classifying typing as a
       // write would make every read-only lookup require --allow-writes, which
-      // trains operators to pass the flag always — the opposite of safe.
+      // trains operators to pass the flag always - the opposite of safe.
       // Typing into a sensitive field is blocked separately, by name, in the
       // gate's forbidden-field rule, regardless of this classification.
       return "read_only";
@@ -78,7 +78,7 @@ export function classifyAction(
       if (matches(name, patterns.readOnly)) return "read_only";
       if (matches(name, patterns.write)) return "reversible_write";
       // A link is navigation in these apps. An unrecognised button is not
-      // assumed safe — deny-by-default applies to risk too.
+      // assumed safe - deny-by-default applies to risk too.
       if (element?.role === "link") return "read_only";
       return "reversible_write";
     }

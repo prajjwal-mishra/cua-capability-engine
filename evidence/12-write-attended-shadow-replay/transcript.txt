@@ -1,7 +1,7 @@
 capability: member.open_subaccount@1.0.0  (draft)
 inputs:     {"memberId":"10042","nickname":"Vacation","initialDeposit":"250.00","accountKind":"Certificate"}
 
-success — no outputs
+success - no outputs
 
 step telemetry:
   s1   label_anchor         1x  35ms

@@ -221,7 +221,7 @@ describe("recoverable conditions are cleared and the run continues", () => {
     // not there.
     //
     // The bug this guards against reported that as `success_condition_failed`,
-    // i.e. "the artifact's idea of done is wrong" — sending someone to re-record
+    // i.e. "the artifact's idea of done is wrong" - sending someone to re-record
     // a capability over a transient server error. The detectors have to be
     // consulted at the point the verdict is reached, not only after each step.
     await arm("transient_503", "/frame/member", 2);
@@ -255,7 +255,7 @@ describe("hard failures stop and explain themselves", () => {
 
   it("says so plainly when the end state is simply not the recorded one", async () => {
     // A capability whose STEPS have been specialized for this tenant but whose
-    // notion of "done" has not — the shape a half-finished overlay takes. Every
+    // notion of "done" has not - the shape a half-finished overlay takes. Every
     // step runs and every checkpoint passes; the accounts grid just calls the
     // product something else, so the success condition can never hold.
     const { result } = await replay(
@@ -312,7 +312,7 @@ describe("escalation", () => {
     const { result, evidenceDir } = await replay({ memberId: "10042" }, { variant: "variant-b" });
     expect(result.status).toBe("escalated");
     const control = new SessionControl(join(evidenceDir, "lease.json"));
-    // Not "operator" — nobody has arrived yet, and a console must claim the
+    // Not "operator" - nobody has arrived yet, and a console must claim the
     // session before it is allowed to drive it.
     expect(control.owner).toBe("awaiting_operator");
     expect(control.lease.interventionId).toBeTruthy();

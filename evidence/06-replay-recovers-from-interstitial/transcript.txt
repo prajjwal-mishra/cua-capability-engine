@@ -1,7 +1,7 @@
 capability: member.savings_balance@1.0.0  (draft)
 inputs:     {"memberId":"10042"}
 
-success — savings_balance=$8,241.17
+success - savings_balance=$8,241.17
 
 step telemetry:
   s1   label_anchor         1x  32ms

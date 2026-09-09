@@ -18,7 +18,7 @@ import type { UISnapshot } from "../surface/types.js";
  * progress. INCLUDES the value of every editable control, which is the
  * distinction that matters: filling the second field of a five-field form
  * changes nothing about the page, and a screen-only fingerprint calls that a
- * stall — declaring the single most common back-office flow stuck three fields
+ * stall - declaring the single most common back-office flow stuck three fields
  * in. Typing the SAME value into the same field again still fingerprints
  * identically, which is correct: that genuinely is no progress.
  *

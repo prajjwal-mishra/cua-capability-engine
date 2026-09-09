@@ -34,7 +34,7 @@ export const VARIANTS: Record<string, Variant> = {
     searchButtonLabel: "Search",
     savingsRowLabel: "Savings",
     balanceColumnHeader: "Current Balance",
-    detailHeading: (name) => `Member Detail — ${name}`,
+    detailHeading: (name) => `Member Detail - ${name}`,
     subAccountReviewStep: false,
     ctlPrefix: "ctl00_ContentPlaceHolder1",
   },

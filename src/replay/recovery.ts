@@ -2,7 +2,7 @@
  * Recovery execution.
  *
  * Recoveries are declared as data in the artifact; this file is the small
- * interpreter for that data. Keeping the vocabulary tiny is deliberate — every
+ * interpreter for that data. Keeping the vocabulary tiny is deliberate - every
  * action a recovery can take is one a reviewer must be able to reason about
  * from the JSON alone, without reading code.
  */

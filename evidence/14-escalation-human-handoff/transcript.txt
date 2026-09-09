@@ -12,7 +12,7 @@ console:      http://localhost:62917/i/int-9f26054c
 The browser is headless, so drive the session from the console's element list.
 waiting for an operator to take control and hand back …
 
-[operator-demo] the run escalated and released the session — taking control
+[operator-demo] the run escalated and released the session - taking control
 [operator-demo] reviewed the request, clicking "Commit Sub-Account" by hand
 [operator-demo] handing control back, flow is complete
 
@@ -24,7 +24,7 @@ human did:    2 action(s)
               submitted the form "/frame/subaccount/10042/commit"
 resuming at:  $verify
 
-success — no outputs
+success - no outputs
 
 evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-09T09-51-42-436Z-6410f8ce
 policy checks: 11

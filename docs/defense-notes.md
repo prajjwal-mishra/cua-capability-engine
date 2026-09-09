@@ -20,7 +20,7 @@ But be precise about what it does *not* prove: the model shaped every descriptor
 every checkpoint and every recovery in the artifact. Replay is deterministic
 given the artifact; the artifact is a model's output that a human is expected to
 review. The honesty of the whole system rests on that review actually happening,
-and this repo cannot make it happen. What it can do — and does — is make the
+and this repo cannot make it happen. What it can do - and does - is make the
 artifact small enough and plain enough to review, and refuse to run an unreviewed
 one unattended.
 
@@ -32,7 +32,7 @@ recognises, and there is no code path that guesses and continues.
 The uncomfortable follow-up: my detectors were written against the app I also
 wrote. On a real system of record I would be discovering outcome classes for
 months, and every one I had not yet declared would arrive as
-`unclassified_condition` — safe, but an escalation, which costs a human. The
+`unclassified_condition` - safe, but an escalation, which costs a human. The
 system degrades toward "ask a human about everything" as the app gets stranger.
 That is the correct direction to fail in, but it is a cost curve, not a solved
 problem.
@@ -59,12 +59,11 @@ rather say so than let it be found.
 
 ## Where it would break first
 
-**Drift is measured and nothing watches it.** The run log records which locator
-rung resolved, and a capability resolving on rung 4 instead of rung 1 is a
-scheduled outage that has not happened yet. There is no alert, no threshold, no
-dashboard. The signal is the hard part and it exists; the plumbing is the easy
-part and it does not. At any real scale this is what I would build next after the
-promotion path.
+**Drift is measured and checked, not paged.** `cua drift report` aggregates
+`extra.driftSignal` from `run.jsonl` trees and exits non-zero over a threshold.
+That closes "we logged it and ignored it." It does not close ops: there is no
+pager, no per-tenant burn rate, no auto-open of an overlay review. A week of
+rung-4 hits still only fails the check if someone runs the check.
 
 **Concurrency is unaddressed.** One session per process. Two agents invoking the
 same write capability for the same member at the same time would both proceed.
@@ -73,7 +72,7 @@ second is what you would actually need. I know where it goes; it is not there.
 
 **The recovery pack is shared, and that is load-bearing.**
 `config/recovery-pack.corevantage-backoffice.json` is per vendor product, which
-is right — session timeouts and maintenance banners are properties of the
+is right - session timeouts and maintenance banners are properties of the
 product, not of one flow. But it means a bad edit to that file degrades every
 capability on that product simultaneously, and nothing versions or gates changes
 to it the way the artifact lifecycle gates capabilities. It should have its own
@@ -90,7 +89,7 @@ long before it becomes a technical one.
 object so a reviewer can read the recorded ladder as ordinary test code. It is
 not how production replay runs, and it is not a second locator engine. If the
 two ever diverged, the JSON would still be right and the snippet would be
-wrong — which is why the comment at the top of every generated file says so.
+wrong - which is why the comment at the top of every generated file says so.
 
 **Perception cost.** `observe()` walks the accessibility tree of every frame on
 every step. On this app that is milliseconds. On a real back office with deep
@@ -122,7 +121,7 @@ it `/__control/**` so it cannot reach the hook itself.
 
 **Tests drive a real browser against the real app.** Slower, and it is the point.
 The interesting defects in this system are things like "an operator's click
-navigated the frame and destroyed the buffer holding their recorded actions" —
+navigated the frame and destroyed the buffer holding their recorded actions" -
 which is exactly the class of bug a mocked surface cannot produce, and which a
 mocked surface would have let me ship.
 
@@ -131,7 +130,7 @@ application errors, policy denials and injected faults are not counted at all.
 This looks like grade inflation until you see the alternative: with naive
 counting, demonstrating error handling degraded the capability being
 demonstrated, and probing for a non-existent member looked like a regression. The
-number has to measure one thing — do the locators resolve and the flow execute —
+number has to measure one thing - do the locators resolve and the flow execute -
 or it measures nothing.
 
 ---
@@ -143,7 +142,7 @@ because every one of these was a wrong belief I held until something disagreed.
 
 1. **Human actions were lost exactly when they mattered.** The recorder buffered
    events in a page-scoped array. An operator's click navigates the frame, which
-   destroys the buffer — so it captured inconsequential clicks and dropped every
+   destroys the buffer - so it captured inconsequential clicks and dropped every
    action that moved the flow forward. Now pushed out over a binding as they
    happen.
 
@@ -156,14 +155,14 @@ because every one of these was a wrong belief I held until something disagreed.
 3. **The stall detector could not see a form being filled.** It fingerprinted
    screens by role and name and ignored control *values*, so typing into three
    fields looked like three identical screens and it declared the run stuck. This
-   is why the sub-account discovery run stalled — and a multi-field form is the
+   is why the sub-account discovery run stalled - and a multi-field form is the
    commonest back-office flow there is.
 
 4. **A 503 in a nested frame was blamed on the recording.** Detectors ran after
    every step but not at the point the run's verdict was decided. A transient
    error inside the accounts iframe, arriving after the last checkpoint had
-   already passed, was reported as `success_condition_failed` — "your artifact is
-   wrong" — for a server error. Detectors now run at the verdict;
+   already passed, was reported as `success_condition_failed` - "your artifact is
+   wrong" - for a server error. Detectors now run at the verdict;
    `tests/replay.test.ts` pins it.
 
 5. **`contentRoute`'s "I cannot tell" fallback was `[]`.** Downstream, `[]` means
@@ -173,7 +172,7 @@ because every one of these was a wrong belief I held until something disagreed.
 
 6. **Overlays were keyed on (product, tenant).** One institution runs many
    capabilities on one product, so that key collapsed all of their
-   specializations into one file — the unreviewable patch swamp separate overlay
+   specializations into one file - the unreviewable patch swamp separate overlay
    files exist to prevent.
 
 7. **The approval gate deadlocked promotion.** Unattended writes need approval;
@@ -192,28 +191,28 @@ because every one of these was a wrong belief I held until something disagreed.
 10. **An attended run waited forever.** Now bounded, and the intervention stays
     queued for the standalone console to pick up.
 
-11. **Failure payloads restated the expectation inside the observation** —
-    `expected: X / observed: X — no cell "Savings"` — and carried less context
+11. **Failure payloads restated the expectation inside the observation** -
+    `expected: X / observed: X - no cell "Savings"` - and carried less context
     than an escalation did. A failure is not a lesser event than an escalation;
     it is the one nobody is coming to look at live. Both now carry the screen
     text, a screenshot, and a remediation line where the classification implies
     one.
 
 12. **Human actions were logged twice** once the console took over that
-    responsibility from the CLI — doubling every entry in the audit trail for the
+    responsibility from the CLI - doubling every entry in the audit trail for the
     actions most worth auditing.
 
 13. **A committed artifact contained a member's account number.** The read
     capability's extraction descriptor anchored the balance cell on its
     neighbours, and rung 2 assumes the neighbour is a label. In a grid it is a
-    sibling value, so the artifact shipped `rowKey: "4417-99820-01"` — a locator
+    sibling value, so the artifact shipped `rowKey: "4417-99820-01"` - a locator
     that only ever matches member 10042, carrying their account number into a
     file that gets committed and code-reviewed. I found this reading the
     generated artifact rather than the code, which is the argument for artifacts
     being human-readable in the first place. Two fixes: rung 2 is suppressed for
     extraction inside a grid, and the compiler drops any rung whose anchor text
     trips the redactor. Worth noting what this was *not*: the redaction stage was
-    working correctly on every path it covered — logs, prompts, snapshots. The
+    working correctly on every path it covered - logs, prompts, snapshots. The
     leak was a path nobody had thought to route through it.
 
 14. **The operator desk was a second door around the gate.** Clicks injected
@@ -226,7 +225,7 @@ because every one of these was a wrong belief I held until something disagreed.
 
 15. **Intervention files skipped the redactor.** `EvidenceWriter.saveJson`
     redacts; `InterventionQueue.write` did not. Screen text from the moment
-    the run stopped — the one place a member's data is most likely to be —
+    the run stopped - the one place a member's data is most likely to be -
     was written verbatim. The queue is still a dumb file store; the executor
     and the desk now redact before they hand it anything.
 
@@ -246,6 +245,6 @@ npm run cua -- catalog describe member.savings_balance
 ```
 
 Then read `evidence/README.md`, and
-`capabilities/member.savings_balance@1.0.0.json` — specifically one step's
+`capabilities/member.savings_balance@1.0.0.json` - specifically one step's
 `strategies` array and the `knownOutcomes` block. Those two are where the design
 either convinces you or does not.

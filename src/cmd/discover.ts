@@ -1,5 +1,5 @@
 /**
- * `cua discover` — the one command that puts a model in the loop.
+ * `cua discover` - the one command that puts a model in the loop.
  *
  * It fails fast and loudly when there is no working model, rather than
  * degrading into something that looks like a run but isn't. A discovery run

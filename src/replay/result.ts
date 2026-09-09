@@ -9,12 +9,12 @@
  * makes a caller handle all four cases.
  *
  * Four arms, and no more:
- *   success          — we did the thing, here are the declared outputs
- *   business_outcome — the application gave a legitimate answer that isn't the
+ *   success          - we did the thing, here are the declared outputs
+ *   business_outcome - the application gave a legitimate answer that isn't the
  *                      happy path; the caller needs it as data, with a code
- *   escalated        — we stopped safely and a human has been asked; here is
+ *   escalated        - we stopped safely and a human has been asked; here is
  *                      how to resume
- *   failed           — something is wrong with the automation or the app, and
+ *   failed           - something is wrong with the automation or the app, and
  *                      here is enough context to debug it without a repro
  */
 
@@ -57,7 +57,7 @@ export type FailureClassification =
    * Every step landed, but the capability's overall success condition did not
    * hold. Distinct from `checkpoint_failed` because it points somewhere else:
    * the steps did what they claimed, so the artifact's model of "done" is what
-   * is wrong — which is the signature of replaying against a variant nobody
+   * is wrong - which is the signature of replaying against a variant nobody
    * has overlaid yet, not of a broken step.
    */
   | "success_condition_failed"
@@ -91,7 +91,7 @@ export type FailureClassification =
  * unattended against a system nobody can safely re-drive on demand, so "run it
  * again with the browser open" is not available. Whatever a person needs in
  * order to understand what happened has to be captured at the moment it
- * happened — which is also why an escalation and a failure carry the same
+ * happened - which is also why an escalation and a failure carry the same
  * context. Which of the two you got is a routing decision, not a reason to know
  * less.
  */
@@ -106,7 +106,7 @@ export interface ReplayFailure {
   readonly detail?: string;
   /**
    * What a person should do about it, when the classification implies something
-   * specific. Absent when it does not — a guess here is worse than a silence,
+   * specific. Absent when it does not - a guess here is worse than a silence,
    * because it sends someone down the wrong path with apparent authority.
    */
   readonly remediation?: string;
@@ -178,7 +178,7 @@ export function exitCodeFor(result: ReplayResult): number {
  * The stability record gates approval, so what it counts decides what approval
  * means. It has to measure one thing: do this artifact's locators still resolve
  * and does its flow still execute. Several outcomes look like failures and are
- * not evidence about that at all —
+ * not evidence about that at all -
  *
  *   business_outcome  the flow worked perfectly and the bank said no. Counting
  *                     "member not found" against a capability would mean
@@ -189,7 +189,7 @@ export function exitCodeFor(result: ReplayResult): number {
  *                     about the invocation, not the artifact.
  *   escalated         we stopped early on purpose. Indeterminate, so silent.
  *
- * — and folding them in would produce a number that drifts downward with
+ * - and folding them in would produce a number that drifts downward with
  * ordinary use, which is worse than having no number, because it looks like
  * one.
  */
@@ -217,15 +217,15 @@ export function stabilitySignal(result: ReplayResult): "success" | "failure" | "
 export function summarize(result: ReplayResult): string {
   switch (result.status) {
     case "success":
-      return `success — ${
+      return `success - ${
         Object.entries(result.outputs)
           .map(([k, v]) => `${k}=${v}`)
           .join(", ") || "no outputs"
       }`;
     case "business_outcome":
-      return `business outcome — ${result.code}: ${result.message}`;
+      return `business outcome - ${result.code}: ${result.message}`;
     case "escalated":
-      return `escalated — ${result.reason} (intervention ${result.interventionId})`;
+      return `escalated - ${result.reason} (intervention ${result.interventionId})`;
     case "failed": {
       const e = result.error;
       const lines = [

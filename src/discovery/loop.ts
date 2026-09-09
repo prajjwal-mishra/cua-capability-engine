@@ -2,7 +2,7 @@
  * The discovery loop: observe → model decides → policy gate → act → record.
  *
  * This is the only place in the system that talks to an LLM. It produces a
- * TRACE, not an artifact — compilation is a separate, deterministic step, so
+ * TRACE, not an artifact - compilation is a separate, deterministic step, so
  * the model's transcript stays evidence rather than becoming the capability.
  */
 
@@ -25,7 +25,7 @@ export interface RecordedStep {
   readonly action: SurfaceAction;
   /** The target as it appeared in the snapshot the model was looking at. */
   readonly element?: UIElement;
-  /** Set when the value came from an input parameter — the provenance that
+  /** Set when the value came from an input parameter - the provenance that
    *  makes generalization safe rather than a string search. */
   readonly paramBinding?: string;
   readonly literalValue?: string;
@@ -349,7 +349,7 @@ function elementFor(snapshot: UISnapshot, ref: unknown): UIElement | undefined {
 }
 
 const refError = (ref: unknown) =>
-  `no element ${String(ref)} in the current snapshot — refs are only valid for the snapshot you were just shown`;
+  `no element ${String(ref)} in the current snapshot - refs are only valid for the snapshot you were just shown`;
 
 type BuiltAction =
   | { action: SurfaceAction; element?: UIElement; paramBinding?: string; literalValue?: string }
@@ -411,7 +411,7 @@ function buildAction(
 
 /**
  * Resolve a value-carrying tool call into either a parameter binding or a
- * literal — never both, and never a literal that merely equals a parameter
+ * literal - never both, and never a literal that merely equals a parameter
  * value. Provenance is the whole point: the compiler generalizes a step because
  * the model SAID this value came from an input, not because a string matched.
  *

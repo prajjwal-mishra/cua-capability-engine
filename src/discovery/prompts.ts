@@ -1,5 +1,5 @@
 /**
- * Prompting. The model is handed a normalized, redacted snapshot — never HTML.
+ * Prompting. The model is handed a normalized, redacted snapshot - never HTML.
  *
  * Parameter VALUES are not in the prompt. The model is told a parameter exists
  * and what it means; when it wants that value typed it binds by name, and the
@@ -25,7 +25,7 @@ Rules:
 - Refs are valid only for the snapshot you were just given. Never reuse an old ref.
 - Element names may have been inferred from the surrounding table layout, because this application has no labels. Trust the name, but prefer elements whose role matches what you intend.
 - When a value comes from a task input parameter, use the "param" field rather than typing the literal. You are not given parameter values, and you do not need them.
-- If the application shows a legitimate business outcome (no such member, permission denied, a validation error), call note_known_outcome. That is a real answer, not a failure — do not try to work around it.
+- If the application shows a legitimate business outcome (no such member, permission denied, a validation error), call note_known_outcome. That is a real answer, not a failure - do not try to work around it.
 - Call extract_output for every value the goal asks you to return, then call declare_success.
 - If you are stuck, looping, or an action looks unsafe or irreversible, call request_human_help instead of guessing.
 

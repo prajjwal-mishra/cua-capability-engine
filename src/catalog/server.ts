@@ -1,7 +1,7 @@
 /**
  * HTTP face of the catalog.
  *
- * Small on purpose. The interesting artifact is the CONTRACT this serves —
+ * Small on purpose. The interesting artifact is the CONTRACT this serves -
  * `GET /capabilities` returns JSON Schema an agent framework can register as
  * tools without any adapter code, and `POST /capabilities/:id/invoke` returns
  * the replay result union unchanged. Anything more (auth, tenancy resolution,
@@ -39,7 +39,7 @@ export async function startCatalogServer(
   });
 
   /** The whole point: an agent calls this with typed args and gets the result
-   *  contract back — including `business_outcome`, which is not an error. */
+   *  contract back - including `business_outcome`, which is not an error. */
   app.post("/capabilities/:id/invoke", async (req, res) => {
     const body = (req.body ?? {}) as {
       args?: Record<string, unknown>;

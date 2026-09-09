@@ -3,7 +3,7 @@
  *
  * Playwright is the DRIVER, not the abstraction. It earns its place because it
  * gives us trusted input dispatch, actionability checks, frame handling, and
- * tracing — all things that are genuinely hard to get right. What it does NOT
+ * tracing - all things that are genuinely hard to get right. What it does NOT
  * get to do is leak upward: nothing above this file mentions a Locator, a CSS
  * selector, or a pixel. Swap this class for a DesktopSurface and the recorded
  * artifacts still replay.
@@ -36,7 +36,7 @@ const COLLECTOR_SRC = collectElements.toString();
 
 export interface WebSurfaceOptions {
   /** Called with a PNG buffer when a snapshot requests a screenshot. Returns
-   *  the path it was written to. Redaction masking is applied by the caller —
+   *  the path it was written to. Redaction masking is applied by the caller -
    *  this class never writes evidence to disk itself. */
   readonly screenshotSink?: (
     png: Buffer,
@@ -77,7 +77,7 @@ export class WebSurface implements Surface {
       const framePath = await this.framePathOf(frame);
       // Element bounds arrive frame-relative. Offset them into top-level page
       // coordinates so they are usable both as diagnostics and as screenshot
-      // mask regions — a frame-relative box would mask the wrong pixels.
+      // mask regions - a frame-relative box would mask the wrong pixels.
       const offset = await this.frameOffset(frame);
       frameContexts.push({
         framePath,
@@ -170,7 +170,7 @@ export class WebSurface implements Surface {
           return done({ ok: true });
         }
         case "reload": {
-          // Reload the named frame, or the deepest one — in a frameset app the
+          // Reload the named frame, or the deepest one - in a frameset app the
           // shell is not what failed, the content frame is.
           const target = action.framePath
             ? await this.frameByPath(action.framePath)
@@ -236,7 +236,7 @@ export class WebSurface implements Surface {
     const el = await this.resolveRef(ref);
     if (!el) {
       throw new Error(
-        `ref ${ref} does not resolve in the current page state — refs are snapshot-scoped, so observe() again before acting`,
+        `ref ${ref} does not resolve in the current page state - refs are snapshot-scoped, so observe() again before acting`,
       );
     }
     return el;
@@ -298,7 +298,7 @@ export class WebSurface implements Surface {
 
   /**
    * Screenshot with sensitive regions painted out BEFORE capture. The overlay
-   * is injected, the image is taken, and the overlay is removed — so a PNG
+   * is injected, the image is taken, and the overlay is removed - so a PNG
    * containing the unmasked value is never produced in the first place.
    */
   async screenshot(masks: readonly Bounds[] = []): Promise<Buffer> {
@@ -359,14 +359,14 @@ export class WebSurface implements Surface {
    *
    * This is the subtle one. In a frameset app, clicking a submit button inside
    * the content frame navigates that frame and never touches the top-level
-   * document — so waiting on the page's load state returns immediately and we
+   * document - so waiting on the page's load state returns immediately and we
    * observe the pre-click DOM. That failure is intermittent by nature: it is a
    * race, and it wins often enough to look like flakiness in the artifact
    * rather than a bug in perception.
    *
    * So we arm a frame-navigation listener BEFORE dispatching, and the wait ends
    * the moment a frame actually navigates. The ceiling is only reached when
-   * nothing navigated — a click that genuinely changed nothing — and it exists
+   * nothing navigated - a click that genuinely changed nothing - and it exists
    * to bound that case, not to pace the common one.
    */
   private async actAndSettle(dispatch: () => Promise<unknown>, ceilingMs = 1_500): Promise<void> {
@@ -438,7 +438,7 @@ function normalizeRole(role: string): UIRole {
  *
  * `ordinal` counts within role+name and expresses "the second 'Open' link".
  * `roleOrdinal` counts within role alone and expresses "the first textbox in
- * this frame" — the only one of the two that still means something after the
+ * this frame" - the only one of the two that still means something after the
  * app is relabelled, which is precisely the cross-tenant case.
  */
 function assignOrdinals(elements: readonly UIElement[]): UIElement[] {

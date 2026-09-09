@@ -1,7 +1,7 @@
 /**
  * A hand-built capability used ONLY as test input.
  *
- * This is deliberately not the artifact in /evidence — that one must come from
+ * This is deliberately not the artifact in /evidence - that one must come from
  * a genuine discovery run. This exists so the replay executor can be tested
  * exhaustively (every branch of the result contract, every recovery) without
  * needing a model, and without twenty LLM runs to produce twenty fixtures.
@@ -26,7 +26,7 @@ export function testAllowlist(origin: string): Allowlist {
 }
 
 /**
- * Labels this capability was RECORDED against — deliberately separate from the
+ * Labels this capability was RECORDED against - deliberately separate from the
  * variant it is being replayed against.
  *
  * Keeping the two independent is what lets a test say either "this capability

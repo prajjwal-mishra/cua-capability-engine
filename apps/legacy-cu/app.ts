@@ -2,7 +2,7 @@
  * The target application: a legacy credit-union back office.
  *
  * Built rather than borrowed. A public demo site would have been safer, but it
- * would also have let us dodge the exact reality the brief describes — no clean
+ * would also have let us dodge the exact reality the brief describes - no clean
  * DOM, no test ids, and runtime exceptional states we need to trigger on
  * demand. A local app is reproducible, PII-free, and lets us INJECT the failure
  * modes the brief names instead of waiting for them.

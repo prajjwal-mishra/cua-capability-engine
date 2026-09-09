@@ -1,8 +1,8 @@
 /**
  * Command line entry point.
  *
- * `discover` is the only command that needs a model. Everything else — replay,
- * catalog, the operator console — runs offline against saved artifacts, which
+ * `discover` is the only command that needs a model. Everything else - replay,
+ * catalog, the operator console - runs offline against saved artifacts, which
  * is deliberate: a reviewer with no API key should still be able to exercise
  * the production path.
  */
@@ -14,7 +14,7 @@ import { parseArgs } from "./cli-args.js";
 
 const [, , command, ...rest] = process.argv;
 
-const USAGE = `cua — computer-use capability engine
+const USAGE = `cua - computer-use capability engine
 
   discover   --goal "<text>" --target <url> --tenant <id> [--input k=v ...]
              [--capability <id>] [--variant variant-a|variant-b] [--allow-writes]
@@ -40,11 +40,15 @@ const USAGE = `cua — computer-use capability engine
 
   emit       --capability <id>[@<version>] [--format test|page-object] [--out <file>]
              Project an artifact into a Playwright snippet. A projection of the
-             JSON, not a second source of truth — replay still executes the artifact.
+             JSON, not a second source of truth - replay still executes the artifact.
 
   overlay    propose --from <intervention.json> --tenant <id> [--out <file>]
              Draft a tenant overlay from captured human actions. A proposal to
-             review, not an applied patch — risk is never lowered automatically.
+             review, not an applied patch - risk is never lowered automatically.
+
+  drift      report [--from <dir>[,<dir>...]] [--threshold 0]
+             Aggregate rung-drop flags from run.jsonl trees. Exit 2 when the
+             drifted fraction of resolutions exceeds --threshold (default 0).
 `;
 
 async function main(): Promise<void> {
@@ -67,6 +71,9 @@ async function main(): Promise<void> {
       break;
     case "overlay":
       await (await import("./cmd/overlay.js")).overlayCommand(args);
+      break;
+    case "drift":
+      await (await import("./cmd/drift.js")).driftCommand(args);
       break;
     default:
       console.log(USAGE);

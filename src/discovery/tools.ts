@@ -4,7 +4,7 @@
  * Two deliberate properties.
  *
  * First, it mirrors SurfaceAction rather than the DOM. The model never sees
- * HTML, never writes a selector, and never gets coordinates — it picks a ref
+ * HTML, never writes a selector, and never gets coordinates - it picks a ref
  * out of a normalized snapshot. That is what makes the recorded flow portable
  * to a surface Playwright cannot drive.
  *
@@ -58,7 +58,7 @@ export const DISCOVERY_TOOLS: readonly ToolSpec[] = [
     description:
       "Choose an option in a combobox. Supply EITHER option (a literal visible label) OR param " +
       "(the name of a goal input holding the label). Prefer param whenever the choice came from " +
-      "the task inputs — a hard-coded product type would make the capability only able to open " +
+      "the task inputs - a hard-coded product type would make the capability only able to open " +
       "that one product.",
     parameters: {
       type: "object",

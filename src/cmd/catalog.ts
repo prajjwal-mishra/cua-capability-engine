@@ -1,10 +1,10 @@
 /**
- * `cua catalog` — what an AI agent sees.
+ * `cua catalog` - what an AI agent sees.
  *
  * list / describe / invoke mirror the three questions a calling agent has, and
  * `approve` is the promotion gate between them: a recording is a draft until a
  * human says otherwise, and only approved capabilities are invocable
- * unattended. That gate is the cheapest real safety property in the system —
+ * unattended. That gate is the cheapest real safety property in the system -
  * it costs one field and it is the difference between "the model found a way to
  * do this" and "we are willing to let this run against a member's account".
  */
@@ -40,7 +40,7 @@ export async function catalogCommand(args: Args): Promise<void> {
       return serve(args);
     default:
       throw new Error(
-        `unknown catalog subcommand '${sub}' — expected list | describe | invoke | approve | deprecate | serve`,
+        `unknown catalog subcommand '${sub}' - expected list | describe | invoke | approve | deprecate | serve`,
       );
   }
 }
@@ -50,7 +50,7 @@ export async function catalogCommand(args: Args): Promise<void> {
 function list(): void {
   const entries = listCatalog();
   if (entries.length === 0) {
-    console.log("no capabilities saved yet — run `cua discover` first");
+    console.log("no capabilities saved yet - run `cua discover` first");
     return;
   }
   console.log(`${entries.length} capability(ies):\n`);
@@ -162,7 +162,7 @@ async function invoke(args: Args): Promise<void> {
 
 /**
  * What the calling agent gets. Evidence paths and per-step telemetry are for
- * operators debugging a run, not for a model deciding what to do next — handing
+ * operators debugging a run, not for a model deciding what to do next - handing
  * them to the agent invites it to reason about our internals.
  */
 function agentView(result: ReplayResult): Record<string, unknown> {
@@ -205,9 +205,9 @@ function setState(args: Args, state: "approved" | "deprecated"): void {
     // record, so it is gated on evidence rather than on someone's judgement of
     // the diff. Two conditions, and both matter:
     //
-    //   enough runs   — one green run says nothing about a locator ladder that
+    //   enough runs   - one green run says nothing about a locator ladder that
     //                   degrades only when the page is slow
-    //   no red runs   — a capability that fails one time in five will fail
+    //   no red runs   - a capability that fails one time in five will fail
     //                   unattended, at night, on a real member's account. There
     //                   is no useful sense in which that is "mostly working".
     const reasons: string[] = [];

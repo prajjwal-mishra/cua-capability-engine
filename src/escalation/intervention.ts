@@ -2,8 +2,8 @@
  * Intervention requests: the routing half of human-in-the-loop.
  *
  * File-backed, under the run's own evidence directory. A queue technology would
- * be premature here — the brief explicitly does not reward building scaling
- * infrastructure — but the SHAPE is the shape a real queue would carry, and the
+ * be premature here - the brief explicitly does not reward building scaling
+ * infrastructure - but the SHAPE is the shape a real queue would carry, and the
  * console reads it exactly as a worker would read a job.
  *
  * What an intervention must carry is the interesting part: enough for a human
@@ -106,7 +106,7 @@ export class InterventionQueue {
   }
 }
 
-/** Every intervention across every run — what the console lists. */
+/** Every intervention across every run - what the console lists. */
 export function listAllInterventions(
   runsRoot: string,
 ): { runDir: string; intervention: Intervention }[] {

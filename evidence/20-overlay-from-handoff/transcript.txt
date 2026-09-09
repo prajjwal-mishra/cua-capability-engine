@@ -3,4 +3,4 @@ $ cua overlay propose --from evidence/14-escalation-human-handoff/run/interventi
   clicked the button "Commit Sub-Account": proposed insert for button "Commit Sub-Account"
   submitted the form "/frame/subaccount/10042/commit": skipped (submit is not a control action)
 
-wrote evidence/20-overlay-from-handoff/proposed.json  (1 inserted step(s) — proposal, not applied)
+wrote evidence/20-overlay-from-handoff/proposed.json  (1 inserted step(s) - proposal, not applied)

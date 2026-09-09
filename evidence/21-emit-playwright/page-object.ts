@@ -1,7 +1,7 @@
 /**
  * Generated from member.savings_balance@1.0.0.
  *
- * A projection of the capability artifact — not a second source of truth.
+ * A projection of the capability artifact - not a second source of truth.
  * Replay still executes the JSON; this file exists so a reviewer can see the
  * recorded ladder as ordinary Playwright, or drop a snippet into an existing
  * suite. Do not edit this and the artifact independently.

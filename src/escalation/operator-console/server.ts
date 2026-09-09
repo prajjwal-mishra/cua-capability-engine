@@ -3,10 +3,10 @@
  *
  * Two modes, one implementation:
  *
- *   standalone  — `cua operator`. Lists intervention requests across every run
+ *   standalone  - `cua operator`. Lists intervention requests across every run
  *                 and shows their full context. Review and triage; no browser.
  *
- *   attached    — started by a replay that escalated, holding the paused run's
+ *   attached    - started by a replay that escalated, holding the paused run's
  *                 live page. This is where control actually transfers.
  *
  * What is real: the lease (persisted, authoritative, checked before every
@@ -56,7 +56,7 @@ export interface LiveSession {
    * automation's.
    *
    * A handoff where the machine's steps are recorded and the human's are not
-   * produces a run record that reads as if the automation did everything —
+   * produces a run record that reads as if the automation did everything -
    * which is precisely backwards for the actions most worth attributing. These
    * are written here rather than by the caller so that attribution does not
    * depend on which caller attached the console.
@@ -146,7 +146,7 @@ export async function startOperatorConsole(
    *
    * The lease reading `awaiting_operator` is not enough. That state means
    * automation has stepped back, which is not the same as a human having
-   * arrived — and acting on the weaker signal would dispatch clicks into a live
+   * arrived - and acting on the weaker signal would dispatch clicks into a live
    * banking session with no recorder installed and nothing attributing them to
    * anyone.
    */
@@ -210,7 +210,7 @@ export async function startOperatorConsole(
 
   /**
    * Take control. The lease moves to the operator FIRST, and only then is the
-   * recorder installed — the automation is checking that lease before every
+   * recorder installed - the automation is checking that lease before every
    * action it dispatches, so there is no window in which both sides believe
    * they may act.
    */
@@ -242,7 +242,7 @@ export async function startOperatorConsole(
     const { kind, ref, text } = req.body as { kind: string; ref: string; text?: string };
     try {
       // Observe first so the gate can reason about the actual target, not just
-      // the action's shape — the same order GuardedSurface uses.
+      // the action's shape - the same order GuardedSurface uses.
       const snapshot = await session.surface.observe();
       const element = snapshot.elements.find((e) => e.ref === ref);
       const action =
@@ -357,7 +357,7 @@ export async function startOperatorConsole(
         err.code === "EADDRINUSE"
           ? new Error(
               `operator console cannot start: port ${options.port} is already in use. ` +
-                `Another run's console is probably still holding it — stop it, or pass ` +
+                `Another run's console is probably still holding it - stop it, or pass ` +
                 `--console-port <n> / set OPERATOR_PORT.`,
             )
           : err,

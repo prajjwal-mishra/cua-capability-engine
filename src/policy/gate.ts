@@ -1,8 +1,8 @@
 /**
  * The single choke point.
  *
- * Every action dispatched by this system — discovery, replay, and the operator
- * desk — passes through PolicyGate.check. Discovery and replay are handed a
+ * Every action dispatched by this system - discovery, replay, and the operator
+ * desk - passes through PolicyGate.check. Discovery and replay are handed a
  * GuardedSurface, which cannot be constructed without a gate. The desk calls
  * check() itself before it touches the raw surface, with actor: "operator":
  * a human is not the automation, but they are still inside the allowlist.
@@ -75,8 +75,8 @@ export interface PolicyContext {
   readonly attended?: boolean;
   /**
    * Who is asking. Defaults to automation. An operator who has taken the
-   * lease may act — including on irreversible controls, which is the whole
-   * point of the handoff — but they still cannot leave the allowlist or type
+   * lease may act - including on irreversible controls, which is the whole
+   * point of the handoff - but they still cannot leave the allowlist or type
    * into a forbidden field. The desk is an HTTP API on localhost; without
    * those checks it would be a second door around the gate.
    */
@@ -133,7 +133,7 @@ export class PolicyGate {
     }
 
     // 3. Location. Navigation is checked against its destination; everything
-    //    else against where we already are — acting on a page we should never
+    //    else against where we already are - acting on a page we should never
     //    have reached is still acting outside the allowlist.
     const urlUnderTest = action.kind === "navigate" ? action.url : ctx.currentUrl;
     const urlCheck = checkUrl(allowlist, urlUnderTest);
@@ -150,7 +150,7 @@ export class PolicyGate {
     }
 
     // 5. Forbidden fields. Matched on the control's accessible name, which on
-    //    this surface is often the adjacent label cell — the same thing a human
+    //    this surface is often the adjacent label cell - the same thing a human
     //    reads to know what a box is for.
     if ((action.kind === "type" || action.kind === "select") && ctx.element) {
       const name = ctx.element.name.toLowerCase();

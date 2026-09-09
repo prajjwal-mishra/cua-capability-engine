@@ -1,6 +1,6 @@
 /**
  * The in-page perception pass. This function is serialized into the browser and
- * runs once per frame, so it must be entirely self-contained — no imports, no
+ * runs once per frame, so it must be entirely self-contained - no imports, no
  * closure over module scope.
  *
  * Why compute the accessibility view ourselves rather than read Chromium's AX
@@ -8,13 +8,13 @@
  * but we need a live element handle paired with each name so Playwright can
  * dispatch real, actionability-checked input against it. Bridging AX node ids
  * back to handles means either mutating the page (stamping attributes) or
- * clicking by coordinate — and clicking by coordinate is the exact thing this
+ * clicking by coordinate - and clicking by coordinate is the exact thing this
  * design rejects. So we implement the subset of the accname algorithm these
  * controls actually exercise and keep the handle alongside it.
  *
  * The important property is that the OUTPUT SHAPE is platform-neutral. On a
  * desktop surface, UIA/AXAPI compute role and name for us and this whole file
- * collapses to a tree walk — which is why `nativeAccessibilityNames` is on the
+ * collapses to a tree walk - which is why `nativeAccessibilityNames` is on the
  * capabilities record.
  */
 
@@ -246,7 +246,7 @@ export function collectElements(refPrefix: string, maxElements: number): RawElem
 
     // A cell earns its place by carrying text of its own. Skipping every cell
     // that contains a control or a nested table looks tidier but silently drops
-    // the sentences that identify exceptional states — a session-timeout notice
+    // the sentences that identify exceptional states - a session-timeout notice
     // sits in the same cell as the re-auth form, and a "no records" message in
     // the same cell as the link back. ownText() already excludes anything that
     // belongs to a descendant control or table, so an outer wrapper contributes

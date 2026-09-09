@@ -3,7 +3,7 @@
   "page": {
     "url": "http://localhost:4000/",
     "routePattern": "/",
-    "title": "Riverbend Credit Union — Back Office",
+    "title": "Riverbend Credit Union - Back Office",
     "frames": [
       {
         "framePath": [],
@@ -113,7 +113,7 @@
     {
       "ref": "e5",
       "role": "cell",
-      "name": "Member Detail — Marisol Vantreight",
+      "name": "Member Detail - Marisol Vantreight",
       "nameSource": "text-content",
       "state": {},
       "framePath": ["contentFrame"],

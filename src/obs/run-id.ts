@@ -3,7 +3,7 @@
  *
  * Trivial, and deliberately in its own module. It used to live in the recorder,
  * which meant `cua replay` imported the compiler, which imports the discovery
- * trace type, which reaches the LLM client — putting a model back inside
+ * trace type, which reaches the LLM client - putting a model back inside
  * replay's import graph for the sake of one string function.
  * tests/no-llm-import.test.ts caught it. Keeping this here keeps that boundary
  * honest rather than merely documented.

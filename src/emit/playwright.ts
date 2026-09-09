@@ -3,7 +3,7 @@
  *
  * This is a stretch the brief offered: a page object / test generated from the
  * recorded ladder. It is a projection of the artifact, not a second source of
- * truth — the engine still replays the JSON. Generated locators prefer the
+ * truth - the engine still replays the JSON. Generated locators prefer the
  * same vocabulary replay uses (role + name + frame path) and never invent CSS
  * selectors from structural rungs.
  */
@@ -32,7 +32,7 @@ export function emitPlaywright(
   const header = `/**
  * Generated from ${artifact.capabilityId}@${artifact.version}.
  *
- * A projection of the capability artifact — not a second source of truth.
+ * A projection of the capability artifact - not a second source of truth.
  * Replay still executes the JSON; this file exists so a reviewer can see the
  * recorded ladder as ordinary Playwright, or drop a snippet into an existing
  * suite. Do not edit this and the artifact independently.

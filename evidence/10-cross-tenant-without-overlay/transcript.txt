@@ -6,7 +6,7 @@ failed at s3 (success_condition_failed)
   expected: the Savings row is present in the results grid
   observed: no cell "Savings"
   what now: every step completed and nothing on screen matches a known fault, so
-            the flow ran — but the end state the artifact expects is not what is
+            the flow ran - but the end state the artifact expects is not what is
             there. If this is a tenant the capability was not recorded against,
             that is what an overlay is for.
   screen:   screenshots/failure-s3.png

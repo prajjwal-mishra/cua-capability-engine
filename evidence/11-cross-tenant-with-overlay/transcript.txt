@@ -2,7 +2,7 @@ capability: member.savings_balance@1.0.0  (draft)
 overlay:    summit-fcu.member.savings_balance for tenant summit-fcu
 inputs:     {"memberId":"10042"}
 
-success — savings_balance=$8,241.17
+success - savings_balance=$8,241.17
 
 step telemetry:
   s1   label_anchor         1x  38ms

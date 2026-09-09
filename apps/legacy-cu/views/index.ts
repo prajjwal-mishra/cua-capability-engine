@@ -56,7 +56,7 @@ function page(v: Variant, title: string, body: string): string {
 
 /** Top-level frame shell: nav frame + content frame. */
 export function shell(v: Variant, contentUrl: string): string {
-  return `<html><head><title>${esc(v.brand)} — Back Office</title>
+  return `<html><head><title>${esc(v.brand)} - Back Office</title>
 <style>html,body{margin:0;height:100%;background:#e8e8e0;} iframe{border:0;}</style></head>
 <body>
 <table width="100%" height="100%" cellpadding="0" cellspacing="0"><tr>
@@ -91,7 +91,7 @@ export function searchPage(v: Variant, error?: string): string {
   const p = v.ctlPrefix;
   return page(
     v,
-    `${v.brand} — Member Search`,
+    `${v.brand} - Member Search`,
     `<table width="100%" cellpadding="0" cellspacing="0"><tr><td class="hdr"><font ${FONT} color="#ffffff">Member Search</font></td></tr></table>
 <form method="get" action="/frame/results">
 <input type="hidden" name="variant" value="${esc(v.id)}">
@@ -132,7 +132,7 @@ export function resultsPage(v: Variant, members: readonly Member[], query: strin
     .join("\n");
   return page(
     v,
-    `${v.brand} — Search Results`,
+    `${v.brand} - Search Results`,
     `<table width="100%" cellpadding="0" cellspacing="0"><tr><td class="hdr"><font ${FONT} color="#ffffff">Search Results</font></td></tr></table>
 <table cellpadding="4"><tr><td><font ${FONT}>Results for &quot;${esc(query)}&quot;</font></td></tr></table>
 <table cellpadding="0" cellspacing="0"><tr><td>
@@ -148,7 +148,7 @@ export function resultsPage(v: Variant, members: readonly Member[], query: strin
 export function noResultsPage(v: Variant, query: string): string {
   return page(
     v,
-    `${v.brand} — Search Results`,
+    `${v.brand} - Search Results`,
     `<table width="100%" cellpadding="0" cellspacing="0"><tr><td class="hdr"><font ${FONT} color="#ffffff">Search Results</font></td></tr></table>
 <table cellpadding="8"><tr><td>
   <font ${FONT} class="err">No member records match the criteria supplied.</font><br><br>
@@ -186,7 +186,7 @@ export function memberDetail(v: Variant, m: Member): string {
   );
 }
 
-/** The accounts grid — nested one frame deeper than the detail page. */
+/** The accounts grid - nested one frame deeper than the detail page. */
 export function accountsFrame(v: Variant, m: Member): string {
   const rows = m.accounts
     .map(
@@ -218,7 +218,7 @@ export function accountsFrame(v: Variant, m: Member): string {
 export function permissionDenied(v: Variant, memberId: string): string {
   return page(
     v,
-    `${v.brand} — Access Denied`,
+    `${v.brand} - Access Denied`,
     `<table width="100%" cellpadding="0" cellspacing="0"><tr><td class="hdr"><font ${FONT} color="#ffffff">Access Denied</font></td></tr></table>
 <table cellpadding="8"><tr><td>
   <font ${FONT} class="err">You are not authorized to view this member record.</font><br><br>
@@ -233,7 +233,7 @@ export function loginInterstitial(v: Variant, returnTo: string): string {
   const p = v.ctlPrefix;
   return page(
     v,
-    `${v.brand} — Session Expired`,
+    `${v.brand} - Session Expired`,
     `<table width="100%" cellpadding="0" cellspacing="0"><tr><td class="hdr"><font ${FONT} color="#ffffff">Session Expired</font></td></tr></table>
 <form method="post" action="/frame/login">
 <input type="hidden" name="returnTo" value="${esc(returnTo)}">
@@ -254,7 +254,7 @@ export function loginInterstitial(v: Variant, returnTo: string): string {
 export function interstitialDialog(v: Variant, continueUrl: string): string {
   return page(
     v,
-    `${v.brand} — Notice`,
+    `${v.brand} - Notice`,
     `<table width="100%" cellpadding="0" cellspacing="0"><tr><td class="hdr"><font ${FONT} color="#ffffff">System Notice</font></td></tr></table>
 <table cellpadding="8"><tr><td>
   <font ${FONT}><b>Scheduled maintenance window</b></font><br><br>
@@ -303,8 +303,8 @@ export function subAccountForm(
   const val = (s: string | undefined) => esc(s ?? "");
   return page(
     v,
-    `${v.brand} — Open Sub-Account`,
-    `<table width="100%" cellpadding="0" cellspacing="0"><tr><td class="hdr"><font ${FONT} color="#ffffff">Open Sub-Account — ${esc(m.memberId)}</font></td></tr></table>
+    `${v.brand} - Open Sub-Account`,
+    `<table width="100%" cellpadding="0" cellspacing="0"><tr><td class="hdr"><font ${FONT} color="#ffffff">Open Sub-Account - ${esc(m.memberId)}</font></td></tr></table>
 <form method="post" action="/frame/subaccount/${esc(m.memberId)}">
 <input type="hidden" name="variant" value="${esc(v.id)}">
 <table cellpadding="0" cellspacing="0"><tr><td>
@@ -335,7 +335,7 @@ export function subAccountForm(
 export function subAccountReview(v: Variant, m: Member, draft: SubAccountDraft): string {
   return page(
     v,
-    `${v.brand} — Review Sub-Account`,
+    `${v.brand} - Review Sub-Account`,
     `<table width="100%" cellpadding="0" cellspacing="0"><tr><td class="hdr"><font ${FONT} color="#ffffff">Review Request</font></td></tr></table>
 <form method="post" action="/frame/subaccount/${esc(m.memberId)}/commit">
 <input type="hidden" name="variant" value="${esc(v.id)}">
@@ -364,7 +364,7 @@ export function subAccountConfirmation(
 ): string {
   return page(
     v,
-    `${v.brand} — Sub-Account Opened`,
+    `${v.brand} - Sub-Account Opened`,
     `<table width="100%" cellpadding="0" cellspacing="0"><tr><td class="hdr"><font ${FONT} color="#ffffff">Confirmation</font></td></tr></table>
 <table cellpadding="8"><tr><td>
   <font ${FONT}><b>Sub-account opened successfully.</b></font><br><br>

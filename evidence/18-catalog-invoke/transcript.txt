@@ -8,5 +8,5 @@ invoking member.savings_balance with {"memberId":"10042"}
   }
 }
 
-success — savings_balance=$8,241.17
+success - savings_balance=$8,241.17
 exit 0

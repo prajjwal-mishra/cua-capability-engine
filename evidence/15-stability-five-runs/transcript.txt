@@ -8,5 +8,5 @@ inputs:     {"memberId":"10042"}
 
 stability: 5/5 succeeded (100.0%)
 breakdown: {"success":5}
-drift:     none — every step resolved on its recorded top strategy
+drift:     none - every step resolved on its recorded top strategy
 exit 0

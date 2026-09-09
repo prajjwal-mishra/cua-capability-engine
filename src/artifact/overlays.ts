@@ -9,7 +9,7 @@
  * fails at the scale this system actually targets. Hundreds of tenants share
  * one vendor product; if their patches live inside the base, then every tenant's
  * drift re-versions a document all of them share, one file accumulates hundreds
- * of editors, and the ownership boundary collapses — the base belongs to
+ * of editors, and the ownership boundary collapses - the base belongs to
  * whoever maintains the recording, the patch belongs to the institution.
  *
  * As separate documents: a tenant's drift is a small diff in a file only that
@@ -32,7 +32,7 @@ import { satisfies } from "./version.js";
 
 /** Sparse patch of one step. Absent keys are inherited from the base. */
 export const StepPatchSchema = StepSchema.partial().extend({
-  /** Replaces the base descriptor wholesale rather than merging ladders —
+  /** Replaces the base descriptor wholesale rather than merging ladders -
    *  a half-merged strategy list is worse than either version alone. */
   target: ElementDescriptorSchema.optional(),
   checkpoint: ConditionSchema.optional(),
@@ -72,8 +72,8 @@ export type OverlayInput = z.input<typeof OverlaySchema>;
 export class OverlayMismatch extends Error {}
 
 /**
- * Apply an overlay to a base artifact. Pure — takes two documents, returns a
- * third — so a reviewer can diff resolved(base, overlay) against base and see
+ * Apply an overlay to a base artifact. Pure - takes two documents, returns a
+ * third - so a reviewer can diff resolved(base, overlay) against base and see
  * exactly what a tenant changed.
  */
 export function applyOverlay(base: CapabilityArtifact, overlay: Overlay): CapabilityArtifact {
@@ -135,7 +135,7 @@ export function applyOverlay(base: CapabilityArtifact, overlay: Overlay): Capabi
   });
 }
 
-/** What a tenant actually changed — the reviewable unit. */
+/** What a tenant actually changed - the reviewable unit. */
 export function describeOverlay(overlay: Overlay): string[] {
   const lines: string[] = [];
   for (const [id, patch] of Object.entries(overlay.patch.steps)) {

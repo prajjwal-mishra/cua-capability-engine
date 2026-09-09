@@ -3,7 +3,7 @@
  * reviewer can read a single folder and understand what happened.
  *
  * Screenshots pass through the surface's masking path, never through a raw
- * capture — see WebSurface.screenshot.
+ * capture - see WebSurface.screenshot.
  */
 
 import { mkdirSync, writeFileSync, cpSync, existsSync } from "node:fs";

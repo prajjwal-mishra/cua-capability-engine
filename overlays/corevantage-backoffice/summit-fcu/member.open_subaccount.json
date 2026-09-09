@@ -6,7 +6,7 @@
     "capabilityId": "member.open_subaccount",
     "versionRange": "^1.0.0"
   },
-  "describe": "Same CoreVantage build as Riverbend, two differences that matter. The search screen is relabelled ('Member Number' / 'Find Member'), and Summit's configuration interposes a review screen with an explicit commit before the account is actually opened. That commit is IRREVERSIBLE here where Riverbend's Continue was not, so it is declared as such — which is what routes it to a human instead of being clicked.",
+  "describe": "Same CoreVantage build as Riverbend, two differences that matter. The search screen is relabelled ('Member Number' / 'Find Member'), and Summit's configuration interposes a review screen with an explicit commit before the account is actually opened. That commit is IRREVERSIBLE here where Riverbend's Continue was not, so it is declared as such - which is what routes it to a human instead of being clicked.",
   "patch": {
     "steps": {
       "s1": {

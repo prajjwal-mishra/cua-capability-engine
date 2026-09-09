@@ -1,8 +1,8 @@
 /**
  * One place that assembles a replay session.
  *
- * Both entry points into the production path — the CLI and the agent-facing
- * catalog — go through here, so there is exactly one answer to "how is a
+ * Both entry points into the production path - the CLI and the agent-facing
+ * catalog - go through here, so there is exactly one answer to "how is a
  * replay wired up", and in particular exactly one place where the executor is
  * handed its surface. That matters more than the saved lines: if the catalog
  * assembled its own surface it could quietly assemble an UNGUARDED one, and

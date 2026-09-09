@@ -1,7 +1,7 @@
 capability: member.savings_balance@1.0.0  (draft)
 inputs:     {"memberId":"10099"}
 
-business outcome — permission_denied: The operator is not authorized to view this member record.
+business outcome - permission_denied: The operator is not authorized to view this member record.
 
 step telemetry:
   s1   label_anchor         1x  36ms

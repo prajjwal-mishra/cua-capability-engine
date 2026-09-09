@@ -1,6 +1,6 @@
 # cua-capability-engine
 
-Gives an AI agent hands on a UI that has no API — then takes the model out of
+Gives an AI agent hands on a UI that has no API - then takes the model out of
 the loop.
 
 A model explores a hostile legacy web app to work out how to complete a task.
@@ -50,10 +50,14 @@ npm run cua -- catalog invoke member.savings_balance --args '{"memberId":"10042"
 npm run cua -- emit --capability member.savings_balance --format page-object
 
 # 7. Draft an overlay from a captured human handoff (proposal, not applied).
-#    Point --from at the intervention JSON under evidence/14-…/run/interventions/.
+#    Point --from at the intervention JSON under evidence/14-.../run/interventions/.
 npm run cua -- overlay propose \
   --from evidence/14-escalation-human-handoff/run/interventions/*.json \
   --tenant summit-fcu
+
+# 8. Drift watch: aggregate rung-drop flags from run.jsonl (exit 2 if any).
+npm run cua -- drift report --from evidence/10-cross-tenant-without-overlay
+npm run cua -- drift report --from evidence/11-cross-tenant-with-overlay --threshold 0
 ```
 
 Add `HEADLESS=1` to any command to skip the browser window.
@@ -80,7 +84,7 @@ What is real versus stubbed: discovery, replay, the policy gate, same-session
 handoff, and the catalog are live against `apps/legacy-cu/`. The operator desk
 is a real control-transfer surface, not an embedded co-browsing stream (headed,
 you drive the visible window; headless, the desk injects clicks through the same
-API). There is no desktop driver — that is a documented cut. Replay has no
+API). There is no desktop driver - that is a documented cut. Replay has no
 model in the loop, by design.
 
 ### The two demos worth your time
@@ -88,7 +92,7 @@ model in the loop, by design.
 **A human takes over a live session and hands it back.** The sub-account flow at
 Summit FCU ends in an irreversible commit, which policy refuses to click. The run
 stops, releases the browser session, and waits. An operator takes control, reviews
-the request, commits it by hand, and hands back — and the automation resumes *on
+the request, commits it by hand, and hands back - and the automation resumes *on
 the same session* and verifies.
 
 ```bash
@@ -111,7 +115,7 @@ npm run cua -- replay --capability member.savings_balance --input memberId=10042
 ```
 
 The overlay is [one file](./overlays/corevantage-backoffice/summit-fcu/member.savings_balance.json)
-patching four things — two field labels, a column header and a row key. The flow
+patching four things - two field labels, a column header and a row key. The flow
 itself is not duplicated, which is the whole argument for overlays over
 re-recording per tenant.
 
@@ -122,14 +126,14 @@ re-recording per tenant.
 Two pages. Same visual language, no build step.
 
 ```bash
-npm run desk             # http://localhost:4100  — intervention queue and live takeover
-npm run catalog:serve    # http://localhost:4200  — typed contracts, invocable from the page
+npm run desk             # http://localhost:4100  - intervention queue and live takeover
+npm run catalog:serve    # http://localhost:4200  - typed contracts, invocable from the page
 ```
 
 The desk is what an operator sees when a run escalates. The catalog is what an
 agent sees, rendered so a human can read the contract without curling it. Invoke
 from the catalog page hits the same `POST /capabilities/:id/invoke` an agent
-would — drafts and writes still refused unless you opt in.
+would - drafts and writes still refused unless you opt in.
 
 ---
 
@@ -169,7 +173,7 @@ would — drafts and writes still refused unless you opt in.
 ```
 
 Everything above the Surface port is expressed in roles, accessible names and
-frame paths — never CSS selectors or coordinates. That is what lets the same
+frame paths - never CSS selectors or coordinates. That is what lets the same
 artifact shape describe a desktop app later.
 
 ### Layout
@@ -186,7 +190,7 @@ artifact shape describe a desktop app later.
 | `src/replay/` | the deterministic executor. No model reaches this directory, and a test enforces it |
 | `src/policy/` | allowlist, risk classification, the gate, redaction |
 | `src/escalation/` | the session lease, intervention queue, and operator desk |
-| `src/catalog/` | the agent-facing surface: list, describe, invoke — JSON and a page |
+| `src/catalog/` | the agent-facing surface: list, describe, invoke - JSON and a page |
 | `src/desk/` | shared chrome for the two human-facing surfaces |
 | `evidence/` | real runs, regenerable with `npm run evidence` |
 | `docs/` | design defence and the questions this system does not answer yet |
@@ -211,14 +215,14 @@ eventually confuse a genuine outage for a missing member, or the reverse.
 
 ## What to read to judge this
 
-- **[REPORT.md](./REPORT.md)** — the design write-up, under the seven headings
+- **[REPORT.md](./REPORT.md)** - the design write-up, under the seven headings
   the brief asked for.
-- **[docs/defense-notes.md](./docs/defense-notes.md)** — the honest version: what
+- **[docs/defense-notes.md](./docs/defense-notes.md)** - the honest version: what
   is weak, what would break first at scale, and what I would do next.
 - **[capabilities/member.savings_balance@1.0.0.json](./capabilities/member.savings_balance@1.0.0.json)**
-  — a real artifact, produced by a real model run. The locator ladders and the
+  - a real artifact, produced by a real model run. The locator ladders and the
   declared outcomes are the parts worth looking at.
-- **[evidence/README.md](./evidence/README.md)** — the runs, indexed, with what
+- **[evidence/README.md](./evidence/README.md)** - the runs, indexed, with what
   each one is meant to prove.
 
 ## Development

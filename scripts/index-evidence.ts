@@ -22,20 +22,20 @@ const NOTES: Record<string, string> = {
     "full trace and the artifact it compiled to; `provenance.runId` in the artifact ties them together.",
   "01-replay-success": "The happy path, with no model in the decision loop.",
   "02-replay-business-outcome":
-    "A member that does not exist. This is an ANSWER with a code, not an exception — the " +
+    "A member that does not exist. This is an ANSWER with a code, not an exception - the " +
     "distinction the whole result contract exists to make.",
   "03-replay-permission-denied":
     "The same shape for an authorisation refusal: the application said no, and that is data.",
   "04-replay-input-rejected":
     "An input that fails the declared contract is refused before a browser is launched.",
   "05-replay-recovers-from-transient":
-    "A transient 503 on the member page. Detected as a host fault, the frame is re-requested, and the interrupted step is retried — not blamed on the recording.",
+    "A transient 503 on the member page. Detected as a host fault, the frame is re-requested, and the interrupted step is retried - not blamed on the recording.",
   "06-replay-recovers-from-interstitial":
     "An unexpected maintenance dialog is acknowledged and the interrupted step retried.",
   "07-replay-recovers-from-session-timeout":
     "Re-authentication mid-flow, then the interrupted step is retried rather than the flow restarted.",
   "08-replay-hard-failure":
-    "A server error that does not clear. Classified `application_error` — the bank's software " +
+    "A server error that does not clear. Classified `application_error` - the bank's software " +
     "broke, which is a different problem from a broken recording, and the payload says so.",
   "09-policy-denies-unrequested-write":
     "A write-bearing capability invoked without opting into writes. Denied at the gate, mid-flow, " +
@@ -88,15 +88,15 @@ function headline(dir: string): string {
   const fixed = FIXED_HEADLINES[dir];
   if (fixed) return fixed;
   const path = join(EV, dir, "transcript.txt");
-  if (!existsSync(path)) return "—";
+  if (!existsSync(path)) return "-";
   const text = readFileSync(path, "utf8");
 
   const patterns: RegExp[] = [
     // The handoff transcript prints the resume block before the verdict, and
     // the verdict is the point.
-    /^── resumed[\s\S]*?^(success — .*)$/m,
-    /^success — .*$/m,
-    /^business outcome — .*$/m,
+    /^── resumed[\s\S]*?^(success - .*)$/m,
+    /^success - .*$/m,
+    /^business outcome - .*$/m,
     /^failed at .*$/m,
     /^stability: .*$/m,
     /^.*: draft → approved.*$/m,
@@ -109,14 +109,14 @@ function headline(dir: string): string {
     // Prefer a capture group when the pattern used one to skip past preamble.
     if (m) return (m[1] ?? m[0]).trim().replace(/^"status": "rejected"$/, "rejected by the catalog");
   }
-  return "—";
+  return "-";
 }
 
 function exitCode(dir: string): string {
   const path = join(EV, dir, "transcript.txt");
-  if (!existsSync(path)) return "—";
+  if (!existsSync(path)) return "-";
   const m = readFileSync(path, "utf8").match(/^exit (\d+)$/m);
-  return m ? `\`${m[1]}\`` : "—";
+  return m ? `\`${m[1]}\`` : "-";
 }
 
 const dirs = readdirSync(EV)
@@ -142,8 +142,8 @@ Each case contains:
 | \`transcript.txt\` | everything the command printed, plus its exit code |
 | \`run/\` | the run's own evidence: \`run.jsonl\`, accessibility snapshots, screenshots |
 
-Exit codes are meaningful and distinct — \`0\` success, \`10\` business outcome,
-\`20\` escalated, \`30\` failed, \`40\` refused before running — so a caller can
+Exit codes are meaningful and distinct - \`0\` success, \`10\` business outcome,
+\`20\` escalated, \`30\` failed, \`40\` refused before running - so a caller can
 branch on the outcome class without parsing text.
 
 ## Index
@@ -158,12 +158,12 @@ ${rows
 
 \`run/run.jsonl\` is one JSON record per step. The fields worth knowing:
 
-- \`resolvedBy\` — which rung of the locator ladder actually matched. A step
+- \`resolvedBy\` - which rung of the locator ladder actually matched. A step
   resolving below its recorded rung is the earliest available signal that a
   screen has changed, and it is visible long before anything fails.
-- \`leaseOwner\` — who was in control when this happened. \`operator\` records are
+- \`leaseOwner\` - who was in control when this happened. \`operator\` records are
   a human's actions, captured in the same vocabulary as the automation's.
-- \`policy\` — the gate's verdict, risk classification and reason, recorded for
+- \`policy\` - the gate's verdict, risk classification and reason, recorded for
   every action rather than only for the denied ones.
 
 Values are redacted on the way in: the logger cannot be handed an unredacted
@@ -171,5 +171,5 @@ value, and screenshots are masked before they are encoded.
 `;
 
 writeFileSync(join(EV, "README.md"), body);
-console.log(`wrote evidence/README.md — ${rows.length} cases`);
+console.log(`wrote evidence/README.md - ${rows.length} cases`);
 for (const r of rows) console.log(`  ${r.dir.padEnd(38)} ${r.headline}`);

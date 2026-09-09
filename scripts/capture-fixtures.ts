@@ -3,7 +3,7 @@
  *
  * The resolver is a pure function of (descriptor, snapshot), so freezing real
  * snapshots lets the whole locator ladder be tested in milliseconds with no
- * browser — while still being tested against markup the app actually produced,
+ * browser - while still being tested against markup the app actually produced,
  * not markup someone hand-wrote to make the tests pass.
  */
 

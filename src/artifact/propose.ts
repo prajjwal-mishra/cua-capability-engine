@@ -6,7 +6,7 @@
  * same cause costs a human the same amount forever.
  *
  * A proposal is a document for review, not a mutation. It never overwrites an
- * existing overlay, and it never lowers a step's risk — a human confirmed an
+ * existing overlay, and it never lowers a step's risk - a human confirmed an
  * irreversible click; promoting that click into unattended automation is a
  * different decision, made by whoever approves the overlay.
  */
@@ -113,12 +113,12 @@ function consider(
     return { keep: false, reason: `skipped (role '${action.role ?? ""}' is not a recorded UI role)` };
   }
   if (!action.name) {
-    return { keep: false, reason: "skipped (no accessible name — cannot record a locator)" };
+    return { keep: false, reason: "skipped (no accessible name - cannot record a locator)" };
   }
   if (alreadyNamed(base, role.data, action.name) || pendingNamed(pending, action.name)) {
     return {
       keep: false,
-      reason: `already represented as role_name "${action.name}" — overlay would duplicate it`,
+      reason: `already represented as role_name "${action.name}" - overlay would duplicate it`,
     };
   }
   return { keep: true, reason: `proposed insert for ${role.data} "${action.name}"` };

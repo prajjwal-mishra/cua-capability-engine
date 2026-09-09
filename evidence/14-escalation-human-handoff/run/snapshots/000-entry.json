@@ -3,7 +3,7 @@
   "page": {
     "url": "http://localhost:4000/?variant=variant-b",
     "routePattern": "/",
-    "title": "Summit Federal CU — Back Office",
+    "title": "Summit Federal CU - Back Office",
     "frames": [
       {
         "framePath": [],

@@ -3,7 +3,7 @@
  *
  * This is the piece that makes a handoff more than a pause. When an operator
  * takes over, their clicks and keystrokes are recorded as normalized
- * SurfaceAction-shaped records — role, accessible name, frame path — not as CSS
+ * SurfaceAction-shaped records - role, accessible name, frame path - not as CSS
  * selectors or screen coordinates. That matters for one specific reason: the
  * only way captured human work can later be PROMOTED into a proposed artifact
  * patch is if it is already expressed in the same terms the artifact uses.
@@ -147,7 +147,7 @@ const buffers = new WeakMap<Page, CapturedAction[]>();
  * Install the recorder into every frame, now and after any navigation.
  *
  * `addInitScript` covers documents loaded from here on; the explicit per-frame
- * pass covers the ones already open — an operator takes over a session that is
+ * pass covers the ones already open - an operator takes over a session that is
  * already mid-flow, which is the whole situation.
  */
 export async function installHumanRecorder(page: Page): Promise<void> {
@@ -176,7 +176,7 @@ export function capturedActions(page: Page): CapturedAction[] {
 
 /**
  * Frame paths are resolved lazily, at read time, because resolving them at
- * capture time means an `await` inside a synchronous binding callback — and the
+ * capture time means an `await` inside a synchronous binding callback - and the
  * frame is usually mid-navigation at exactly that moment.
  */
 export async function resolveFramePaths(

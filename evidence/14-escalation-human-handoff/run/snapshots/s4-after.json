@@ -3,7 +3,7 @@
   "page": {
     "url": "http://localhost:4000/?variant=variant-b",
     "routePattern": "/",
-    "title": "Summit Federal CU — Back Office",
+    "title": "Summit Federal CU - Back Office",
     "frames": [
       {
         "framePath": [],
@@ -120,7 +120,7 @@
     {
       "ref": "e5",
       "role": "cell",
-      "name": "Open Sub-Account — 10042",
+      "name": "Open Sub-Account - 10042",
       "nameSource": "text-content",
       "state": {},
       "framePath": [

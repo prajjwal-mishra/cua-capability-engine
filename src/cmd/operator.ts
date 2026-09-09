@@ -1,9 +1,9 @@
 /**
- * `cua operator` — the standalone console.
+ * `cua operator` - the standalone console.
  *
  * Triage only: it lists every intervention any run has raised and shows the
  * full context each one carries. It cannot transfer control, because there is
- * no live session in this process to transfer — and pretending otherwise would
+ * no live session in this process to transfer - and pretending otherwise would
  * be exactly the "TODO in a costume" this is meant not to be.
  *
  * Same-session takeover happens when the console is ATTACHED to a paused run,

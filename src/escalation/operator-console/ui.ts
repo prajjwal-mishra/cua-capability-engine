@@ -1,7 +1,7 @@
 /**
  * The operator desk.
  *
- * Still one page and no build step — the brief puts a full co-browsing product
+ * Still one page and no build step - the brief puts a full co-browsing product
  * out of scope. What changed is the chrome. A handoff is a control-room event:
  * the lease, the live viewport, and the reason we stopped should read that way
  * at a glance, not as a debug form that happens to have buttons.
@@ -65,9 +65,9 @@ export function interventionView(i: Intervention, live: boolean, hasShot = false
   const resumeOptions = [
     ...i.flow.map(
       (s) =>
-        `<option value="${esc(s.id)}"${s.id === i.stepId ? " selected" : ""}>${esc(s.id)} — ${esc(s.intent)}${s.risk === "irreversible" ? "  · irreversible" : ""}</option>`,
+        `<option value="${esc(s.id)}"${s.id === i.stepId ? " selected" : ""}>${esc(s.id)} - ${esc(s.intent)}${s.risk === "irreversible" ? "  · irreversible" : ""}</option>`,
     ),
-    `<option value="$verify">$verify — I finished the flow; just verify</option>`,
+    `<option value="$verify">$verify - I finished the flow; just verify</option>`,
   ].join("");
 
   const flow = `<ol class="flow">${i.flow
@@ -87,7 +87,7 @@ export function interventionView(i: Intervention, live: boolean, hasShot = false
       </div>
       <div class="row">
         <label class="field" style="flex:1">Page element
-          <select id="ref"><option value="">— take control to load elements —</option></select>
+          <select id="ref"><option value="">- take control to load elements -</option></select>
         </label>
       </div>
       <div class="row">
@@ -95,7 +95,7 @@ export function interventionView(i: Intervention, live: boolean, hasShot = false
         <button id="doType" disabled>Type</button>
         <button id="doClick" disabled>Click</button>
       </div>
-      <p class="note">If the browser is headed, drive the visible window — every action is captured either way. These controls exist so takeover is equally real when it is headless.</p>
+      <p class="note">If the browser is headed, drive the visible window - every action is captured either way. These controls exist so takeover is equally real when it is headless.</p>
       <h2 style="margin-top:22px">What you did</h2>
       <ul class="log" id="log"><li>Nothing captured yet.</li></ul>
       <h2 style="margin-top:22px">Hand it back</h2>
@@ -129,7 +129,7 @@ export function interventionView(i: Intervention, live: boolean, hasShot = false
           <h2>Why the run stopped</h2>
           <dl class="kv">
             <dt>goal</dt><dd>${esc(i.goal)}</dd>
-            <dt>step</dt><dd>${esc(i.stepId)} — ${esc(i.stepIntent)}</dd>
+            <dt>step</dt><dd>${esc(i.stepId)} - ${esc(i.stepIntent)}</dd>
             <dt>class</dt><dd>${esc(i.classification)}</dd>
             <dt>status</dt><dd id="status">${esc(i.status)}</dd>
           </dl>
@@ -148,7 +148,7 @@ export function interventionView(i: Intervention, live: boolean, hasShot = false
                 ? `<img class="screen" id="shot" alt="live session" src="/api/live/screenshot">`
                 : hasShot
                   ? `<img class="screen" id="shot" alt="session at stop" src="/i/${esc(i.interventionId)}/shot">`
-                  : `<div class="screen empty-frame">no frame on disk — the run record still holds the snapshot</div>`
+                  : `<div class="screen empty-frame">no frame on disk - the run record still holds the snapshot</div>`
             }
           </div>
         </section>
@@ -187,7 +187,7 @@ async function loadElements() {
   const snap = await (await fetch("/api/live/snapshot")).json();
   const sel = $("ref");
   sel.innerHTML = snap.elements
-    .map((e) => '<option value="' + e.ref + '">[' + e.role + '] ' + (e.name || "(unnamed)") + " — " + (e.framePath.join(">") || "main") + "</option>")
+    .map((e) => '<option value="' + e.ref + '">[' + e.role + '] ' + (e.name || "(unnamed)") + " - " + (e.framePath.join(">") || "main") + "</option>")
     .join("");
 }
 

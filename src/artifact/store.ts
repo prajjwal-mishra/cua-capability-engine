@@ -2,7 +2,7 @@
  * Artifact storage. A directory of JSON files, on purpose.
  *
  * The brief explicitly does not reward building scaling infrastructure, and a
- * capability catalogue is a small, slow-changing, human-reviewed corpus — git
+ * capability catalogue is a small, slow-changing, human-reviewed corpus - git
  * is a better fit for it than a database, because the review workflow we
  * actually want (diff, approve, roll back) is the one git already has.
  */
@@ -84,7 +84,7 @@ export class ArtifactStore {
    *
    * Keyed by capability as well as tenant, because a tenant runs ~20 apps with
    * many capabilities each. Keying only on (product, tenant) would force one
-   * institution's every specialization into a single document — the exact
+   * institution's every specialization into a single document - the exact
    * "unreviewable patch swamp" that separate overlay files exist to avoid.
    */
   overlayPath(vendorProduct: string, tenant: string, capabilityId: string): string {
@@ -128,7 +128,7 @@ export class ArtifactStore {
    * does NOT roll up into the headline figure: the headline is "does this
    * recording still work where it was recorded", and letting a half-overlaid
    * tenant drag it down would punish the act of trying a capability somewhere
-   * new — which is the only way to discover what an overlay needs to cover.
+   * new - which is the only way to discover what an overlay needs to cover.
    */
   recordRun(ref: string, success: boolean, tenant?: string): void {
     const artifact = this.load(ref);

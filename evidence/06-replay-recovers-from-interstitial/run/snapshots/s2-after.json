@@ -3,7 +3,7 @@
   "page": {
     "url": "http://localhost:4000/",
     "routePattern": "/",
-    "title": "Riverbend Credit Union — Back Office",
+    "title": "Riverbend Credit Union - Back Office",
     "frames": [
       {
         "framePath": [],
@@ -141,7 +141,7 @@
     {
       "ref": "e6",
       "role": "cell",
-      "name": "Scheduled maintenance window Core processing will be unavailable Sunday 02:00–04:00 ET. Acknowledge this notice to continue.",
+      "name": "Scheduled maintenance window Core processing will be unavailable Sunday 02:00-04:00 ET. Acknowledge this notice to continue.",
       "nameSource": "text-content",
       "state": {},
       "framePath": [

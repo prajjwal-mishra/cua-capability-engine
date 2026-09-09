@@ -2,7 +2,7 @@
  * The locator ladder, tested against snapshots the real app produced.
  *
  * These run with no browser: resolution is a pure function of descriptor and
- * snapshot. That property is worth more than the speed — it is the same
+ * snapshot. That property is worth more than the speed - it is the same
  * property that lets a DesktopSurface reuse this code unchanged.
  */
 
@@ -75,7 +75,7 @@ describe("descriptors for reading a value out", () => {
     const d = describeElement(balanceCell(), "the savings balance", { forExtraction: true });
     // Recording "the cell named $8,241.17" does not locate the savings balance.
     // It locates one member's balance, and on the next invocation it either
-    // misses or matches a different row holding the same amount — resolving on
+    // misses or matches a different row holding the same amount - resolving on
     // the top rung, with high confidence, on the wrong data.
     expect(d.strategies.some((s) => s.kind === "role_name")).toBe(false);
     expect(d.strategies.some((s) => s.kind === "table_cell")).toBe(true);
@@ -84,7 +84,7 @@ describe("descriptors for reading a value out", () => {
   it("does not anchor a grid cell to its neighbours' data", () => {
     const d = describeElement(balanceCell(), "the savings balance", { forExtraction: true });
     // In a grid the adjacent cell is a SIBLING VALUE, not a label. Anchoring to
-    // it produces "the cell in the row labelled 4417-99820-01" — one member's
+    // it produces "the cell in the row labelled 4417-99820-01" - one member's
     // row wearing a relation's clothing. On a form, where leftCell really is a
     // label, the rung is still allowed.
     expect(d.strategies.some((s) => s.kind === "label_anchor")).toBe(false);
@@ -125,7 +125,7 @@ describe("descriptors for reading a value out", () => {
     // variant-b's review screen is <th>Field</th><th>Value</th>. Perception
     // fills both columnHeader and rowKey, so the grid heuristic fires. Rung 2
     // would duplicate rung 3 (leftCell === rowKey === "Product") at a lower
-    // score — dropping it is the same relation, kept once, ranked higher.
+    // score - dropping it is the same relation, kept once, ranked higher.
     const cell: UIElement = {
       ...balanceCell(),
       nearbyText: {
@@ -160,7 +160,7 @@ describe("resolution", () => {
     if (out.status === "resolved") expect(out.ref).toBe(balance!.ref);
   });
 
-  it("respects frame scoping — a descriptor never matches across frames", () => {
+  it("respects frame scoping - a descriptor never matches across frames", () => {
     // Two frames deep: the accounts grid lives inside the detail page, which
     // itself lives inside the shell's content frame.
     const cell = framed.elements.find(
@@ -220,7 +220,7 @@ describe("resolution", () => {
     const out = resolveDescriptor(d, searchB);
     expect(out.attempts.length).toBeGreaterThan(1);
     // Every rung above the one that resolved missed, and they were tried in
-    // descending confidence — the ladder's whole claim.
+    // descending confidence - the ladder's whole claim.
     const confidences = out.attempts.map((a) => a.confidence);
     expect([...confidences].sort((a, b) => b - a)).toEqual(confidences);
     expect(out.attempts[0]!.matches).toBe(0); // the label was renamed in variant-b

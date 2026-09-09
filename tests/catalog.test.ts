@@ -2,7 +2,7 @@
  * The agent-facing contract.
  *
  * These tests are about what a CALLER sees and is protected from, not about
- * browsers — the catalog's job is to make a UI flow indistinguishable from a
+ * browsers - the catalog's job is to make a UI flow indistinguishable from a
  * typed function, and to refuse the calls that should not happen before a
  * browser is ever launched. Each refusal below is a thing an autonomous agent
  * would otherwise be free to do to a system of record on a hunch.
@@ -80,7 +80,7 @@ describe("what an agent can discover", () => {
       ...readOnly,
       steps: readOnly.steps.map((s, i) => (i === 1 ? { ...s, risk: "irreversible" as const } : s)),
     };
-    // The whole flow's risk, not the average and not the first step's — a
+    // The whole flow's risk, not the average and not the first step's - a
     // caller deciding whether to invoke needs the worst case.
     expect(maxRisk(writes)).toBe("irreversible");
   });
@@ -123,7 +123,7 @@ describe("what an agent can discover", () => {
 
     const entry = entryFor(store.load(ID));
     // The headline still reflects where it was recorded. Otherwise probing a
-    // new tenant — the only way to find out what needs overlaying — would
+    // new tenant - the only way to find out what needs overlaying - would
     // damage the capability's standing everywhere it already works.
     expect(entry.stability).toMatchObject({ runs: 2, successes: 2, rate: 1 });
     expect(entry.stabilityByTenant["summit-fcu"]).toMatchObject({
@@ -223,7 +223,7 @@ describe("over HTTP", () => {
       expect(refused.status).toBe(403);
       expect(((await refused.json()) as { reason: string }).reason).toMatch(/not approved/);
 
-      // A malformed call is 400, distinctly — an agent retrying a 403 is
+      // A malformed call is 400, distinctly - an agent retrying a 403 is
       // pointless, an agent correcting a 400 is not.
       const malformed = await fetch(`${server.url}/capabilities/${ID}/invoke`, {
         method: "POST",
@@ -280,7 +280,7 @@ describe("resolving a capability for a tenant", () => {
     expect(artifact.steps.find((s) => s.id === "s2")!.target!.strategies[0]).toMatchObject({
       name: "Find Member",
     });
-    // The base recording is untouched — the overlay is a view, not an edit.
+    // The base recording is untouched - the overlay is a view, not an edit.
     expect(store.load(ID).steps.find((s) => s.id === "s2")!.target!.strategies[0]).toMatchObject({
       name: "Search",
     });

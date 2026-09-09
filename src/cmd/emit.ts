@@ -1,5 +1,5 @@
 /**
- * `cua emit` — project an artifact into a Playwright page object / test.
+ * `cua emit` - project an artifact into a Playwright page object / test.
  *
  * Stretch goal from the brief. The generated file is a projection so a reviewer
  * can read the recorded ladder as ordinary Playwright. It is not how production

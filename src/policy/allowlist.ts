@@ -84,7 +84,7 @@ export function checkUrl(allowlist: Allowlist, rawUrl: string): OriginCheck {
       reason:
         `origin ${u.origin} is not on the allowlist for '${allowlist.appId}' ` +
         `(permitted: ${allowlist.origins.join(", ")}). ` +
-        `An allowlist is per deployment — add the origin to ${allowlist.appId}'s allowlist file, ` +
+        `An allowlist is per deployment - add the origin to ${allowlist.appId}'s allowlist file, ` +
         `or point CUA_TARGET_ORIGIN at a permitted one.`,
     };
   }

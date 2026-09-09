@@ -1,6 +1,6 @@
 /**
  * Structured run logging. One JSONL record per step, everything redacted on the
- * way in — the Redactor sits between this logger and the raw world, so there is
+ * way in - the Redactor sits between this logger and the raw world, so there is
  * no code path that writes an unredacted value to disk.
  */
 

@@ -6,7 +6,7 @@
 # reviewer can reproduce the claims rather than take them on trust. Two things
 # are deliberately NOT regenerated here:
 #
-#   * the discovery runs, which cost a live model call — they are captured once
+#   * the discovery runs, which cost a live model call - they are captured once
 #     and copied in by scripts/capture-discovery.sh
 #   * the capabilities themselves, which are the OUTPUT of those discovery runs
 #     and are committed as reviewed artifacts
@@ -24,7 +24,7 @@ export HEADLESS=1
 
 command -v jq >/dev/null || { echo "jq is required"; exit 1; }
 curl -sf "${ORIGIN}/__control/state" >/dev/null || {
-  echo "the target app is not answering on ${ORIGIN} — start it with: npm run app"
+  echo "the target app is not answering on ${ORIGIN} - start it with: npm run app"
   exit 1
 }
 
@@ -49,7 +49,7 @@ fi
 #
 # Replaying writes to the stability counters and approval flips the lifecycle
 # state, so without this the script's own output would depend on how many times
-# it had been run before — and the promotion demo would show an already-approved
+# it had been run before - and the promotion demo would show an already-approved
 # capability being approved. The point of this file is that a reviewer gets the
 # same evidence we did.
 echo "── resetting capability lifecycle to draft"
@@ -135,7 +135,7 @@ capture 04-replay-input-rejected \
 # A 503 on the member page. Recovery reloads the frame and retries the step;
 # the committed artifact's checkpoint (Open Sub-Account present) then passes.
 # Two 503s against this checkpoint is a different story, pinned in tests/replay.test.ts
-# with a route-based fixture — not this evidence folder.
+# with a route-based fixture - not this evidence folder.
 echo "── 05-replay-recovers-from-transient"
 arm '{"mode":"transient_503","count":1,"pathContains":"/frame/member"}'
 capture 05-replay-recovers-from-transient \
@@ -193,7 +193,7 @@ capture 14-escalation-human-handoff \
 
 # ────────────────────────────────────────────────────────────── stability
 # Rewind the lookup capability so the promotion evidence is "five green
-# unattended runs, then approve" — not a pile of mixed earlier captures.
+# unattended runs, then approve" - not a pile of mixed earlier captures.
 echo "── resetting member.savings_balance stability ahead of the sweep"
 tmp=$(mktemp)
 jq '.lifecycle = {state: "draft", stability: {runs: 0, successes: 0}, stabilityByTenant: {}}' \
@@ -263,4 +263,4 @@ printf '%s\n' "cua emit --capability member.savings_balance --format page-object
   > "${EV}/21-emit-playwright/command.txt"
 
 echo
-echo "wrote ${EV}/ — now regenerate the index:  npx tsx scripts/index-evidence.ts"
+echo "wrote ${EV}/ - now regenerate the index:  npx tsx scripts/index-evidence.ts"

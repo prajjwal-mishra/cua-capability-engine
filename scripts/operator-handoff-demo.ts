@@ -2,8 +2,8 @@
  * Reproducible operator handoff.
  *
  * This is an OPERATOR CLIENT, not a mock of the handoff. It speaks exactly the
- * HTTP API the console's own page speaks — take control, read the live page,
- * act on it, hand back — so what runs here is the same control transfer a human
+ * HTTP API the console's own page speaks - take control, read the live page,
+ * act on it, hand back - so what runs here is the same control transfer a human
  * performs by clicking. The only thing being substituted is the pair of hands.
  *
  * Why it exists: the escalation evidence has to be regenerable by a grader on a
@@ -94,7 +94,7 @@ async function main(): Promise<void> {
   const exited = new Promise<number>((resolve) => child.on("exit", (code) => resolve(code ?? 0)));
 
   await waitForConsole();
-  console.log(`\n[operator-demo] the run escalated and released the session — taking control`);
+  console.log(`\n[operator-demo] the run escalated and released the session - taking control`);
   await api("/api/live/take", { method: "POST" });
 
   const snapshot = await api<{

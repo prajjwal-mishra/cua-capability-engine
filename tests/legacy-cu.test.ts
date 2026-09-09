@@ -1,7 +1,7 @@
 /**
  * The target app is a first-class part of the submission, so its behaviour is
  * pinned by tests. If an exceptional state stops firing, the replay evidence
- * that depends on it is quietly worthless — these tests catch that.
+ * that depends on it is quietly worthless - these tests catch that.
  */
 
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";

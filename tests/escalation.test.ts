@@ -8,7 +8,7 @@
  * get wrong while still having something that looks like an escalation, which
  * is why they are asserted rather than described.
  *
- * The console is driven over its HTTP API — the same API its own page uses — so
+ * The console is driven over its HTTP API - the same API its own page uses - so
  * these tests exercise the actual control-transfer path, not a stand-in for it.
  */
 
@@ -78,7 +78,7 @@ afterEach(async () => {
  * This is the realistic shape of a partially-drifted tenant: almost everything
  * resolves, one control does not, and there is no safe guess available. It
  * escalates at s2 with the flow otherwise intact, so the resume after handoff
- * can actually complete — which is the half of a handoff that is easy to skip.
+ * can actually complete - which is the half of a handoff that is easy to skip.
  */
 function partiallyDriftedCapability(): CapabilityArtifact {
   const artifact = savingsBalanceCapability("variant-b", VARIANT_B_LABELS);
@@ -271,7 +271,7 @@ describe("taking control of the live session and handing it back", () => {
         expect(h.control.owner).toBe("operator");
         expect(c.queue.get(escalated.interventionId)!.status).toBe("operator_control");
 
-        // The operator looks at the live page — the SAME page, mid-flow, with
+        // The operator looks at the live page - the SAME page, mid-flow, with
         // the member id the automation already typed still in the box.
         const snap = await c.api<{
           url: string;
@@ -290,8 +290,8 @@ describe("taking control of the live session and handing it back", () => {
         expect(handback.captured).toBeGreaterThan(0);
 
         const resolution = await c.handedBack;
-        // Captured in the automation's vocabulary — role and accessible name,
-        // not a selector — which is what makes promotion to a patch possible.
+        // Captured in the automation's vocabulary - role and accessible name,
+        // not a selector - which is what makes promotion to a patch possible.
         expect(resolution.capturedActions.some((a) => a.name === "Find Member")).toBe(true);
         expect(resolution.resumeAtStepId).toBe("s3");
         expect(h.control.owner).toBe("automation");

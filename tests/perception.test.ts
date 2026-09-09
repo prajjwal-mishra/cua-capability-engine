@@ -2,7 +2,7 @@
  * Perception against a real browser and the real target app.
  *
  * The locator tests run on frozen snapshots; these prove the snapshots are
- * faithful in the first place — in particular that the accessibility pass
+ * faithful in the first place - in particular that the accessibility pass
  * genuinely fails on this markup and the heuristic pass genuinely rescues it.
  */
 
@@ -48,7 +48,7 @@ describe("accessibility-first perception with a legacy fallback", () => {
     await page.goto(`${base}/frame/search`);
     const snap = await surface.observe();
     const box = snap.elements.find((e) => e.role === "textbox");
-    // The markup offers no label, aria, title or placeholder — the a11y pass
+    // The markup offers no label, aria, title or placeholder - the a11y pass
     // returns nothing and the layout is the only remaining source of meaning.
     expect(box?.name).toBe("Member ID");
     expect(box?.nameSource).toBe("heuristic-table-cell");

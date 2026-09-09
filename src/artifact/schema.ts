@@ -1,14 +1,14 @@
 /**
  * The CapabilityArtifact: a recorded flow, promoted to a callable capability.
  *
- * Zod is the single source of truth — TypeScript types are inferred from it and
+ * Zod is the single source of truth - TypeScript types are inferred from it and
  * the agent-facing JSON Schema is emitted from it, so the contract a calling
  * agent reads and the contract replay enforces cannot drift apart.
  *
  * Four properties this schema is shaped around:
  *
  *  1. DECOUPLED FROM THE TRANSCRIPT. The model's reasoning is evidence, not the
- *     artifact. Nothing here depends on what the LLM said — every mechanical
+ *     artifact. Nothing here depends on what the LLM said - every mechanical
  *     fact comes from a recorded snapshot. Re-running discovery with a
  *     different model should produce the same artifact.
  *
@@ -289,7 +289,7 @@ export const TargetSchema = z.object({
   appId: z.string(),
   vendorProduct: z.string(),
   variant: z.string().optional(),
-  /** A route PATTERN, parameterized — never the concrete recorded URL. */
+  /** A route PATTERN, parameterized - never the concrete recorded URL. */
   entryPoint: z.string(),
 });
 
@@ -310,8 +310,8 @@ export const LifecycleSchema = z.object({
    * can be rock-solid at the institution it was recorded against and broken at
    * the one whose overlay is half-finished, and averaging those together hides
    * the only fact anybody needed: WHERE it is broken. It also means probing a
-   * capability against a new tenant — the thing you must do to find out what
-   * needs overlaying — silently degrades its reputation everywhere else.
+   * capability against a new tenant - the thing you must do to find out what
+   * needs overlaying - silently degrades its reputation everywhere else.
    */
   stabilityByTenant: z.record(z.string(), StabilityRecordSchema).default({}),
 });

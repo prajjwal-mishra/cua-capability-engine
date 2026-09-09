@@ -1,5 +1,5 @@
 /**
- * `cua overlay` — tenant specialization, including proposals from a human
+ * `cua overlay` - tenant specialization, including proposals from a human
  * handoff. Applying an overlay is a review. Generating one from captured
  * clicks is what stops the same escalation from costing a human forever.
  */
@@ -43,7 +43,7 @@ export async function overlayCommand(args: Args): Promise<void> {
     if (dir && dir !== ".") mkdirSync(dir, { recursive: true });
     writeFileSync(out, source);
     console.log(
-      `\nwrote ${out}  (${inserted} inserted step(s) — proposal, not applied)`,
+      `\nwrote ${out}  (${inserted} inserted step(s) - proposal, not applied)`,
     );
     return;
   }

@@ -3,7 +3,7 @@
  *
  * Checkpoints, preconditions, outcome detectors and recovery triggers are all
  * the same shape, so this is the only evaluator in the system. It is a pure
- * function of (condition, snapshot) — no browser, no I/O — which makes every
+ * function of (condition, snapshot) - no browser, no I/O - which makes every
  * detector in every artifact testable without launching anything.
  *
  * A clause with no framePath matches in ANY frame. That is the right default
@@ -96,7 +96,7 @@ export function evaluateCondition(condition: Condition, snapshot: UISnapshot): C
 
 /**
  * A recorded pattern like /frame/member/:memberId must match an observed
- * /frame/member/:id — both sides are already canonicalized, and the parameter
+ * /frame/member/:id - both sides are already canonicalized, and the parameter
  * NAME is ours, not the app's, so any `:token` segment matches any other.
  */
 export function routePatternMatches(pattern: string, observed: string): boolean {
@@ -113,13 +113,13 @@ export function routePatternMatches(pattern: string, observed: string): boolean 
 /** One-line summary for the run log and for a failure payload. */
 export function explain(result: ConditionResult): string {
   if (result.passed) return result.describe ?? "condition met";
-  return `${result.describe ?? "condition"} — ${observations(result)}`;
+  return `${result.describe ?? "condition"} - ${observations(result)}`;
 }
 
 /**
  * Just what was seen, without restating what was expected. Used where the
  * expectation is already reported in its own field, so a failure payload reads
- * `expected: X / observed: Y` rather than `expected: X / observed: X — Y`.
+ * `expected: X / observed: Y` rather than `expected: X / observed: X - Y`.
  */
 export function observations(result: ConditionResult): string {
   return result.clauses

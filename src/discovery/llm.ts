@@ -3,7 +3,7 @@
  *
  * Bound to the OpenAI chat-completions + tool-calling shape rather than to one
  * vendor's SDK. That is not fence-sitting: this system uses the model for
- * exactly one job — pick the next action from a normalized snapshot — and every
+ * exactly one job - pick the next action from a normalized snapshot - and every
  * serious provider exposes that job through this interface. Coupling the
  * discovery loop to a single vendor would buy nothing and cost us the ability
  * to run at all when one provider is unavailable, which is not hypothetical.
