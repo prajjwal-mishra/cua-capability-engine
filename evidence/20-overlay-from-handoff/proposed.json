@@ -1,0 +1,51 @@
+{
+  "overlayId": "proposed.summit-fcu.member.open_subaccount",
+  "tenant": "summit-fcu",
+  "basedOn": {
+    "capabilityId": "member.open_subaccount",
+    "versionRange": "^1.0.0"
+  },
+  "describe": "PROPOSAL from intervention int-9f26054c. Review before applying. Risk is left at irreversible on purpose: a human just confirmed these clicks, and promoting them to unattended is a separate approval.",
+  "patch": {
+    "steps": {},
+    "insertSteps": [
+      {
+        "after": "s8",
+        "step": {
+          "id": "s8_human_1",
+          "intent": "operator clicked the button \"Commit Sub-Account\"",
+          "action": "click",
+          "target": {
+            "intent": "clicked the button \"Commit Sub-Account\"",
+            "role": "button",
+            "framePath": [
+              "contentFrame"
+            ],
+            "strategies": [
+              {
+                "kind": "role_name",
+                "confidence": 0.9,
+                "role": "button",
+                "name": "Commit Sub-Account",
+                "match": "exact"
+              }
+            ]
+          },
+          "waitPolicy": {
+            "strategy": "settled",
+            "timeoutMs": 10000
+          },
+          "retryPolicy": {
+            "maxAttempts": 1,
+            "backoffMs": 500
+          },
+          "risk": "irreversible",
+          "onCondition": []
+        }
+      }
+    ],
+    "outputs": {},
+    "knownOutcomes": [],
+    "recoveries": []
+  }
+}

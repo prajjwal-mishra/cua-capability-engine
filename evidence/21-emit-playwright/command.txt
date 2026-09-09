@@ -1,0 +1,1 @@
+cua emit --capability member.savings_balance --format page-object

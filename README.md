@@ -43,11 +43,17 @@ npm run cua -- replay --capability member.savings_balance --input memberId=10042
 npm run cua -- catalog list
 npm run cua -- catalog describe member.savings_balance
 
-# 5. Invoke it like a function.
+# 5. Invoke it like a function. (savings_balance is approved; drafts are refused.)
 npm run cua -- catalog invoke member.savings_balance --args '{"memberId":"10042"}'
 
 # 6. Project the artifact into a Playwright snippet (stretch).
 npm run cua -- emit --capability member.savings_balance --format page-object
+
+# 7. Draft an overlay from a captured human handoff (proposal, not applied).
+#    Point --from at the intervention JSON under evidence/14-…/run/interventions/.
+npm run cua -- overlay propose \
+  --from evidence/14-escalation-human-handoff/run/interventions/*.json \
+  --tenant summit-fcu
 ```
 
 Add `HEADLESS=1` to any command to skip the browser window.
@@ -173,16 +179,16 @@ artifact shape describe a desktop app later.
 | `apps/legacy-cu/` | the target: a deliberately hostile 2003-era back office, framesets and all, with seven injectable failure modes |
 | `src/surface/` | the Surface port and its Playwright implementation; accessibility-tree-first perception |
 | `src/locator/` | `ElementDescriptor` and the resolution ladder |
-| `src/artifact/` | the capability schema, versioning, storage, tenant overlays |
+| `src/emit/` | project an artifact into a Playwright page object / test |
+| `src/artifact/` | the capability schema, versioning, storage, tenant overlays, proposals from human actions |
 | `src/discovery/` | the model-driven loop, its tools, and the stall detector |
 | `src/recorder/` | compiling a successful trace into an artifact |
 | `src/replay/` | the deterministic executor. No model reaches this directory, and a test enforces it |
 | `src/policy/` | allowlist, risk classification, the gate, redaction |
 | `src/escalation/` | the session lease, intervention queue, and operator desk |
 | `src/catalog/` | the agent-facing surface: list, describe, invoke — JSON and a page |
-| `src/emit/` | project an artifact into a Playwright page object / test |
 | `src/desk/` | shared chrome for the two human-facing surfaces |
-| `evidence/` | 20 real runs, regenerable with `npm run evidence` |
+| `evidence/` | real runs, regenerable with `npm run evidence` |
 | `docs/` | design defence and the questions this system does not answer yet |
 
 ### The result contract
@@ -212,7 +218,7 @@ eventually confuse a genuine outage for a missing member, or the reverse.
 - **[capabilities/member.savings_balance@1.0.0.json](./capabilities/member.savings_balance@1.0.0.json)**
   — a real artifact, produced by a real model run. The locator ladders and the
   declared outcomes are the parts worth looking at.
-- **[evidence/README.md](./evidence/README.md)** — 20 runs, indexed, with what
+- **[evidence/README.md](./evidence/README.md)** — the runs, indexed, with what
   each one is meant to prove.
 
 ## Development

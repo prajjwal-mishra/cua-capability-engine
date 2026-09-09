@@ -10,9 +10,9 @@ failed at s4 (policy_denied)
 
 step telemetry:
   s1   label_anchor         1x  35ms
-  s2   role_name            1x  572ms
-  s3   role_name            1x  587ms
+  s2   role_name            1x  563ms
+  s3   role_name            1x  574ms
 
-evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-01T10-37-10-488Z-c4c191b8
+evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-09T09-51-28-788Z-56524cff
 policy checks: 5
 exit 30

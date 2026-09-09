@@ -1,0 +1,2 @@
+$ cua emit --capability member.savings_balance --format page-object
+wrote evidence/21-emit-playwright/page-object.ts  (member.savings_balance@1.0.0)

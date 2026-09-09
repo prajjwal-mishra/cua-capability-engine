@@ -6,9 +6,9 @@
     "expected": "Open member detail page for member 10042, without the application failing",
     "observed": "The application raised an unhandled server error. (application_error)",
     "remediation": "the target application reported a fault, so this is not a defect in the capability. Retrying later is reasonable; re-recording is not.",
-    "visibleText": "[navFrame=/frame/nav contentFrame=/frame/member/:id] Riverbend Credit Union | Member Search | Reports | Batch Jobs | Server Error in '/' Application. Object reference not set to an instance of an object. Correlation Id: 979ec891",
+    "visibleText": "[navFrame=/frame/nav contentFrame=/frame/member/:id] Riverbend Credit Union | Member Search | Reports | Batch Jobs | Server Error in '/' Application. Object reference not set to an instance of an object. Correlation Id: cc8e072a",
     "screenshotPath": "screenshots/failure-s3.png",
     "url": "http://localhost:4000/"
   },
-  "screen": "[navFrame=/frame/nav contentFrame=/frame/member/:id] Riverbend Credit Union | Member Search | Reports | Batch Jobs | Server Error in '/' Application. Object reference not set to an instance of an object. Correlation Id: 979ec891"
+  "screen": "[navFrame=/frame/nav contentFrame=/frame/member/:id] Riverbend Credit Union | Member Search | Reports | Batch Jobs | Server Error in '/' Application. Object reference not set to an instance of an object. Correlation Id: cc8e072a"
 }

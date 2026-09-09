@@ -29,9 +29,7 @@ const NOTES: Record<string, string> = {
   "04-replay-input-rejected":
     "An input that fails the declared contract is refused before a browser is launched.",
   "05-replay-recovers-from-transient":
-    "Two 503s. The second lands inside the accounts frame after the last step's checkpoint has " +
-    "already passed, so nothing looks wrong until the run is verified — and it is still recognised " +
-    "as a server fault rather than blamed on the recording.",
+    "A transient 503 on the member page. Detected as a host fault, the frame is re-requested, and the interrupted step is retried — not blamed on the recording.",
   "06-replay-recovers-from-interstitial":
     "An unexpected maintenance dialog is acknowledged and the interrupted step retried.",
   "07-replay-recovers-from-session-timeout":
@@ -66,6 +64,10 @@ const NOTES: Record<string, string> = {
   "18-catalog-invoke": "Invocation by name with typed arguments. No browser in the caller's vocabulary.",
   "19-catalog-refuses-unapproved-write":
     "The catalog refusing an unapproved write to a system of record.",
+  "20-overlay-from-handoff":
+    "The human click from the live handoff, compiled into a proposed overlay against the base artifact. A document to review, not an applied patch.",
+  "21-emit-playwright":
+    "Code generation: the recorded ladder projected into a Playwright page object. Replay still executes the JSON.",
 };
 
 /**
@@ -77,6 +79,8 @@ const FIXED_HEADLINES: Record<string, string> = {
   "00-discovery": "2 capabilities compiled from live model runs",
   "16-promotion": "draft → approved, and one refusal",
   "17-catalog": "2 capabilities, typed contracts",
+  "20-overlay-from-handoff": "proposed overlay from captured human actions",
+  "21-emit-playwright": "Playwright page object emitted from the artifact",
 };
 
 /** Pull the one line a reader wants from a transcript. */

@@ -41,6 +41,10 @@ const USAGE = `cua — computer-use capability engine
   emit       --capability <id>[@<version>] [--format test|page-object] [--out <file>]
              Project an artifact into a Playwright snippet. A projection of the
              JSON, not a second source of truth — replay still executes the artifact.
+
+  overlay    propose --from <intervention.json> --tenant <id> [--out <file>]
+             Draft a tenant overlay from captured human actions. A proposal to
+             review, not an applied patch — risk is never lowered automatically.
 `;
 
 async function main(): Promise<void> {
@@ -60,6 +64,9 @@ async function main(): Promise<void> {
       break;
     case "emit":
       await (await import("./cmd/emit.js")).emitCommand(args);
+      break;
+    case "overlay":
+      await (await import("./cmd/overlay.js")).overlayCommand(args);
       break;
     default:
       console.log(USAGE);

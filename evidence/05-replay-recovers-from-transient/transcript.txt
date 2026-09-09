@@ -1,16 +1,13 @@
 capability: member.savings_balance@1.0.0  (draft)
 inputs:     {"memberId":"10042"}
 
-failed at s3 (checkpoint_failed)
-  step:     Open member detail page for member 10042
-  expected: a button named "Open Sub-Account" is present
-  observed: no button "Open Sub-Account"
-  screen:   screenshots/failure-s3.png
+success — savings_balance=$8,241.17
 
 step telemetry:
-  s1   label_anchor         1x  33ms
-  s2   role_name            1x  576ms
+  s1   label_anchor         1x  34ms
+  s2   role_name            1x  581ms
+  s3   role_name            1x  2333ms  recovered:service_unavailable
 
-evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-01T10-36-55-311Z-bfa4a00b
-policy checks: 7
-exit 30
+evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-09T09-51-15-837Z-b0a86dbb
+policy checks: 6
+exit 0

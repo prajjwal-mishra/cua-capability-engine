@@ -4,9 +4,9 @@ inputs:     {"memberId":"10099"}
 business outcome — permission_denied: The operator is not authorized to view this member record.
 
 step telemetry:
-  s1   label_anchor         1x  38ms
-  s2   role_name            1x  560ms
+  s1   label_anchor         1x  36ms
+  s2   role_name            1x  563ms
 
-evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-01T10-36-52-101Z-d3f6e004
+evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-09T09-51-12-636Z-89a68c0c
 policy checks: 4
 exit 10

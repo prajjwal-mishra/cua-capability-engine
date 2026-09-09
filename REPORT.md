@@ -126,8 +126,9 @@ That distinction was not free. Detectors originally ran after every step but not
 at the run's verdict. A 503 inside a nested accounts frame, arriving after the
 last checkpoint had already passed on the outer route, was reported as
 `success_condition_failed`. Detectors now run when the verdict is decided;
-`tests/replay.test.ts` pins it. `evidence/06` and `evidence/07` are the
-recoveries that land mid-step.
+`tests/replay.test.ts` pins it. `evidence/05` is a 503 recovered mid-step;
+`evidence/06` and `evidence/07` are the interstitial and session-timeout
+recoveries.
 
 `--stability N` replays N times and writes a flake rate back onto the artifact,
 per tenant. A `business_outcome` counts as success (the flow worked). Injected
@@ -201,7 +202,9 @@ production version is CDP screencast plus input forwarding, or a WebRTC-backed
 remote browser — same lease, same recorder.
 
 Captured actions are in role + name + frame path, the vocabulary an overlay
-patch would need. Turning them into a proposed patch is not built.
+patch would need. `cua overlay propose` turns them into a draft overlay.
+Applying it is a review; the command will not overwrite an existing overlay or
+lower risk on its own.
 
 ## Safety
 
@@ -242,10 +245,9 @@ bounded "just this step" model call is the shortcut the architecture exists to
 make impossible. The answer to an ambiguous screen is a human, not a quieter
 model. Recorded as a seam (escalation), not as a second decision loop.
 
-**Promoting captured human actions into an overlay.** The capture is in the
-right vocabulary. The patch-and-review loop is not built. This is what I would
-do next: every escalation of the same cause currently costs a human the same
-amount forever.
+**Auto-applying a proposed overlay.** `cua overlay propose` drafts the patch.
+A reviewer still has to accept it, and risk is never lowered automatically.
+Until that review happens, the same escalation costs a human the same amount.
 
 **A real desktop surface.** The port makes it a swap. Claiming it is proven
 without having done it would be dishonest.

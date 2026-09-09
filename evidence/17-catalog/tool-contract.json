@@ -3,27 +3,16 @@
   "version": "1.0.0",
   "name": "look up member 10042 and read their current savings balance",
   "description": "look up member 10042 and read their current savings balance",
-  "state": "draft",
+  "state": "approved",
   "maxRisk": "read_only",
   "appId": "legacy-cu",
   "vendorProduct": "corevantage-backoffice",
   "stability": {
-    "runs": 11,
-    "successes": 10,
-    "rate": 0.9090909090909091
+    "runs": 5,
+    "successes": 5,
+    "rate": 1
   },
-  "stabilityByTenant": {
-    "variant:variant-b": {
-      "runs": 1,
-      "successes": 0,
-      "rate": 0
-    },
-    "summit-fcu": {
-      "runs": 1,
-      "successes": 1,
-      "rate": 1
-    }
-  },
+  "stabilityByTenant": {},
   "tool": {
     "name": "member.savings_balance",
     "description": "look up member 10042 and read their current savings balance",

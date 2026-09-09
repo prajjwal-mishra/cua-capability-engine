@@ -28,8 +28,22 @@ curl -sf "${ORIGIN}/__control/state" >/dev/null || {
   exit 1
 }
 
-rm -rf "${EV}"/0* "${EV}"/1*
+# Preserve live discovery captures. They cannot be regenerated without a model,
+# and `runs/` is gitignored, so deleting 00-discovery here would destroy the
+# only proof the brief requires.
+DISCOVERY_BAK=""
+if [ -d "${EV}/00-discovery" ]; then
+  DISCOVERY_BAK="$(mktemp -d)"
+  cp -R "${EV}/00-discovery" "${DISCOVERY_BAK}/00-discovery"
+fi
+
+rm -rf "${EV}"/0* "${EV}"/1* "${EV}"/2*
 mkdir -p "${EV}"
+
+if [ -n "${DISCOVERY_BAK}" ]; then
+  mv "${DISCOVERY_BAK}/00-discovery" "${EV}/00-discovery"
+  rmdir "${DISCOVERY_BAK}"
+fi
 
 # Rewind every capability to draft with no stability record.
 #
@@ -41,7 +55,7 @@ mkdir -p "${EV}"
 echo "── resetting capability lifecycle to draft"
 for cap in capabilities/*.json; do
   tmp=$(mktemp)
-  jq '.lifecycle = {state: "draft", stability: {runs: 0, successes: 0}}' "${cap}" > "${tmp}"
+  jq '.lifecycle = {state: "draft", stability: {runs: 0, successes: 0}, stabilityByTenant: {}}' "${cap}" > "${tmp}"
   mv "${tmp}" "${cap}"
 done
 
@@ -62,7 +76,7 @@ for cap in capabilities/*.json; do
     jq -r '.provenance | "capability: '"${id}"'\nmodel:      \(.discoveredBy)\nrun:        \(.runId)\nrecorded:   \(.recordedAt)"' \
       "${cap}" > "${EV}/00-discovery/${id}/provenance.txt"
   else
-    echo "   ! ${id}: discovery run ${run} is not on disk; skipping"
+    echo "   keeping existing ${EV}/00-discovery/${id} (live run ${run} is not in runs/)"
   fi
 done
 
@@ -118,11 +132,12 @@ capture 04-replay-input-rejected \
 # Faults armed out of band, so the automation drives byte-identical URLs
 # whether or not something is about to go wrong.
 
-# Two 503s, so the second lands on the nested accounts frame after the last
-# step's checkpoint has already passed — the fault that is invisible until the
-# run is verified.
+# A 503 on the member page. Recovery reloads the frame and retries the step;
+# the committed artifact's checkpoint (Open Sub-Account present) then passes.
+# Two 503s against this checkpoint is a different story, pinned in tests/replay.test.ts
+# with a route-based fixture — not this evidence folder.
 echo "── 05-replay-recovers-from-transient"
-arm '{"mode":"transient_503","count":2,"pathContains":"/frame/member/"}'
+arm '{"mode":"transient_503","count":1,"pathContains":"/frame/member"}'
 capture 05-replay-recovers-from-transient \
   cua replay --capability member.savings_balance --input memberId=10042
 
@@ -177,6 +192,14 @@ capture 14-escalation-human-handoff \
   npx tsx scripts/operator-handoff-demo.ts
 
 # ────────────────────────────────────────────────────────────── stability
+# Rewind the lookup capability so the promotion evidence is "five green
+# unattended runs, then approve" — not a pile of mixed earlier captures.
+echo "── resetting member.savings_balance stability ahead of the sweep"
+tmp=$(mktemp)
+jq '.lifecycle = {state: "draft", stability: {runs: 0, successes: 0}, stabilityByTenant: {}}' \
+  capabilities/member.savings_balance@1.0.0.json > "${tmp}"
+mv "${tmp}" capabilities/member.savings_balance@1.0.0.json
+
 # Five consecutive replays. This is what promotes a draft: the approval gate
 # wants evidence, and this is the evidence.
 capture 15-stability-five-runs \
@@ -216,6 +239,28 @@ capture 18-catalog-invoke \
 capture 19-catalog-refuses-unapproved-write \
   cua catalog invoke member.open_subaccount \
     --args '{"memberId":"10042","nickname":"Vacation","initialDeposit":"250.00","accountKind":"Certificate"}'
+
+# ───────────────────────────────────────────── overlay proposal + codegen
+# The human click from 14, turned into a reviewable overlay against the BASE
+# artifact (not the already-specialized Summit overlay).
+echo "── 20-overlay-from-handoff"
+mkdir -p "${EV}/20-overlay-from-handoff"
+INT=$(find "${EV}/14-escalation-human-handoff/run/interventions" -name '*.json' | head -1)
+{
+  echo "\$ cua overlay propose --from ${INT} --tenant summit-fcu"
+  cua overlay propose --from "${INT}" --tenant summit-fcu --out "${EV}/20-overlay-from-handoff/proposed.json"
+} > "${EV}/20-overlay-from-handoff/transcript.txt" 2>&1
+printf '%s\n' "cua overlay propose --from ${INT} --tenant summit-fcu" \
+  > "${EV}/20-overlay-from-handoff/command.txt"
+
+echo "── 21-emit-playwright"
+mkdir -p "${EV}/21-emit-playwright"
+{
+  echo '$ cua emit --capability member.savings_balance --format page-object'
+  cua emit --capability member.savings_balance --format page-object --out "${EV}/21-emit-playwright/page-object.ts"
+} > "${EV}/21-emit-playwright/transcript.txt" 2>&1
+printf '%s\n' "cua emit --capability member.savings_balance --format page-object" \
+  > "${EV}/21-emit-playwright/command.txt"
 
 echo
 echo "wrote ${EV}/ — now regenerate the index:  npx tsx scripts/index-evidence.ts"

@@ -1,0 +1,6 @@
+$ cua overlay propose --from evidence/14-escalation-human-handoff/run/interventions/int-9f26054c.json --tenant summit-fcu
+  anchored after 's8' because 's8b' is not a step on the base artifact
+  clicked the button "Commit Sub-Account": proposed insert for button "Commit Sub-Account"
+  submitted the form "/frame/subaccount/10042/commit": skipped (submit is not a control action)
+
+wrote evidence/20-overlay-from-handoff/proposed.json  (1 inserted step(s) — proposal, not applied)

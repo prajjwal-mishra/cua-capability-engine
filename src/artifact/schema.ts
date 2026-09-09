@@ -31,7 +31,7 @@ export const SCHEMA_VERSION = "1.0.0";
 
 /* ------------------------------------------------------- descriptors ----- */
 
-const UIRoleSchema = z.enum([
+export const UIRoleSchema = z.enum([
   "textbox",
   "button",
   "link",

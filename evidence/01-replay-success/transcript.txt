@@ -4,10 +4,10 @@ inputs:     {"memberId":"10042"}
 success — savings_balance=$8,241.17
 
 step telemetry:
-  s1   label_anchor         1x  52ms
-  s2   role_name            1x  596ms
-  s3   role_name            1x  584ms
+  s1   label_anchor         1x  44ms
+  s2   role_name            1x  567ms
+  s3   role_name            1x  587ms
 
-evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-01T10-36-47-443Z-fe75bd54
+evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-09T09-51-08-051Z-93c558f3
 policy checks: 5
 exit 0

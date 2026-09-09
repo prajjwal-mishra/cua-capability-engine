@@ -4,15 +4,15 @@ inputs:     {"memberId":"10042","nickname":"Vacation","initialDeposit":"250.00",
 success — no outputs
 
 step telemetry:
-  s1   label_anchor         1x  32ms
-  s2   role_name            1x  576ms
-  s3   role_name            1x  598ms
-  s4   role_name            1x  560ms
-  s5   label_anchor         1x  1522ms
-  s6   label_anchor         1x  15ms
-  s7   label_anchor         1x  9ms
-  s8   role_name            1x  579ms
+  s1   label_anchor         1x  35ms
+  s2   role_name            1x  560ms
+  s3   role_name            1x  585ms
+  s4   role_name            1x  553ms
+  s5   label_anchor         1x  1523ms
+  s6   label_anchor         1x  14ms
+  s7   label_anchor         1x  11ms
+  s8   role_name            1x  557ms
 
-evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-01T10-37-18-117Z-ebef4235
+evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-09T09-51-36-290Z-aabf0b49
 policy checks: 9
 exit 0

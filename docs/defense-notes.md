@@ -49,11 +49,11 @@ frame path, in the same vocabulary the artifact uses. The resume re-observes the
 screen and re-checks the resumed step's precondition rather than assuming
 anything.
 
-What is missing is the payoff: captured human actions are recorded in a form that
-*could* become a proposed artifact patch, and nothing turns them into one. So
-every escalation of the same cause costs a human the same amount, forever. That
-is the single biggest gap in the submission and I would rather say so than let it
-be found.
+What is missing is auto-apply, not capture. `cua overlay propose` drafts a
+reviewable overlay from the recorded clicks and refuses to lower risk or
+overwrite an existing overlay. Every escalation of the same cause still costs a
+human until someone reviews that draft. That is the remaining gap, and I would
+rather say so than let it be found.
 
 ---
 

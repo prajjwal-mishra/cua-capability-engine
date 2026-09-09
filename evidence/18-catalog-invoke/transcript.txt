@@ -1,7 +1,12 @@
 invoking member.savings_balance with {"memberId":"10042"}
 
 {
-  "status": "rejected",
-  "reason": "member.savings_balance@1.0.0 is 'draft', not approved. Approve it (cua catalog approve member.savings_balance) or pass allowDraft to call it anyway."
+  "capability": "member.savings_balance@1.0.0",
+  "status": "success",
+  "outputs": {
+    "savings_balance": "$8,241.17"
+  }
 }
-exit 40
+
+success — savings_balance=$8,241.17
+exit 0

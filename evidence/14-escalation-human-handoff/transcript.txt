@@ -1,14 +1,14 @@
-[operator-demo] starting: cua replay --console-port 4100 --capability member.open_subaccount --tenant summit-fcu --input memberId=10042 --input nickname=Vacation --input initialDeposit=250.00 --input accountKind=Certificate --allow-writes --attended
+[operator-demo] starting: cua replay --console-port 62917 --capability member.open_subaccount --tenant summit-fcu --input memberId=10042 --input nickname=Vacation --input initialDeposit=250.00 --input accountKind=Certificate --allow-writes --attended
 
 capability: member.open_subaccount@1.0.0  (draft)
 overlay:    summit-fcu.member.open_subaccount for tenant summit-fcu
 inputs:     {"memberId":"10042","nickname":"Vacation","initialDeposit":"250.00","accountKind":"Certificate"}
 
 ── escalated ─────────────────────────────────────────────
-intervention: int-5a5ceb94  (policy_denied)
+intervention: int-9f26054c  (policy_denied)
 reason:       'Commit Sub-Account' is irreversible and requires human confirmation
 lease:        awaiting_operator
-console:      http://localhost:4100/i/int-5a5ceb94
+console:      http://localhost:62917/i/int-9f26054c
 The browser is headless, so drive the session from the console's element list.
 waiting for an operator to take control and hand back …
 
@@ -26,6 +26,6 @@ resuming at:  $verify
 
 success — no outputs
 
-evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-01T10-37-24-262Z-8cb86023
-policy checks: 10
+evidence: /Users/prajjwal54/Documents/new_new/Ai Engineer/ai engineer/cua-capability-engine/runs/replay-2026-09-09T09-51-42-436Z-6410f8ce
+policy checks: 11
 exit 0
