@@ -342,6 +342,7 @@ export const CapabilityArtifactSchema = z.object({
 });
 
 export type CapabilityArtifact = z.infer<typeof CapabilityArtifactSchema>;
+export type ElementDescriptor = z.infer<typeof ElementDescriptorSchema>;
 export type Step = z.infer<typeof StepSchema>;
 export type Condition = z.infer<typeof ConditionSchema>;
 export type ConditionClause = z.infer<typeof ConditionClauseSchema>;

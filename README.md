@@ -45,12 +45,37 @@ npm run cua -- catalog describe member.savings_balance
 
 # 5. Invoke it like a function.
 npm run cua -- catalog invoke member.savings_balance --args '{"memberId":"10042"}'
+
+# 6. Project the artifact into a Playwright snippet (stretch).
+npm run cua -- emit --capability member.savings_balance --format page-object
 ```
 
 Add `HEADLESS=1` to any command to skip the browser window.
 
 Every one of these is captured in [`evidence/`](./evidence) with its full
 transcript, so you can compare against a run we did.
+
+### Demo path (discover, then replay)
+
+The committed artifacts already came from a live model run
+([`evidence/00-discovery`](./evidence/00-discovery)). To run that thread yourself:
+copy `.env.example` to `.env` and set `CUA_LLM_API_KEY` (any OpenAI-compatible
+endpoint). The rest of the system does not need a key.
+
+```bash
+npm run cua -- discover \
+  --goal "look up member 10042 and read their current savings balance" \
+  --target http://localhost:4000 --tenant riverbend-cu --input memberId=10042
+
+npm run cua -- replay --capability member.savings_balance --input memberId=10042
+```
+
+What is real versus stubbed: discovery, replay, the policy gate, same-session
+handoff, and the catalog are live against `apps/legacy-cu/`. The operator desk
+is a real control-transfer surface, not an embedded co-browsing stream (headed,
+you drive the visible window; headless, the desk injects clicks through the same
+API). There is no desktop driver — that is a documented cut. Replay has no
+model in the loop, by design.
 
 ### The two demos worth your time
 
@@ -99,24 +124,6 @@ The desk is what an operator sees when a run escalates. The catalog is what an
 agent sees, rendered so a human can read the contract without curling it. Invoke
 from the catalog page hits the same `POST /capabilities/:id/invoke` an agent
 would — drafts and writes still refused unless you opt in.
-
-### Rediscovering a capability from scratch
-
-This is the only part that needs a model. Copy `.env.example` to `.env` and fill
-in `CUA_LLM_API_KEY` — any OpenAI-compatible endpoint works, and the file
-defaults to Groq's. The two committed artifacts were discovered with
-`openai/gpt-oss-120b`.
-
-```bash
-npm run cua -- discover \
-  --goal "look up member 10042 and read their current savings balance" \
-  --target http://localhost:4000 --tenant riverbend-cu --input memberId=10042
-```
-
-It explores, and on success writes a new capability into `capabilities/`. The
-runs that produced the two committed artifacts are in
-[`evidence/00-discovery`](./evidence/00-discovery), with the compiled output
-beside each one.
 
 ---
 
@@ -173,6 +180,7 @@ artifact shape describe a desktop app later.
 | `src/policy/` | allowlist, risk classification, the gate, redaction |
 | `src/escalation/` | the session lease, intervention queue, and operator desk |
 | `src/catalog/` | the agent-facing surface: list, describe, invoke — JSON and a page |
+| `src/emit/` | project an artifact into a Playwright page object / test |
 | `src/desk/` | shared chrome for the two human-facing surfaces |
 | `evidence/` | 20 real runs, regenerable with `npm run evidence` |
 | `docs/` | design defence and the questions this system does not answer yet |
@@ -197,8 +205,8 @@ eventually confuse a genuine outage for a missing member, or the reverse.
 
 ## What to read to judge this
 
-- **[REPORT.md](./REPORT.md)** — the design decisions, the trade-offs, and what
-  was deliberately not built.
+- **[REPORT.md](./REPORT.md)** — the design write-up, under the seven headings
+  the brief asked for.
 - **[docs/defense-notes.md](./docs/defense-notes.md)** — the honest version: what
   is weak, what would break first at scale, and what I would do next.
 - **[capabilities/member.savings_balance@1.0.0.json](./capabilities/member.savings_balance@1.0.0.json)**
@@ -211,7 +219,7 @@ eventually confuse a genuine outage for a missing member, or the reverse.
 
 ```bash
 npm run typecheck
-npm test               # 109 tests; launches real browsers against the real app
+npm test               # launches real browsers against the real app
 npm run check          # both
 npm run evidence       # regenerate evidence/ from scratch (needs the app running)
 ```

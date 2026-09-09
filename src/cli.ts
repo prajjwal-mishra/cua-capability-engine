@@ -37,6 +37,10 @@ const USAGE = `cua — computer-use capability engine
   operator   [--port 4100]
              The desk: triage queued interventions across all runs.
              Same-session takeover happens via 'replay --attended'.
+
+  emit       --capability <id>[@<version>] [--format test|page-object] [--out <file>]
+             Project an artifact into a Playwright snippet. A projection of the
+             JSON, not a second source of truth — replay still executes the artifact.
 `;
 
 async function main(): Promise<void> {
@@ -53,6 +57,9 @@ async function main(): Promise<void> {
       break;
     case "operator":
       await (await import("./cmd/operator.js")).operatorCommand(args);
+      break;
+    case "emit":
+      await (await import("./cmd/emit.js")).emitCommand(args);
       break;
     default:
       console.log(USAGE);

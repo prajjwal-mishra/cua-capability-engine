@@ -86,6 +86,12 @@ tells a tenant's overlay it is *about* to go stale when a new capability version
 is published. At hundreds of institutions that becomes an operational problem
 long before it becomes a technical one.
 
+**`cua emit` is a projection.** It turns an artifact into a Playwright page
+object so a reviewer can read the recorded ladder as ordinary test code. It is
+not how production replay runs, and it is not a second locator engine. If the
+two ever diverged, the JSON would still be right and the snippet would be
+wrong — which is why the comment at the top of every generated file says so.
+
 **Perception cost.** `observe()` walks the accessibility tree of every frame on
 every step. On this app that is milliseconds. On a real back office with deep
 framesets and thousands of grid rows it would not be, and there is no incremental
@@ -157,7 +163,8 @@ because every one of these was a wrong belief I held until something disagreed.
    every step but not at the point the run's verdict was decided. A transient
    error inside the accounts iframe, arriving after the last checkpoint had
    already passed, was reported as `success_condition_failed` — "your artifact is
-   wrong" — for a server error. Now `evidence/05`, and it recovers.
+   wrong" — for a server error. Detectors now run at the verdict;
+   `tests/replay.test.ts` pins it.
 
 5. **`contentRoute`'s "I cannot tell" fallback was `[]`.** Downstream, `[]` means
    "the main frame only" and `undefined` means "any frame". So an ambiguous frame
